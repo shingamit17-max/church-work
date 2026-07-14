@@ -7,6 +7,8 @@ export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const glowRef1 = useRef<HTMLDivElement>(null);
   const glowRef2 = useRef<HTMLDivElement>(null);
+  const glowRef3 = useRef<HTMLDivElement>(null);
+  const glowRef4 = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -34,6 +36,20 @@ export default function LandingPage() {
         glowRef2.current.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
       }
 
+      // Move glow effect 3
+      if (glowRef3.current) {
+        const offsetX = (x - rect.width / 2) * 0.12;
+        const offsetY = (y - rect.height / 2) * -0.12;
+        glowRef3.current.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      }
+
+      // Move glow effect 4
+      if (glowRef4.current) {
+        const offsetX = (x - rect.width / 2) * -0.08;
+        const offsetY = (y - rect.height / 2) * 0.08;
+        glowRef4.current.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      }
+
       // Subtle text parallax
       if (textRef.current) {
         const offsetX = (x - rect.width / 2) * 0.03;
@@ -52,17 +68,56 @@ export default function LandingPage() {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#0a0a0a] overflow-hidden relative"
+      className="min-h-screen flex flex-col items-center justify-center p-8 overflow-hidden relative"
+      style={{
+        background: 'radial-gradient(ellipse at 50% 50%, rgb(15, 10, 40) 0%, rgb(5, 5, 15) 100%)',
+      }}
     >
-      {/* Background glow effects */}
+      {/* Animated gradient background mesh */}
+      <style>{`
+        @keyframes drift1 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(30px, -30px); }
+        }
+        @keyframes drift2 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-40px, 40px); }
+        }
+        @keyframes drift3 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-30px, -40px); }
+        }
+        @keyframes drift4 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(35px, 25px); }
+        }
+        .drift1 { animation: drift1 12s ease-in-out infinite; }
+        .drift2 { animation: drift2 14s ease-in-out infinite; }
+        .drift3 { animation: drift3 16s ease-in-out infinite; }
+        .drift4 { animation: drift4 18s ease-in-out infinite; }
+      `}</style>
+
+      {/* Background glow effects with animations */}
       <div 
         ref={glowRef1}
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
+        className="drift1 absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/15 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
       />
       <div 
         ref={glowRef2}
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
+        className="drift2 absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/12 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
       />
+      <div 
+        ref={glowRef3}
+        className="drift3 absolute top-1/3 right-1/3 w-80 h-80 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none transition-transform duration-100"
+      />
+      <div 
+        ref={glowRef4}
+        className="drift4 absolute bottom-1/3 left-1/3 w-72 h-72 bg-pink-500/8 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
+      />
+      
+      {/* Additional ambient glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
 
       <div ref={textRef} className="relative z-10 max-w-3xl text-center space-y-8 transition-transform duration-100">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
