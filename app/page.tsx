@@ -1,13 +1,70 @@
+'use client';
+
 import NextLink from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#0a0a0a] overflow-hidden relative">
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+  const containerRef = useRef<HTMLDivElement>(null);
+  const glowRef1 = useRef<HTMLDivElement>(null);
+  const glowRef2 = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-      <div className="relative z-10 max-w-3xl text-center space-y-8">
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      setMousePosition({ x, y });
+
+      // Move glow effect 1
+      if (glowRef1.current) {
+        const offsetX = (x - rect.width / 2) * 0.15;
+        const offsetY = (y - rect.height / 2) * 0.15;
+        glowRef1.current.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      }
+
+      // Move glow effect 2
+      if (glowRef2.current) {
+        const offsetX = (x - rect.width / 2) * -0.1;
+        const offsetY = (y - rect.height / 2) * -0.1;
+        glowRef2.current.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      }
+
+      // Subtle text parallax
+      if (textRef.current) {
+        const offsetX = (x - rect.width / 2) * 0.03;
+        const offsetY = (y - rect.height / 2) * 0.03;
+        textRef.current.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("mousemove", handleMouseMove);
+      return () => container.removeEventListener("mousemove", handleMouseMove);
+    }
+  }, []);
+
+  return (
+    <div 
+      ref={containerRef}
+      className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#0a0a0a] overflow-hidden relative"
+    >
+      {/* Background glow effects */}
+      <div 
+        ref={glowRef1}
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
+      />
+      <div 
+        ref={glowRef2}
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none transition-transform duration-100"
+      />
+
+      <div ref={textRef} className="relative z-10 max-w-3xl text-center space-y-8 transition-transform duration-100">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
           Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">Perfect Mentor.</span>
         </h1>
