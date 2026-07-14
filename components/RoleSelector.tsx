@@ -96,9 +96,9 @@ export function RoleSelector({ isDark, onThemeToggle }: RoleSelectorProps) {
         }
         
         .role-card.light:hover {
-          border-color: rgba(79, 70, 229, 0.4);
+          border-color: rgba(51, 65, 85, 0.4);
           background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 1) 100%);
-          box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15), 0 0 0 1px rgba(79, 70, 229, 0.1);
+          box-shadow: 0 20px 40px rgba(51, 65, 85, 0.15), 0 0 0 1px rgba(51, 65, 85, 0.1);
           transform: translateY(-4px);
         }
         
@@ -110,9 +110,9 @@ export function RoleSelector({ isDark, onThemeToggle }: RoleSelectorProps) {
         }
         
         .role-card.dark:hover {
-          border-color: rgba(129, 140, 248, 0.4);
+          border-color: rgba(100, 116, 139, 0.6);
           background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
-          box-shadow: 0 20px 40px rgba(129, 140, 248, 0.2), 0 0 0 1px rgba(129, 140, 248, 0.15);
+          box-shadow: 0 20px 40px rgba(71, 85, 105, 0.2), 0 0 0 1px rgba(100, 116, 139, 0.3);
           transform: translateY(-4px);
         }
         
@@ -128,14 +128,14 @@ export function RoleSelector({ isDark, onThemeToggle }: RoleSelectorProps) {
         }
         
         .btn-primary.light {
-          background: linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(99, 102, 241) 100%);
+          background: linear-gradient(135deg, rgb(51, 65, 85) 0%, rgb(71, 85, 105) 100%);
           color: white;
-          box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+          box-shadow: 0 4px 15px rgba(51, 65, 85, 0.3);
         }
         
         .btn-primary.light:hover {
-          background: linear-gradient(135deg, rgb(67, 56, 202) 0%, rgb(88, 91, 228) 100%);
-          box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+          background: linear-gradient(135deg, rgb(30, 41, 59) 0%, rgb(51, 65, 85) 100%);
+          box-shadow: 0 8px 25px rgba(51, 65, 85, 0.4);
           transform: translateY(-2px);
         }
         
@@ -144,14 +144,14 @@ export function RoleSelector({ isDark, onThemeToggle }: RoleSelectorProps) {
         }
         
         .btn-primary.dark {
-          background: linear-gradient(135deg, rgb(129, 140, 248) 0%, rgb(165, 142, 251) 100%);
-          color: rgb(30, 41, 59);
-          box-shadow: 0 4px 15px rgba(129, 140, 248, 0.3);
+          background: linear-gradient(135deg, rgb(100, 116, 139) 0%, rgb(120, 136, 159) 100%);
+          color: rgb(15, 23, 42);
+          box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
         }
         
         .btn-primary.dark:hover {
-          background: linear-gradient(135deg, rgb(110, 120, 230) 0%, rgb(145, 120, 240) 100%);
-          box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4);
+          background: linear-gradient(135deg, rgb(120, 136, 159) 0%, rgb(148, 163, 184) 100%);
+          box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
           transform: translateY(-2px);
         }
         
@@ -195,19 +195,19 @@ export function RoleSelector({ isDark, onThemeToggle }: RoleSelectorProps) {
         }
         
         .theme-toggle.light:hover {
-          background: rgba(79, 70, 229, 0.1);
-          border-color: rgba(79, 70, 229, 0.3);
+          background: rgba(51, 65, 85, 0.1);
+          border-color: rgba(51, 65, 85, 0.3);
           transform: scale(1.1) rotate(20deg);
         }
         
         .theme-toggle.dark {
-          border-color: rgba(148, 163, 184, 0.3);
+          border-color: rgba(100, 116, 139, 0.5);
           color: rgb(226, 232, 240);
         }
         
         .theme-toggle.dark:hover {
-          background: rgba(129, 140, 248, 0.15);
-          border-color: rgba(129, 140, 248, 0.4);
+          background: rgba(100, 116, 139, 0.15);
+          border-color: rgba(120, 136, 159, 0.6);
           transform: scale(1.1) rotate(-20deg);
         }
       `}</style>

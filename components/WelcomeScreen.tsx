@@ -83,8 +83,8 @@ export function WelcomeScreen({ onComplete, isDark }: WelcomeScreenProps) {
         if (particle.opacity > 0) {
           activeParticles++;
           ctx.fillStyle = isDark 
-            ? `rgba(150, 120, 255, ${particle.opacity})` 
-            : `rgba(100, 80, 200, ${particle.opacity})`;
+            ? `rgba(100, 116, 139, ${particle.opacity})` 
+            : `rgba(71, 85, 105, ${particle.opacity})`;
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
           ctx.fill();
@@ -120,8 +120,8 @@ export function WelcomeScreen({ onComplete, isDark }: WelcomeScreenProps) {
   }, [onComplete, isDark, isAnimating]);
 
   const bgStyle = isDark 
-    ? 'linear-gradient(135deg, rgb(10, 10, 20) 0%, rgb(15, 10, 30) 100%)'
-    : 'linear-gradient(135deg, rgb(250, 250, 255) 0%, rgb(240, 245, 255) 100%)';
+    ? 'linear-gradient(135deg, rgb(15, 23, 42) 0%, rgb(10, 15, 30) 100%)'
+    : 'linear-gradient(135deg, rgb(248, 250, 252) 0%, rgb(240, 244, 252) 100%)';
 
   return (
     <canvas
