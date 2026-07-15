@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { getPusherClient } from "@/lib/pusher";
 import { useSession } from "next-auth/react";
 import { use } from "react";
+import BackButton from "@/components/BackButton";
 
 export default function ChatPage({ params }: { params: Promise<{ matchId: string }> }) {
   const resolvedParams = use(params);
@@ -58,7 +59,9 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+    <div className="max-w-4xl mx-auto">
+      <BackButton fallbackUrl="/dashboard" />
+      <div className="flex flex-col h-[calc(100vh-12rem)] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
       <div className="p-4 border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <h2 className="font-semibold text-lg">Mentorship Chat</h2>
         <p className="text-xs text-white/50">Match ID: {matchId}</p>
@@ -99,6 +102,7 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
           </button>
         </form>
       </div>
+    </div>
     </div>
   );
 }

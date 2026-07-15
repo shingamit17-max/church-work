@@ -7,8 +7,7 @@ export const inngest = new Inngest({ id: "grace-mentor" });
 
 // 1. mentorFeedbackNudge: 7 days after match active with no feedback
 export const mentorFeedbackNudge = inngest.createFunction(
-  { id: "mentor-feedback-nudge" },
-  { event: "match/accepted" },
+  { id: "mentor-feedback-nudge", triggers: [{ event: "match/accepted" }] },
   async ({ event, step }) => {
     // Wait for 7 days
     await step.sleep("wait-7-days", "7d");
@@ -30,8 +29,7 @@ export const mentorFeedbackNudge = inngest.createFunction(
 
 // 2. testimonialPrompt: match marked completed
 export const testimonialPrompt = inngest.createFunction(
-  { id: "testimonial-prompt" },
-  { event: "match/completed" },
+  { id: "testimonial-prompt", triggers: [{ event: "match/completed" }] },
   async ({ event, step }) => {
     // Wait 1 day after completion to ask for testimonial
     await step.sleep("wait-1-day", "1d");
@@ -45,8 +43,7 @@ export const testimonialPrompt = inngest.createFunction(
 
 // 3. shareCardGeneration: mentor profile updated
 export const shareCardGeneration = inngest.createFunction(
-  { id: "share-card-generation" },
-  { event: "mentor/profile-updated" },
+  { id: "share-card-generation", triggers: [{ event: "mentor/profile-updated" }] },
   async ({ event, step }) => {
     await step.run("generate-og-image", async () => {
       // Logic to ping the @vercel/og endpoint or trigger a revalidation
@@ -57,8 +54,7 @@ export const shareCardGeneration = inngest.createFunction(
 
 // 4. matchScoreRefresh: new mentor feedback submitted
 export const matchScoreRefresh = inngest.createFunction(
-  { id: "match-score-refresh" },
-  { event: "feedback/submitted" },
+  { id: "match-score-refresh", triggers: [{ event: "feedback/submitted" }] },
   async ({ event, step }) => {
     await step.run("refresh-match-scores", async () => {
       await dbConnect();

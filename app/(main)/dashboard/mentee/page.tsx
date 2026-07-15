@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 import { MenteeProfile } from "@/models/MenteeProfile";
+import { EventRegistration } from "@/models/EventRegistration";
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,10 @@ export default async function MenteeDashboardPage() {
   
   const matches = await Match.find({ menteeId: session.user.id }).sort({ matchScore: -1 });
   const profile = await MenteeProfile.findOne({ userId: session.user.id });
+  
+  const eventRegistrations = await EventRegistration.find({ userId: session.user.id })
+    .populate("eventId", "title dateTime domain isFree price status")
+    .sort({ createdAt: -1 });
 
   return (
     <div className="space-y-8">
@@ -80,10 +85,45 @@ export default async function MenteeDashboardPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Event Activity</h2>
-            <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center text-white/50">
-              You haven&apos;t registered for any events yet. (Coming in Phase 6)
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Event Activity</h2>
+              <NextLink href="/events" className="text-sm text-indigo-400 hover:underline">
+                Browse Events →
+              </NextLink>
             </div>
+            
+            {eventRegistrations.length === 0 ? (
+              <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center text-white/50">
+                You haven&apos;t registered for any events yet.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {eventRegistrations.map((reg: { _id: string, eventId: { _id: string, title: string, dateTime: string, domain: string, isFree: boolean, price: number, status: string } }) => {
+                  const evt = reg.eventId;
+                  return (
+                    <div key={reg._id} className="p-4 border border-white/10 rounded-xl bg-white/5 flex items-center justify-between hover:bg-white/10 transition-colors">
+                      <div>
+                        <NextLink href={`/events/${evt._id}`} className="font-medium hover:underline block mb-1">
+                          {evt.title}
+                        </NextLink>
+                        <div className="text-xs text-white/50">
+                          {new Date(evt.dateTime).toLocaleString(undefined, { 
+                            month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' 
+                          })} • {evt.domain}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${
+                          evt.status === 'upcoming' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-white/10 text-white/50'
+                        }`}>
+                          {evt.status}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         </div>
 

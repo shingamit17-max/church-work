@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import dbConnect from "@/lib/db";
 import { MentorProfile } from "@/models/MentorProfile";
 import { auth } from "@/lib/auth";
-import NextLink from "next/link";
+import BackButton from "@/components/BackButton";
 import { notFound } from "next/navigation";
 import RequestMentorshipButton from "./RequestMentorshipButton";
 
@@ -52,10 +52,8 @@ export default async function PublicMentorProfile({ params }: Props) {
   
   return (
     <div className="min-h-screen bg-linear-to-b from-black to-[#0a0a0a] text-white pt-24 pb-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <NextLink href="/" className="text-teal-400 text-sm mb-8 inline-block hover:underline">
-          ← Back to Grace Mentor
-        </NextLink>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <BackButton fallbackUrl="/" />
 
         <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-xl shadow-2xl relative overflow-hidden">
           {/* Background glow */}

@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 import { MentorProfile } from "@/models/MentorProfile";
+import { Event } from "@/models/Event";
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,8 @@ export default async function MentorDashboardPage() {
   
   const matches = await Match.find({ mentorId: session.user.id }).sort({ createdAt: -1 });
   const profile = await MentorProfile.findOne({ userId: session.user.id });
+  
+  const hostedEvents = await Event.find({ hostId: session.user.id }).sort({ dateTime: 1 });
 
   return (
     <div className="space-y-8">
@@ -112,10 +115,29 @@ export default async function MentorDashboardPage() {
 
           <section className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
             <h3 className="font-semibold mb-2">Hosted Events</h3>
-            <p className="text-xs text-white/60 mb-4">Host a group workshop or Q&A.</p>
-            <button disabled className="w-full py-2 bg-white/5 border border-white/10 text-white/40 rounded-lg text-sm cursor-not-allowed">
-              Coming in Phase 6
-            </button>
+            {hostedEvents.length === 0 ? (
+              <>
+                <p className="text-xs text-white/60 mb-4">Host a group workshop or Q&A.</p>
+                <NextLink href="/events/create" className="block w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors">
+                  Create Event
+                </NextLink>
+              </>
+            ) : (
+              <div className="space-y-3 mt-4 text-left">
+                {hostedEvents.slice(0, 3).map((evt: { _id: string, title: string, dateTime: string, registeredCount: number, capacity: number }) => (
+                  <NextLink href={`/events/${evt._id}`} key={evt._id} className="block p-3 bg-black/20 rounded-xl hover:bg-white/5 transition-colors border border-white/5">
+                    <div className="text-sm font-medium truncate mb-1">{evt.title}</div>
+                    <div className="flex justify-between items-center text-xs text-white/50">
+                      <span>{new Date(evt.dateTime).toLocaleDateString()}</span>
+                      <span className="text-teal-400">{evt.registeredCount} / {evt.capacity}</span>
+                    </div>
+                  </NextLink>
+                ))}
+                <NextLink href="/events/create" className="block w-full py-2 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 rounded-lg text-sm text-center transition-colors mt-4">
+                  + New Event
+                </NextLink>
+              </div>
+            )}
           </section>
 
           <section className="bg-white/5 border border-white/10 rounded-2xl p-6">

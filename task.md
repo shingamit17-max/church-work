@@ -11,8 +11,8 @@
 
 ## Current State
 
-- **Phase 9 & 10 — Mentee & Mentor Dashboards:** `[x]` Done
-- **Last completed action:** Separated `/dashboard` into role-specific nested routes (`/dashboard/mentee` and `/dashboard/mentor`).
+- **Phase 6 — Events Page:** `[x]` Done
+- **Last completed action:** Implemented Events directory, event detail, event creation, registration logic, and integrated into mentor/mentee dashboards.
 - **Dev server verified:** Pending
 
 ---
@@ -165,17 +165,17 @@
 
 ## Phase 6 — Events Page
 
-- [ ] Create `/(main)/events/page.tsx` — browsable/filterable event list:
-  - [ ] Filter by: domain, pain-point tag, free/paid, date range
-  - [ ] Event card: host, topic, price/"Free", date/time, seats left, pain-point tags
-- [ ] Create `/(main)/events/[id]/page.tsx` — event detail page
-- [ ] Create `/(main)/events/create/page.tsx` — mentor-side event creation form:
-  - [ ] Fields: title, description, price/free, capacity, date/time, pain-point tags
-  - [ ] API: `POST /api/events` — create event
-- [ ] API: `GET /api/events` — list events with filters
-- [ ] API: `POST /api/events/[id]/register` — register for event
-- [ ] Registration tracking (EventRegistration model)
-- [ ] Payment wiring: **DEFERRED** — `platformFeePercent=0` field present but no payment gateway yet
+- [x] Create `/(main)/events/page.tsx` — browsable/filterable event list:
+  - [x] Filter by: domain, pain-point tag, free/paid, date range
+  - [x] Event card: host, topic, price/"Free", date/time, seats left, pain-point tags
+- [x] Create `/(main)/events/[id]/page.tsx` — event detail page
+- [x] Create `/(main)/events/create/page.tsx` — mentor-side event creation form:
+  - [x] Fields: title, description, price/free, capacity, date/time, pain-point tags
+  - [x] API: `POST /api/events` — create event
+- [x] API: `GET /api/events` — list events with filters
+- [x] API: `POST /api/events/[id]/register` — register for event
+- [x] Registration tracking (EventRegistration model)
+- [x] Payment wiring: **DEFERRED** — `platformFeePercent=0` field present but no payment gateway yet
 
 ---
 

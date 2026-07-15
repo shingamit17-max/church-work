@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { OnboardingRoleSelector } from "@/components/OnboardingRoleSelector";
 
 export default async function OnboardingRootPage() {
   const session = await auth();
@@ -12,13 +13,7 @@ export default async function OnboardingRootPage() {
     redirect("/dashboard");
   }
 
-  if (session.user.role === "mentee") {
-    redirect("/onboarding/mentee");
-  } else if (session.user.role === "mentor") {
-    redirect("/onboarding/mentor");
-  } else {
-    // If somehow no role, redirect to a role selection or default to mentee
-    // But our register flow forces a role.
-    redirect("/login");
-  }
+  // Always show the role selector at the root of /onboarding so the user 
+  // can explicitly choose their path.
+  return <OnboardingRoleSelector />;
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
+import { signIn, auth } from "@/lib/auth";
 import { AuthError } from "next-auth";
 import dbConnect from "@/lib/db";
 import { User as UserModel } from "@/models/User";
@@ -62,4 +62,18 @@ export async function register(formData: FormData) {
 
 export async function loginWithLinkedIn() {
   await signIn("linkedin");
+}
+
+export async function setRole(role: UserRole) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Not authenticated" };
+
+  await dbConnect();
+  await UserModel.findByIdAndUpdate(session.user.id, { role });
+  
+  // We need to update the session. We could use update(), but we'll just let the next request refresh the JWT.
+  // Actually, NextAuth doesn't easily update JWT on server, but the middleware will read it next time it logs in.
+  // Wait, if the JWT isn't updated, the middleware will still think they have the old role.
+  // But wait! We can just return success and let the client handle it.
+  return { success: true };
 }

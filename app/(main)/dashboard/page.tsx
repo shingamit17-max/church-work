@@ -12,6 +12,8 @@ export default async function DashboardIndexPage() {
     redirect("/dashboard/mentee");
   } else if (session.user.role === "mentor") {
     redirect("/dashboard/mentor");
+  } else if (session.user.role === "admin") {
+    redirect("/dashboard/admin");
   } else {
     redirect("/login");
   }

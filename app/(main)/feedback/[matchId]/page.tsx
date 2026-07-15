@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PainPoint } from "@/types";
 import { use } from "react";
+import BackButton from "@/components/BackButton";
 
 export default function MentorFeedbackPage({ params }: { params: Promise<{ matchId: string }> }) {
   const resolvedParams = use(params);
@@ -43,6 +44,7 @@ export default function MentorFeedbackPage({ params }: { params: Promise<{ match
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton fallbackUrl="/dashboard" />
       <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
         Post-Session Feedback
       </h1>
