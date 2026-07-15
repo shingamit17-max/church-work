@@ -1,7 +1,6 @@
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import dbConnect from "@/lib/db";
 import { MentorProfile } from "@/models/MentorProfile";
-import { User as UserModel } from "@/models/User";
 import { auth } from "@/lib/auth";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
@@ -12,8 +11,7 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
@@ -25,7 +23,7 @@ export async function generateMetadata(
     return { title: "Mentor Not Found" };
   }
 
-  const mentorName = (profile.userId as any).name;
+  const mentorName = (profile.userId as { name: string }).name;
   
   return {
     title: `${mentorName} - Mentor at Grace Mentor`,
@@ -49,11 +47,11 @@ export default async function PublicMentorProfile({ params }: Props) {
   }
 
   const session = await auth();
-  const mentorName = (profile.userId as any).name;
+  const mentorName = (profile.userId as { name: string }).name;
   const isAvailable = profile.currentMenteeCount < profile.maxMentees;
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-[#0a0a0a] text-white pt-24 pb-12 px-4">
+    <div className="min-h-screen bg-linear-to-b from-black to-[#0a0a0a] text-white pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <NextLink href="/" className="text-teal-400 text-sm mb-8 inline-block hover:underline">
           ← Back to Grace Mentor
@@ -135,8 +133,8 @@ export default async function PublicMentorProfile({ params }: Props) {
                 isAvailable={isAvailable}
                 userSession={session ? {
                   id: session.user.id,
-                  role: (session.user as any).role,
-                  onboardingComplete: (session.user as any).onboardingComplete
+                  role: (session.user as { role: string }).role,
+                  onboardingComplete: (session.user as { onboardingComplete: boolean }).onboardingComplete
                 } : null}
               />
               <p className="text-xs text-white/40 text-center mt-4">

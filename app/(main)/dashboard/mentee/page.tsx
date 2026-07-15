@@ -17,7 +17,7 @@ export default async function MenteeDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
+        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
           Mentee Dashboard
         </h1>
         <p className="text-white/60">Welcome back, {session.user.name}</p>
@@ -32,7 +32,7 @@ export default async function MenteeDashboardPage() {
             
             {matches.length === 0 ? (
               <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center">
-                <p className="text-white/60 mb-4">You don't have any mentor matches yet.</p>
+                <p className="text-white/60 mb-4">You don&apos;t have any mentor matches yet.</p>
                 <form action="/api/matches/generate" method="POST">
                   <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition-colors shadow-lg shadow-indigo-500/25">
                     Generate AI Matches
@@ -82,7 +82,7 @@ export default async function MenteeDashboardPage() {
           <section>
             <h2 className="text-xl font-semibold mb-4">Event Activity</h2>
             <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center text-white/50">
-              You haven't registered for any events yet. (Coming in Phase 6)
+              You haven&apos;t registered for any events yet. (Coming in Phase 6)
             </div>
           </section>
         </div>
@@ -125,9 +125,9 @@ export default async function MenteeDashboardPage() {
             )}
           </section>
 
-          <section className="bg-gradient-to-br from-indigo-900/40 to-teal-900/20 border border-indigo-500/30 rounded-2xl p-6">
+          <section className="bg-linear-to-br from-indigo-900/40 to-teal-900/20 border border-indigo-500/30 rounded-2xl p-6">
             <h3 className="font-semibold mb-2">3-Month Goal Tracker</h3>
-            <p className="text-sm text-white/70 mb-4 italic">"{profile?.goal3Months || 'Secure a new role'}"</p>
+            <p className="text-sm text-white/70 mb-4 italic">&quot;{profile?.goal3Months || 'Secure a new role'}&quot;</p>
             <div className="w-full bg-black/50 rounded-full h-2 mb-2">
               <div className="bg-teal-400 h-2 rounded-full" style={{ width: '25%' }}></div>
             </div>

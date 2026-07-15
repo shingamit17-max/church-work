@@ -3,8 +3,17 @@
 import { useState, useEffect } from "react";
 import NextLink from "next/link";
 
+type Testimonial = {
+  _id: string;
+  outcome: string;
+  whatHelped: string;
+  freeText?: string;
+  painPoints: string[];
+  authorId?: { name: string; role: string };
+};
+
 export default function TestimonialsPage() {
-  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +34,7 @@ export default function TestimonialsPage() {
       if (res.ok) {
         setTestimonials(prev => prev.filter(t => t._id !== id));
       }
-    } catch (e) {
+    } catch {
       alert("Failed to flag");
     }
   };
@@ -33,7 +42,7 @@ export default function TestimonialsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
           Success Stories
         </h1>
         <NextLink href="/testimonials/submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors font-medium shadow-lg shadow-indigo-500/25">
@@ -54,7 +63,7 @@ export default function TestimonialsPage() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
               
               <div className="relative z-10">
-                <p className="text-lg text-white/90 italic mb-6">"{t.outcome}"</p>
+                <p className="text-lg text-white/90 italic mb-6">&quot;{t.outcome}&quot;</p>
                 <div className="text-sm text-white/70 mb-6">
                   <span className="font-semibold text-white/90">What helped:</span> {t.whatHelped}
                 </div>

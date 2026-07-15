@@ -16,11 +16,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-[#0a0a0a] text-white flex">
+    <div className="min-h-screen bg-linear-to-br from-black to-[#0a0a0a] text-white flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/10 bg-black/20 backdrop-blur-xl flex flex-col p-6 hidden md:flex">
+      <aside className="w-64 border-r border-white/10 bg-black/20 backdrop-blur-xl flex-col p-6 hidden md:flex">
         <div className="mb-10">
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
+          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
             Grace Mentor
           </h1>
         </div>
@@ -36,7 +36,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
             Success Stories
           </NextLink>
           {session.user.role === 'mentor' && (
-            <NextLink href={`/mentors/${(session.user as any).id}`} className="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
+            <NextLink href={`/mentors/${(session.user as { id: string }).id}`} className="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
               Public Profile
             </NextLink>
           )}

@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { login, loginWithLinkedIn } from "@/app/actions/auth";
+import { useState } from "react";
+import { login } from "@/app/actions/auth";
 import NextLink from "next/link";
 
 export default function LoginPage() {
@@ -27,7 +27,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">Welcome Back</h1>
+        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">Welcome Back</h1>
         <p className="text-white/60 mb-8">Sign in to Grace Mentor to continue.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -66,7 +66,7 @@ export default function LoginPage() {
 
 
         <p className="mt-8 text-center text-sm text-white/60">
-          Don't have an account? <NextLink href="/register" className="text-teal-400 hover:underline">Register here</NextLink>
+          Don&apos;t have an account? <NextLink href="/register" className="text-teal-400 hover:underline">Register here</NextLink>
         </p>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { register, loginWithLinkedIn } from "@/app/actions/auth";
+import { register } from "@/app/actions/auth";
 import NextLink from "next/link";
 import { UserRole } from "@/types";
 import { useRouter } from "next/navigation";
@@ -32,18 +32,18 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">Join Grace Mentor</h1>
+        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">Join Grace Mentor</h1>
         <p className="text-white/60 mb-8">Create your account to get started.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">I want to join as a:</label>
             <div className="flex gap-4">
-              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-[:checked]:bg-indigo-600/30 has-[:checked]:border-indigo-500 transition-colors">
+              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-checked:bg-indigo-600/30 has-checked:border-indigo-500 transition-colors">
                 <input type="radio" name="role" value={UserRole.MENTEE} className="hidden" defaultChecked />
                 Mentee (Job Seeker)
               </label>
-              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-[:checked]:bg-teal-600/30 has-[:checked]:border-teal-500 transition-colors">
+              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-checked:bg-teal-600/30 has-checked:border-teal-500 transition-colors">
                 <input type="radio" name="role" value={UserRole.MENTOR} className="hidden" />
                 Mentor (Professional)
               </label>

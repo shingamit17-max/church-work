@@ -18,7 +18,7 @@ export default async function MentorDashboardPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
+          <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
             Mentor Dashboard
           </h1>
           <p className="text-white/60">Welcome back, {session.user.name}</p>
@@ -35,7 +35,7 @@ export default async function MentorDashboardPage() {
             <h2 className="text-xl font-semibold mb-4">Connection Requests</h2>
             {matches.filter(m => m.status === 'pending').length === 0 ? (
               <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center">
-                <p className="text-white/60">You don't have any pending requests.</p>
+                <p className="text-white/60">You don&apos;t have any pending requests.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

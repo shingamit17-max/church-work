@@ -35,7 +35,7 @@ export default function MentorFeedbackPage({ params }: { params: Promise<{ match
       } else {
         alert("Failed to submit feedback");
       }
-    } catch (err) {
+    } catch {
       alert("An error occurred");
     }
     setIsPending(false);
@@ -43,7 +43,7 @@ export default function MentorFeedbackPage({ params }: { params: Promise<{ match
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
+      <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
         Post-Session Feedback
       </h1>
       <p className="text-white/60 mb-8">
@@ -59,11 +59,11 @@ export default function MentorFeedbackPage({ params }: { params: Promise<{ match
               Was the pain point you discussed the same as what they flagged at signup?
             </label>
             <div className="flex gap-4">
-              <label className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border border-white/10 bg-black/20 cursor-pointer hover:bg-white/5 transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-500/10">
+              <label className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border border-white/10 bg-black/20 cursor-pointer hover:bg-white/5 transition-colors has-checked:border-indigo-500 has-checked:bg-indigo-500/10">
                 <input type="radio" name="samePainPoint" value="true" required className="sr-only" />
                 <span className="font-medium">Yes, it was accurate</span>
               </label>
-              <label className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border border-white/10 bg-black/20 cursor-pointer hover:bg-white/5 transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-500/10">
+              <label className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border border-white/10 bg-black/20 cursor-pointer hover:bg-white/5 transition-colors has-checked:border-indigo-500 has-checked:bg-indigo-500/10">
                 <input type="radio" name="samePainPoint" value="false" required className="sr-only" />
                 <span className="font-medium">No, there was a different real gap</span>
               </label>

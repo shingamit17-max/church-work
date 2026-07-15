@@ -12,7 +12,7 @@ export default function GlobalLoading() {
         </div>
         
         {/* Loading text */}
-        <div className="mt-8 text-sm font-medium tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400 uppercase animate-pulse">
+        <div className="mt-8 text-sm font-medium tracking-widest text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400 uppercase animate-pulse">
           Loading
         </div>
       </div>
