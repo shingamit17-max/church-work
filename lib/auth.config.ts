@@ -2,6 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 import LinkedInProvider from "next-auth/providers/linkedin";
 import CredentialsProvider from "next-auth/providers/credentials";
 import Nodemailer from "next-auth/providers/nodemailer";
+import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "./db";
 import { User as UserModel } from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -14,6 +15,10 @@ export const authConfig: NextAuthConfig = {
     newUser: "/register",
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "mock-google-client-id",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "mock-google-client-secret",
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {

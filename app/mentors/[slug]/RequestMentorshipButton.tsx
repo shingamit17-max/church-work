@@ -79,6 +79,18 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
     );
   }
 
+  if (userSession && !userSession.onboardingComplete) {
+    return (
+      <button 
+        disabled
+        className="w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"
+        title="Complete your profile to request mentorship"
+      >
+        Profile Incomplete
+      </button>
+    );
+  }
+
   return (
     <button 
       onClick={handleRequest}

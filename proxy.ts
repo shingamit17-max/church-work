@@ -11,7 +11,6 @@ export default auth((req) => {
 
   const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
   const isPublicRoute =
-    nextUrl.pathname === "/" ||
     nextUrl.pathname.startsWith("/mentors/") ||
     nextUrl.pathname.startsWith("/login") ||
     nextUrl.pathname.startsWith("/register");
@@ -34,13 +33,11 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
 
-    if (!onboardingComplete && !nextUrl.pathname.startsWith("/onboarding")) {
-      return NextResponse.redirect(new URL("/onboarding", nextUrl));
-    }
-
     if (onboardingComplete && nextUrl.pathname.startsWith("/onboarding")) {
       return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
+    // Note: We no longer hard-block users without onboardingComplete. 
+    // They are soft-gated with a banner in the UI instead.
   }
 
   return NextResponse.next();
