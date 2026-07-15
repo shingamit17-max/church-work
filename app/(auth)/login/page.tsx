@@ -7,7 +7,6 @@ import NextLink from "next/link";
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<"mentee" | "mentor" | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,37 +80,6 @@ export default function LoginPage() {
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Welcome Back</h2>
             <p className="text-slate-600 dark:text-slate-400">Sign in to your Grace Work account</p>
-          </div>
-
-          {/* Role Selection */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-slate-900 dark:text-white mb-3">I am a:</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedRole("mentee")}
-                className={`p-4 rounded-lg border-2 transition-all text-center font-medium ${
-                  selectedRole === "mentee"
-                    ? "border-slate-700 dark:border-slate-300 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500"
-                }`}
-              >
-                <div className="text-xl mb-1">🎓</div>
-                <div>Job Seeker</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRole("mentor")}
-                className={`p-4 rounded-lg border-2 transition-all text-center font-medium ${
-                  selectedRole === "mentor"
-                    ? "border-slate-700 dark:border-slate-300 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500"
-                }`}
-              >
-                <div className="text-xl mb-1">👨‍💼</div>
-                <div>Mentor</div>
-              </button>
-            </div>
           </div>
 
           {/* Login Form */}
