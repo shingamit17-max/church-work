@@ -3,8 +3,9 @@
 import { useState } from "react";
 import NextLink from "next/link";
 import { signOut } from "next-auth/react";
+import type { Session } from "next-auth";
 
-export default function MobileNav({ session }: { session: any }) {
+export default function MobileNav({ session }: { session: Session | null }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

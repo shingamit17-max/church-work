@@ -64,14 +64,14 @@ export default function CreateEventPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
+      <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-rose-400">
         Host an Event
       </h1>
       <p className="text-white/60 mb-8">
         Create a group workshop, Q&A session, or masterclass for mentees.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-xl">
+      <form onSubmit={handleSubmit} className="space-y-6 p-8 rounded-3xl" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
         
         <div>
           <label className="block text-sm font-medium mb-2">Event Title</label>
@@ -80,7 +80,14 @@ export default function CreateEventPage() {
             type="text" 
             required 
             placeholder="E.g. System Design Masterclass"
-            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm"
+            style={{ 
+              background: "rgba(28,25,23,0.8)", 
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fafaf9"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
           />
         </div>
 
@@ -91,7 +98,14 @@ export default function CreateEventPage() {
             required 
             rows={4}
             placeholder="What will attendees learn?"
-            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm resize-none"
+            style={{ 
+              background: "rgba(28,25,23,0.8)", 
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fafaf9"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
           />
         </div>
 
@@ -103,7 +117,14 @@ export default function CreateEventPage() {
               type="text" 
               required 
               placeholder="E.g. Software Engineering"
-              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm"
+              style={{ 
+                background: "rgba(28,25,23,0.8)", 
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#fafaf9"
+              }}
+              onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
             />
           </div>
           <div>
@@ -112,7 +133,14 @@ export default function CreateEventPage() {
               name="dateTime" 
               type="datetime-local" 
               required 
-              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white scheme-dark"
+              className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm scheme-dark"
+              style={{ 
+                background: "rgba(28,25,23,0.8)", 
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#fafaf9"
+              }}
+              onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
             />
           </div>
         </div>
@@ -127,17 +155,24 @@ export default function CreateEventPage() {
               min={1}
               max={100}
               defaultValue={10}
-              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm"
+              style={{ 
+                background: "rgba(28,25,23,0.8)", 
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#fafaf9"
+              }}
+              onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Pricing</label>
             <div className="flex gap-4">
-              <label className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-black/20 cursor-pointer has-checked:border-indigo-500 has-checked:bg-indigo-500/10 transition-colors">
+              <label className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-black/20 cursor-pointer has-checked:border-amber-500 has-checked:bg-amber-500/10 transition-colors">
                 <input type="radio" checked={isFree} onChange={() => setIsFree(true)} className="sr-only" />
                 <span className="text-sm font-medium">Free</span>
               </label>
-              <label className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-black/20 cursor-pointer has-checked:border-indigo-500 has-checked:bg-indigo-500/10 transition-colors">
+              <label className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-black/20 cursor-pointer has-checked:border-amber-500 has-checked:bg-amber-500/10 transition-colors">
                 <input type="radio" checked={!isFree} onChange={() => setIsFree(false)} className="sr-only" />
                 <span className="text-sm font-medium">Paid</span>
               </label>
@@ -151,7 +186,14 @@ export default function CreateEventPage() {
                   min={1}
                   required={!isFree}
                   placeholder="0.00"
-                  className="w-full bg-black/20 border border-white/10 rounded-xl pl-8 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl pl-8 pr-4 py-3 focus:outline-none transition-all text-sm"
+                  style={{ 
+                    background: "rgba(28,25,23,0.8)", 
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#fafaf9"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+                  onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
                 />
               </div>
             )}
@@ -170,7 +212,7 @@ export default function CreateEventPage() {
                   onClick={() => togglePainPoint(pt)}
                   className={`px-3 py-1.5 rounded-lg text-xs transition-colors border ${
                     isSelected 
-                      ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200' 
+                      ? 'bg-amber-600/30 border-amber-500 text-amber-200' 
                       : 'bg-black/20 border-white/10 text-white/60 hover:bg-white/5'
                   }`}
                 >
@@ -184,7 +226,12 @@ export default function CreateEventPage() {
         <button 
           type="submit" 
           disabled={isPending}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25 transition-all active:scale-95 disabled:opacity-50 mt-8"
+          className="w-full py-4 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 mt-8 flex items-center justify-center"
+          style={{
+            background: "linear-gradient(135deg,#f59e0b,#d97706)",
+            color: "#0c0a09",
+            boxShadow: "0 4px 16px rgba(245,158,11,0.25)"
+          }}
         >
           {isPending ? "Creating Event..." : "Publish Event"}
         </button>

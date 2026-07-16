@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     await newMatch.save();
 
     return NextResponse.json({ success: true, match: newMatch });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to send connection request:", error);
     return NextResponse.json({ error: "Failed to send request" }, { status: 500 });
   }

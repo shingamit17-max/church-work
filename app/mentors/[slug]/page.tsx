@@ -51,13 +51,26 @@ export default async function PublicMentorProfile({ params }: Props) {
   const isAvailable = profile.currentMenteeCount < profile.maxMentees;
   
   return (
-    <div className="min-h-screen bg-linear-to-b from-black to-[#0a0a0a] text-white pt-24 pb-12 px-4">
+    <div className="min-h-screen text-[#fafaf9] pt-24 pb-12 px-4" style={{ background: "#1c1917" }}>
       <div className="max-w-4xl mx-auto space-y-6">
         <BackButton fallbackUrl="/" />
 
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        <div 
+          className="rounded-3xl p-8 md:p-12 relative overflow-hidden"
+          style={{
+            background: "rgba(41,37,36,0.8)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.4)"
+          }}
+        >
           {/* Background glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div 
+            className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none rounded-full" 
+            style={{ 
+              background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)",
+              transform: "translate(30%,-30%)"
+            }} 
+          />
           
           <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
             <div className="flex-1">
@@ -66,56 +79,62 @@ export default async function PublicMentorProfile({ params }: Props) {
                   {mentorName}
                 </h1>
                 {isAvailable ? (
-                  <span className="px-3 py-1 bg-teal-500/20 text-teal-300 text-xs font-semibold rounded-full border border-teal-500/30">
+                  <span 
+                    className="px-3 py-1 text-xs font-semibold rounded-full"
+                    style={{ background: "rgba(74,222,128,0.1)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.2)" }}
+                  >
                     Accepting Mentees
                   </span>
                 ) : (
-                  <span className="px-3 py-1 bg-red-500/20 text-red-300 text-xs font-semibold rounded-full border border-red-500/30">
+                  <span 
+                    className="px-3 py-1 text-xs font-semibold rounded-full"
+                    style={{ background: "rgba(244,63,94,0.1)", color: "#fb7185", border: "1px solid rgba(244,63,94,0.2)" }}
+                  >
                     At Capacity
                   </span>
                 )}
               </div>
               
-              <p className="text-xl text-white/80 mb-6 font-light">
-                {profile.currentRole} at <span className="font-medium text-white">{profile.company}</span>
+              <p className="text-xl mb-6 font-light" style={{ color: "#a8a29e" }}>
+                {profile.currentRole} at <span className="font-medium" style={{ color: "#fafaf9" }}>{profile.company}</span>
               </p>
 
               <div className="flex flex-wrap gap-2 mb-8">
-                <span className="px-3 py-1 bg-white/10 rounded-lg text-sm text-white/80">
+                <span className="px-3 py-1 rounded-lg text-sm" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {profile.yearsExp} Years Exp
                 </span>
-                <span className="px-3 py-1 bg-white/10 rounded-lg text-sm text-white/80">
+                <span className="px-3 py-1 rounded-lg text-sm" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {profile.domain}
                 </span>
-                <span className="px-3 py-1 bg-white/10 rounded-lg text-sm text-white/80">
+                <span className="px-3 py-1 rounded-lg text-sm" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {profile.specialization}
                 </span>
               </div>
 
               <div className="mb-10">
                 <h2 className="text-xl font-semibold mb-3">About Me</h2>
-                <p className="text-white/70 leading-relaxed">
+                <p className="leading-relaxed" style={{ color: "#d6d3d1" }}>
                   {profile.bio || "This mentor hasn't written a bio yet."}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-indigo-300">I can help with</h3>
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: "#fafaf9" }}>I can help with</h3>
                   <ul className="space-y-2">
                     {profile.painPointsCanHelp?.map((pt: string) => (
-                      <li key={pt} className="flex items-center gap-2 text-white/70">
-                        <span className="text-teal-400">✓</span> {pt.replace(/_/g, ' ')}
+                      <li key={pt} className="flex items-center gap-2" style={{ color: "#d6d3d1" }}>
+                        <span style={{ color: "#fbbf24" }}>✓</span> {pt.replace(/_/g, ' ')}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-indigo-300">Mentorship Modes</h3>
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: "#fafaf9" }}>Mentorship Modes</h3>
                   <ul className="space-y-2">
                     {profile.helpTypes?.map((ht: string) => (
-                      <li key={ht} className="flex items-center gap-2 text-white/70">
-                        <span className="text-teal-400">✦</span> {ht}
+                      <li key={ht} className="flex items-center gap-2" style={{ color: "#d6d3d1" }}>
+                        <span style={{ color: "#fbbf24" }}>✦</span> {ht}
                       </li>
                     ))}
                   </ul>
@@ -124,7 +143,10 @@ export default async function PublicMentorProfile({ params }: Props) {
 
             </div>
 
-            <div className="w-full md:w-80 bg-black/40 rounded-2xl p-6 border border-white/10 shrink-0">
+            <div 
+              className="w-full md:w-80 rounded-2xl p-6 shrink-0"
+              style={{ background: "rgba(28,25,23,0.6)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
               <h3 className="text-lg font-semibold mb-6">Request Mentorship</h3>
               <RequestMentorshipButton 
                 mentorId={profile.userId._id.toString()} 

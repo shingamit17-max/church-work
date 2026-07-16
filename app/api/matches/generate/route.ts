@@ -6,7 +6,7 @@ import { MentorProfile } from "@/models/MentorProfile";
 import { Match } from "@/models/Match";
 import { rankMentors } from "@/lib/matching";
 
-export async function POST(req: Request) {
+export async function POST() {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== "mentee") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, count: newMatchesToInsert.length });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Match generation error:", error);
     return NextResponse.json({ error: "Failed to generate matches" }, { status: 500 });
   }

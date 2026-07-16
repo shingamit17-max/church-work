@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     await mentor.save();
 
     return NextResponse.redirect(new URL("/dashboard", req.url));
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
     return NextResponse.json({ error: "Failed to accept connection" }, { status: 500 });
   }

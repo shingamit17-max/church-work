@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     await dbConnect();
     const messages = await Message.find({ matchId }).sort({ createdAt: 1 });
     return NextResponse.json({ success: true, messages });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Fetch messages error:", error);
     return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
   }

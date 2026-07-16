@@ -15,6 +15,6 @@ export default async function DashboardIndexPage() {
   } else if (session.user.role === "admin") {
     redirect("/dashboard/admin");
   } else {
-    redirect("/login");
+    redirect("/onboarding");
   }
 }

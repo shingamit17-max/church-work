@@ -32,7 +32,7 @@ export default function SubmitTestimonialPage() {
       } else {
         alert("Failed to submit");
       }
-    } catch (err) {
+    } catch {
       alert("An error occurred");
     }
     setIsPending(false);
@@ -43,7 +43,7 @@ export default function SubmitTestimonialPage() {
       <h1 className="text-3xl font-bold mb-2">Share Your Success</h1>
       <p className="text-white/60 mb-8">Inspire others by sharing how mentorship helped you overcome challenges.</p>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white/5 p-8 rounded-2xl border border-white/10 backdrop-blur-xl">
+      <form onSubmit={handleSubmit} className="space-y-6 p-8 rounded-2xl" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
         
         <div>
           <label className="block text-sm font-medium mb-2">What was the final outcome?</label>
@@ -51,7 +51,14 @@ export default function SubmitTestimonialPage() {
             name="outcome" 
             required 
             placeholder="e.g. Landed a Senior Product Manager role at Acme Corp"
-            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm"
+            style={{ 
+              background: "rgba(28,25,23,0.8)", 
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fafaf9"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
           />
         </div>
 
@@ -61,7 +68,14 @@ export default function SubmitTestimonialPage() {
             name="whatHelped" 
             required 
             placeholder="e.g. Refining my system design interview answers"
-            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm"
+            style={{ 
+              background: "rgba(28,25,23,0.8)", 
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fafaf9"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
           />
         </div>
 
@@ -71,7 +85,14 @@ export default function SubmitTestimonialPage() {
             name="freeText" 
             rows={4} 
             placeholder="Share the full journey..."
-            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            className="w-full rounded-xl px-4 py-3 focus:outline-none transition-all text-sm resize-none"
+            style={{ 
+              background: "rgba(28,25,23,0.8)", 
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fafaf9"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "rgba(245,158,11,0.5)"}
+            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
           />
         </div>
 
@@ -80,7 +101,7 @@ export default function SubmitTestimonialPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {Object.values(PainPoint).map((pt) => (
               <label key={pt} className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-black/20 cursor-pointer hover:bg-white/5 transition-colors">
-                <input type="checkbox" name="painPoints" value={pt} className="rounded border-white/20 text-indigo-600 focus:ring-indigo-500 bg-black/50" />
+                <input type="checkbox" name="painPoints" value={pt} className="rounded border-white/20 text-amber-500 focus:ring-amber-500 bg-black/50" />
                 <span className="text-sm text-white/80">{pt.replace(/_/g, ' ')}</span>
               </label>
             ))}
@@ -90,7 +111,12 @@ export default function SubmitTestimonialPage() {
         <button 
           type="submit" 
           disabled={isPending}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50"
+          className="w-full py-4 rounded-xl font-semibold transition-all disabled:opacity-50 flex items-center justify-center"
+          style={{
+            background: "linear-gradient(135deg,#f59e0b,#d97706)",
+            color: "#0c0a09",
+            boxShadow: "0 4px 16px rgba(245,158,11,0.25)"
+          }}
         >
           {isPending ? "Submitting..." : "Submit Success Story"}
         </button>

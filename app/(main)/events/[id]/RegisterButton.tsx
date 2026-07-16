@@ -55,7 +55,12 @@ export default function RegisterButton({
     <button 
       onClick={handleRegister}
       disabled={isPending}
-      className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25 transition-all active:scale-95 disabled:opacity-50"
+      className="w-full py-3 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center"
+      style={{
+        background: "linear-gradient(135deg,#f59e0b,#d97706)",
+        color: "#0c0a09",
+        boxShadow: "0 4px 16px rgba(245,158,11,0.25)"
+      }}
     >
       {isPending ? "Registering..." : "Register Now"}
     </button>

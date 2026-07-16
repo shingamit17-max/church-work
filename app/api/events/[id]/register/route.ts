@@ -50,7 +50,7 @@ export async function POST(
     await Event.findByIdAndUpdate(id, { $inc: { registeredCount: 1 } });
 
     return NextResponse.json({ success: true, registration }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error registering for event:", error);
     return NextResponse.json({ success: false, error: "Registration failed" }, { status: 500 });
   }

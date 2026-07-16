@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     await match.save();
 
     return NextResponse.redirect(new URL("/dashboard", req.url));
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
     return NextResponse.json({ error: "Failed to reject connection" }, { status: 500 });
   }

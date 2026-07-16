@@ -24,7 +24,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     await testimonial.save();
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to flag testimonial:", error);
     return NextResponse.json({ error: "Failed to flag testimonial" }, { status: 500 });
   }

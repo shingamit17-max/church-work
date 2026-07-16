@@ -37,15 +37,33 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     <div className="max-w-4xl mx-auto space-y-4">
       <BackButton fallbackUrl="/events" />
 
-      <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div 
+        className="rounded-3xl p-8 md:p-12 relative overflow-hidden"
+        style={{
+          background: "rgba(41,37,36,0.8)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.4)"
+        }}
+      >
+        <div 
+          className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none rounded-full" 
+          style={{ 
+            background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)",
+            transform: "translate(30%,-30%)"
+          }} 
+        />
         
         <div className="relative z-10 flex flex-col md:flex-row gap-8">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <span className={`text-xs px-3 py-1 rounded-full border font-medium ${
-                event.isFree ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
-              }`}>
+              <span 
+                className="text-xs px-3 py-1 rounded-full border font-semibold"
+                style={{
+                  background: event.isFree ? "rgba(74,222,128,0.1)" : "rgba(245,158,11,0.1)",
+                  color: event.isFree ? "#4ade80" : "#fbbf24",
+                  border: `1px solid ${event.isFree ? "rgba(74,222,128,0.2)" : "rgba(245,158,11,0.2)"}`
+                }}
+              >
                 {event.isFree ? 'Free Event' : `$${event.price}`}
               </span>
               <span className="text-xs px-3 py-1 rounded-full border border-white/10 bg-black/40 text-white/70">
@@ -56,7 +74,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{event.title}</h1>
             
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09" }}
+              >
                 {event.hostId?.name?.charAt(0) || '?'}
               </div>
               <div>
@@ -82,7 +103,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           </div>
 
           <div className="w-full md:w-80 shrink-0">
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-6 sticky top-24">
+            <div 
+              className="rounded-2xl p-6 sticky top-24"
+              style={{ background: "rgba(28,25,23,0.6)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
               <div className="space-y-4 mb-6">
                 <div>
                   <div className="text-xs text-white/50 mb-1">Date & Time</div>
@@ -100,7 +124,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-xs text-white/50">Availability</div>
-                  <div className={`font-medium ${isFull ? 'text-red-400' : 'text-teal-400'}`}>
+                  <div className="font-medium" style={{ color: isFull ? "#fb7185" : "#4ade80" }}>
                     {isFull ? 'Full' : `${seatsLeft} spots left`}
                   </div>
                 </div>
@@ -121,7 +145,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               )}
 
               {isHost && (
-                <div className="w-full py-3 bg-indigo-600/20 text-indigo-300 text-center rounded-xl font-medium border border-indigo-500/30">
+                <div 
+                  className="w-full py-3 text-center rounded-xl font-medium"
+                  style={{ background: "rgba(245,158,11,0.1)", color: "#fbbf24", border: "1px solid rgba(245,158,11,0.25)" }}
+                >
                   You are hosting this event
                 </div>
               )}
@@ -131,15 +158,18 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {isHost && (
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12">
+        <div 
+          className="rounded-3xl p-8 md:p-12"
+          style={{ background: "rgba(41,37,36,0.8)", border: "1px solid rgba(255,255,255,0.08)" }}
+        >
           <h2 className="text-2xl font-bold mb-6">Host Dashboard</h2>
           <div className="flex gap-8 mb-8">
             <div>
-              <div className="text-3xl font-bold text-teal-400">{event.registeredCount}</div>
+              <div className="text-3xl font-bold" style={{ color: "#4ade80" }}>{event.registeredCount}</div>
               <div className="text-sm text-white/50">Registered</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-indigo-400">{!event.isFree ? `$${event.registeredCount * event.price}` : 'Free'}</div>
+              <div className="text-3xl font-bold" style={{ color: "#fbbf24" }}>{!event.isFree ? `$${event.registeredCount * event.price}` : 'Free'}</div>
               <div className="text-sm text-white/50">Revenue</div>
             </div>
           </div>
@@ -163,11 +193,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                       <td className="py-4">{att.userId?.name}</td>
                       <td className="py-4 text-white/70">{att.userId?.email}</td>
                       <td className="py-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          att.paymentStatus === 'completed' || att.paymentStatus === 'not_required' 
-                            ? 'bg-teal-500/20 text-teal-300' 
-                            : 'bg-yellow-500/20 text-yellow-300'
-                        }`}>
+                        <span 
+                          className="text-xs px-2.5 py-1 rounded-full font-medium"
+                          style={{
+                            background: (att.paymentStatus === 'completed' || att.paymentStatus === 'not_required') ? 'rgba(74,222,128,0.1)' : 'rgba(245,158,11,0.1)',
+                            color: (att.paymentStatus === 'completed' || att.paymentStatus === 'not_required') ? '#4ade80' : '#fbbf24',
+                            border: `1px solid ${(att.paymentStatus === 'completed' || att.paymentStatus === 'not_required') ? 'rgba(74,222,128,0.2)' : 'rgba(245,158,11,0.2)'}`
+                          }}
+                        >
                           {att.paymentStatus.replace('_', ' ')}
                         </span>
                       </td>

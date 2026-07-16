@@ -1,19 +1,24 @@
 import { useState, useEffect } from "react";
 
 export function useDraft<T>(key: string, initialValue: T) {
-  const [data, setData] = useState<T>(initialValue);
+  const [data, setData] = useState<T>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error("Failed to load draft from localStorage", e);
+      }
+    }
+    return initialValue;
+  });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        setData(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error("Failed to load draft from localStorage", e);
-    }
-    setIsLoaded(true);
+    const t = setTimeout(() => setIsLoaded(true), 0);
+    return () => clearTimeout(t);
   }, [key]);
 
   const setDraftData = (newData: Partial<T> | ((prev: T) => T)) => {

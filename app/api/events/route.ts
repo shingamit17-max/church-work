@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const status = searchParams.get("status") || "upcoming";
     const hostId = searchParams.get("hostId");
 
-    const query: any = { status };
+    const query: Record<string, unknown> = { status };
 
     if (domain) query.domain = domain;
     if (painPoint) query.painPointTags = painPoint;
@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       .lean();
 
     return NextResponse.json({ success: true, events });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch events" }, { status: 500 });
   }
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, event: newEvent }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating event:", error);
     return NextResponse.json({ success: false, error: "Failed to create event" }, { status: 500 });
   }

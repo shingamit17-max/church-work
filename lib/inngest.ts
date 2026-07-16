@@ -1,6 +1,5 @@
 import { Inngest } from "inngest";
 import dbConnect from "./db";
-import { Match } from "@/models/Match";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "grace-mentor" });

@@ -6,74 +6,163 @@ import { EventRegistration } from "@/models/EventRegistration";
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
 
+const STAT_CARD = ({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) => (
+  <div
+    className="p-5 rounded-2xl flex flex-col gap-1"
+    style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+  >
+    <p className="text-xs font-medium uppercase tracking-widest" style={{ color: "#57534e" }}>{label}</p>
+    <p className="text-3xl font-light" style={{ color: accent || "#fafaf9", letterSpacing: "-0.03em" }}>{value}</p>
+    {sub && <p className="text-xs" style={{ color: "#57534e" }}>{sub}</p>}
+  </div>
+);
+
 export default async function MenteeDashboardPage() {
   const session = await auth();
   if (!session?.user || session.user.role !== "mentee") redirect("/login");
 
   await dbConnect();
-  
+
   const matches = await Match.find({ menteeId: session.user.id }).sort({ matchScore: -1 });
   const profile = await MenteeProfile.findOne({ userId: session.user.id });
-  
   const eventRegistrations = await EventRegistration.find({ userId: session.user.id })
     .populate("eventId", "title dateTime domain isFree price status")
     .sort({ createdAt: -1 });
 
+  const acceptedMatches = matches.filter((m) => m.status === "accepted");
+  const pendingMatches = matches.filter((m) => m.status === "pending");
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">
-          Mentee Dashboard
-        </h1>
-        <p className="text-white/60">Welcome back, {session.user.name}</p>
+    <div className="space-y-10 pb-12">
+      {/* ── Header ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="text-sm mb-1" style={{ color: "#57534e" }}>Welcome back 👋</p>
+          <h1
+            className="text-3xl font-semibold"
+            style={{ letterSpacing: "-0.03em", color: "#fafaf9" }}
+          >
+            {session.user.name?.split(" ")[0]}&apos;s Dashboard
+          </h1>
+        </div>
+        <NextLink
+          href="/onboarding"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all self-start md:self-auto"
+          style={{
+            background: "rgba(245,158,11,0.1)",
+            border: "1px solid rgba(245,158,11,0.25)",
+            color: "#fbbf24",
+          }}
+        >
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Edit Profile
+        </NextLink>
       </div>
 
+      {/* ── Stats row ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <STAT_CARD label="Mentor Matches" value={matches.length} sub="AI generated" accent="#fbbf24" />
+        <STAT_CARD label="Active Mentors" value={acceptedMatches.length} sub="Connections" accent="#4ade80" />
+        <STAT_CARD label="Pending" value={pendingMatches.length} sub="Awaiting response" accent="#fb7185" />
+        <STAT_CARD label="Events" value={eventRegistrations.length} sub="Registered" />
+      </div>
+
+      {/* ── Main grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left: mentor matches + events */}
         <div className="lg:col-span-2 space-y-8">
+
+          {/* Mentor Matches */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Your Mentor Matches</h2>
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-lg font-semibold" style={{ color: "#fafaf9" }}>Your Mentor Matches</h2>
+              <NextLink
+                href="/dashboard/mentee/mentors"
+                className="text-xs px-3 py-1.5 rounded-lg transition-all"
+                style={{ color: "#78716c", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                Find more →
+              </NextLink>
             </div>
-            
+
             {matches.length === 0 ? (
-              <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center">
-                <p className="text-white/60 mb-4">You don&apos;t have any mentor matches yet.</p>
+              <div
+                className="p-10 rounded-2xl text-center"
+                style={{ background: "rgba(41,37,36,0.5)", border: "1px dashed rgba(255,255,255,0.08)" }}
+              >
+                <div className="text-4xl mb-3">🎯</div>
+                <p className="text-sm mb-5" style={{ color: "#78716c" }}>No mentor matches yet. Generate your first set of AI-curated matches.</p>
                 <form action="/api/matches/generate" method="POST">
-                  <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition-colors shadow-lg shadow-indigo-500/25">
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    style={{
+                      background: "linear-gradient(135deg,#f59e0b,#d97706)",
+                      color: "#0c0a09",
+                      boxShadow: "0 4px 16px rgba(245,158,11,0.25)",
+                    }}
+                  >
                     Generate AI Matches
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matches.map((match) => (
-                  <div key={match.id} className="p-6 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-                    
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                      <div>
-                        <span className={`text-xs px-2.5 py-1 rounded-full border ${
-                          match.status === 'accepted' ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 
-                          match.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'
-                        }`}>
-                          {match.status}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-teal-400">{match.matchScore}%</div>
-                      </div>
+                  <div
+                    key={match.id}
+                    className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all"
+                    style={{
+                      background: "rgba(41,37,36,0.7)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                    }}
+                  >
+                    {/* Ambient accent */}
+                    <div
+                      className="absolute top-0 right-0 w-24 h-24 rounded-full pointer-events-none transition-all"
+                      style={{
+                        background: match.status === 'accepted' ? 'rgba(74,222,128,0.06)' : 'rgba(245,158,11,0.06)',
+                        filter: 'blur(20px)',
+                        transform: 'translate(30%, -30%)',
+                      }}
+                    />
+                    <div className="flex items-start justify-between relative z-10">
+                      <span
+                        className="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style={{
+                          background: match.status === 'accepted' ? 'rgba(74,222,128,0.1)' : match.status === 'pending' ? 'rgba(251,191,36,0.1)' : 'rgba(251,113,133,0.1)',
+                          color: match.status === 'accepted' ? '#4ade80' : match.status === 'pending' ? '#fbbf24' : '#fb7185',
+                          border: `1px solid ${match.status === 'accepted' ? 'rgba(74,222,128,0.2)' : match.status === 'pending' ? 'rgba(251,191,36,0.2)' : 'rgba(251,113,133,0.2)'}`,
+                        }}
+                      >
+                        {match.status === 'accepted' ? '✓ Active' : match.status === 'pending' ? '· Pending' : '✕ Declined'}
+                      </span>
+                      <span className="text-2xl font-bold" style={{ color: "#4ade80", letterSpacing: "-0.03em" }}>
+                        {match.matchScore}%
+                      </span>
                     </div>
-                    
-                    <p className="text-sm text-white/70 mb-6 relative z-10 line-clamp-3">{match.matchReason}</p>
-                    
-                    <div className="relative z-10">
+                    <p className="text-sm leading-relaxed relative z-10 line-clamp-3" style={{ color: "#a8a29e" }}>
+                      {match.matchReason}
+                    </p>
+                    <div className="relative z-10 mt-auto">
                       {match.status === 'pending' && (
-                        <NextLink href={`/mentors/${match.mentorId.toString()}`} className="w-full block text-center py-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-colors text-sm font-medium">
+                        <NextLink
+                          href={`/mentors/${match.mentorId.toString()}`}
+                          className="w-full flex items-center justify-center py-2.5 rounded-xl text-sm font-medium transition-all"
+                          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d6d3d1" }}
+                        >
                           View Profile & Request
                         </NextLink>
                       )}
                       {match.status === 'accepted' && (
-                        <NextLink href={`/chat/${match._id}`} className="w-full block text-center py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors text-sm font-medium shadow-lg shadow-indigo-500/25">
+                        <NextLink
+                          href={`/chat/${match._id}`}
+                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                          style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}
+                        >
                           Open Chat
                         </NextLink>
                       )}
@@ -84,41 +173,55 @@ export default async function MenteeDashboardPage() {
             )}
           </section>
 
+          {/* Events */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Event Activity</h2>
-              <NextLink href="/events" className="text-sm text-indigo-400 hover:underline">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-lg font-semibold" style={{ color: "#fafaf9" }}>Event Activity</h2>
+              <NextLink
+                href="/events"
+                className="text-xs px-3 py-1.5 rounded-lg transition-all"
+                style={{ color: "#78716c", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Browse Events →
               </NextLink>
             </div>
-            
+
             {eventRegistrations.length === 0 ? (
-              <div className="p-8 border border-white/10 rounded-2xl bg-white/5 text-center text-white/50">
-                You haven&apos;t registered for any events yet.
+              <div
+                className="p-8 rounded-2xl text-center"
+                style={{ background: "rgba(41,37,36,0.5)", border: "1px dashed rgba(255,255,255,0.08)" }}
+              >
+                <div className="text-3xl mb-2">📅</div>
+                <p className="text-sm" style={{ color: "#78716c" }}>You haven&apos;t registered for any events yet.</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {eventRegistrations.map((reg: { _id: string, eventId: { _id: string, title: string, dateTime: string, domain: string, isFree: boolean, price: number, status: string } }) => {
+              <div className="space-y-3">
+                {eventRegistrations.map((reg: { _id: string; eventId: { _id: string; title: string; dateTime: string; domain: string; isFree: boolean; price: number; status: string } }) => {
                   const evt = reg.eventId;
                   return (
-                    <div key={reg._id} className="p-4 border border-white/10 rounded-xl bg-white/5 flex items-center justify-between hover:bg-white/10 transition-colors">
-                      <div>
-                        <NextLink href={`/events/${evt._id}`} className="font-medium hover:underline block mb-1">
+                    <div
+                      key={reg._id}
+                      className="flex items-center justify-between p-4 rounded-xl transition-all"
+                      style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+                    >
+                      <div className="min-w-0">
+                        <NextLink href={`/events/${evt._id}`} className="text-sm font-medium hover:underline block mb-0.5 truncate" style={{ color: "#fafaf9" }}>
                           {evt.title}
                         </NextLink>
-                        <div className="text-xs text-white/50">
-                          {new Date(evt.dateTime).toLocaleString(undefined, { 
-                            month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' 
-                          })} • {evt.domain}
-                        </div>
+                        <p className="text-xs" style={{ color: "#57534e" }}>
+                          {new Date(evt.dateTime).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} · {evt.domain}
+                        </p>
                       </div>
-                      <div className="text-right">
-                        <span className={`text-xs px-2.5 py-1 rounded-full ${
-                          evt.status === 'upcoming' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-white/10 text-white/50'
-                        }`}>
-                          {evt.status}
-                        </span>
-                      </div>
+                      <span
+                        className="text-xs px-2.5 py-1 rounded-full shrink-0 ml-4"
+                        style={{
+                          background: evt.status === "upcoming" ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.05)",
+                          color: evt.status === "upcoming" ? "#fbbf24" : "#78716c",
+                          border: `1px solid ${evt.status === "upcoming" ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.08)"}`,
+                        }}
+                      >
+                        {evt.status}
+                      </span>
                     </div>
                   );
                 })}
@@ -127,60 +230,85 @@ export default async function MenteeDashboardPage() {
           </section>
         </div>
 
-        <div className="space-y-6">
-          <section className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
-            <h3 className="text-lg font-semibold mb-4">Your Diagnostic</h3>
+        {/* Right: sidebar widgets */}
+        <div className="space-y-5">
+          {/* Diagnostic card */}
+          <div
+            className="p-6 rounded-2xl"
+            style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <h3 className="text-sm font-semibold mb-5" style={{ color: "#fafaf9" }}>Your Diagnostic</h3>
             {profile ? (
               <div className="space-y-4">
                 <div>
-                  <div className="text-xs text-white/50 mb-1">Target Role</div>
-                  <div className="text-sm">{profile.targetRoles?.[0] || "Not set"} in {profile.targetDomain}</div>
+                  <p className="text-xs mb-1" style={{ color: "#57534e" }}>Target Role</p>
+                  <p className="text-sm font-medium" style={{ color: "#fafaf9" }}>
+                    {profile.targetRoles?.[0] || "Not set"}{profile.targetDomain ? ` in ${profile.targetDomain}` : ""}
+                  </p>
                 </div>
                 <div>
-                  <div className="text-xs text-white/50 mb-1">Career Stage</div>
-                  <div className="text-sm capitalize">{profile.careerStage?.replace(/_/g, ' ')}</div>
+                  <p className="text-xs mb-1" style={{ color: "#57534e" }}>Career Stage</p>
+                  <p className="text-sm capitalize" style={{ color: "#fafaf9" }}>{profile.careerStage?.replace(/_/g, " ")}</p>
                 </div>
-                <div>
-                  <div className="text-xs text-white/50 mb-2">Pain Points</div>
-                  <div className="flex flex-wrap gap-2">
-                    {profile.diagnosticAnswers?.painPoints?.slice(0, 3).map((pt: string) => (
-                      <span key={pt} className="px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-xs text-teal-400">
-                        {pt.replace(/_/g, ' ')}
-                      </span>
-                    ))}
-                    {profile.diagnosticAnswers?.painPoints?.length > 3 && (
-                      <span className="text-xs text-white/50 px-2 py-1">+{profile.diagnosticAnswers.painPoints.length - 3} more</span>
-                    )}
+                {profile.diagnosticAnswers?.painPoints?.length > 0 && (
+                  <div>
+                    <p className="text-xs mb-2" style={{ color: "#57534e" }}>Pain Points</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {profile.diagnosticAnswers.painPoints.slice(0, 3).map((pt: string) => (
+                        <span key={pt} className="text-[11px] px-2 py-1 rounded-lg" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#fbbf24" }}>
+                          {pt.replace(/_/g, " ")}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="pt-4 mt-4 border-t border-white/10">
-                  <NextLink href="/onboarding" className="text-xs text-indigo-400 hover:underline">
+                )}
+                <div className="pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <NextLink href="/onboarding" className="text-xs hover:underline" style={{ color: "#78716c" }}>
                     Re-take diagnostic →
                   </NextLink>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-white/50">Profile data missing.</p>
+              <p className="text-sm" style={{ color: "#57534e" }}>Complete your profile to see your diagnostic.</p>
             )}
-          </section>
+          </div>
 
-          <section className="bg-linear-to-br from-indigo-900/40 to-teal-900/20 border border-indigo-500/30 rounded-2xl p-6">
-            <h3 className="font-semibold mb-2">3-Month Goal Tracker</h3>
-            <p className="text-sm text-white/70 mb-4 italic">&quot;{profile?.goal3Months || 'Secure a new role'}&quot;</p>
-            <div className="w-full bg-black/50 rounded-full h-2 mb-2">
-              <div className="bg-teal-400 h-2 rounded-full" style={{ width: '25%' }}></div>
+          {/* 3-month goal */}
+          <div
+            className="p-6 rounded-2xl"
+            style={{
+              background: "linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.04) 100%)",
+              border: "1px solid rgba(245,158,11,0.15)",
+            }}
+          >
+            <h3 className="text-sm font-semibold mb-1" style={{ color: "#fafaf9" }}>3-Month Goal</h3>
+            <p className="text-xs italic leading-relaxed mb-5" style={{ color: "#78716c" }}>
+              &quot;{profile?.goal3Months || "Secure a new role"}&quot;
+            </p>
+            <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+              <div className="h-1.5 rounded-full" style={{ width: "25%", background: "linear-gradient(90deg,#f59e0b,#fbbf24)" }} />
             </div>
-            <div className="text-right text-xs text-white/50">In Progress (25%)</div>
-          </section>
+            <p className="text-xs mt-2 text-right" style={{ color: "#57534e" }}>In Progress · 25%</p>
+          </div>
 
-          <section className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
-            <h3 className="font-semibold mb-2">Share Your Journey</h3>
-            <p className="text-xs text-white/60 mb-4">Did mentorship help you reach a milestone?</p>
-            <NextLink href="/testimonials/submit" className="inline-block w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors">
+          {/* Testimonial CTA */}
+          <div
+            className="p-6 rounded-2xl text-center"
+            style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <div className="text-2xl mb-2">✍️</div>
+            <h3 className="text-sm font-semibold mb-1" style={{ color: "#fafaf9" }}>Share Your Journey</h3>
+            <p className="text-xs mb-4 leading-relaxed" style={{ color: "#57534e" }}>
+              Did mentorship help you reach a milestone? Your story could inspire someone else.
+            </p>
+            <NextLink
+              href="/testimonials/submit"
+              className="inline-flex items-center justify-center w-full py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d6d3d1" }}
+            >
               Write a Testimonial
             </NextLink>
-          </section>
+          </div>
         </div>
       </div>
     </div>

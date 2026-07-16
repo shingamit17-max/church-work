@@ -70,10 +70,31 @@ export async function setRole(role: UserRole) {
 
   await dbConnect();
   await UserModel.findByIdAndUpdate(session.user.id, { role });
-  
-  // We need to update the session. We could use update(), but we'll just let the next request refresh the JWT.
-  // Actually, NextAuth doesn't easily update JWT on server, but the middleware will read it next time it logs in.
-  // Wait, if the JWT isn't updated, the middleware will still think they have the old role.
-  // But wait! We can just return success and let the client handle it.
+  return { success: true };
+}
+
+// TEMPORARY SEED FUNCTION
+export async function forceSeedAccounts() {
+  await dbConnect();
+  const testAccounts = [
+    { name: "Admin User", email: "admin@gracementor.com", password: "admin123", role: "admin", onboardingComplete: true },
+    { name: "Mentor User", email: "mentor@gracementor.com", password: "mentor123", role: "mentor", onboardingComplete: true },
+    { name: "Mentee User", email: "mentee@gracementor.com", password: "mentee123", role: "mentee", onboardingComplete: true }
+  ];
+
+  for (const acc of testAccounts) {
+    const hashedPassword = await bcrypt.hash(acc.password, 10);
+    const existing = await UserModel.findOne({ email: acc.email });
+    if (!existing) {
+      await UserModel.create({
+        name: acc.name, email: acc.email, password: hashedPassword, role: acc.role, onboardingComplete: acc.onboardingComplete
+      });
+    } else {
+      await UserModel.updateOne(
+        { email: acc.email },
+        { $set: { password: hashedPassword, role: acc.role, onboardingComplete: acc.onboardingComplete } }
+      );
+    }
+  }
   return { success: true };
 }

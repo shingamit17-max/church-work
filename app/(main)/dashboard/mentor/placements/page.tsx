@@ -1,4 +1,4 @@
-import { DashboardSidebar } from '@/components/DashboardSidebar';
+
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
@@ -38,12 +38,8 @@ export default async function MentorPlacementsPage() {
   ];
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
-      <DashboardSidebar userRole="mentor" userName={userName} userEmail={userEmail} />
-      
-      <main className="flex-1 overflow-auto">
-        <div className="p-6 lg:p-8">
-          <div className="max-w-5xl">
+    <>
+      <div className="max-w-5xl">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Job Board</h1>
@@ -130,9 +126,7 @@ export default async function MentorPlacementsPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

@@ -3,10 +3,11 @@
 import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import { User as UserModel } from "@/models/User";
-import { MenteeProfile } from "@/models/MenteeProfile";
-import { MentorProfile } from "@/models/MentorProfile";
+import { MenteeProfile as MenteeProfileModel } from "@/models/MenteeProfile";
+import { MentorProfile as MentorProfileModel } from "@/models/MentorProfile";
+import type { MenteeProfile, MentorProfile } from "@/types";
 
-export async function submitMenteeProfile(data: any) {
+export async function submitMenteeProfile(data: Partial<MenteeProfile>) {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== "mentee") {
     return { error: "Unauthorized" };
@@ -16,7 +17,7 @@ export async function submitMenteeProfile(data: any) {
 
   try {
     // 1. Create Mentee Profile
-    await MenteeProfile.findOneAndUpdate(
+    await MenteeProfileModel.findOneAndUpdate(
       { userId: session.user.id },
       {
         userId: session.user.id,
@@ -40,13 +41,13 @@ export async function submitMenteeProfile(data: any) {
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error saving mentee profile:", error);
-    return { error: error.message || "Failed to save profile" };
+    return { error: (error as Error).message || "Failed to save profile" };
   }
 }
 
-export async function submitMentorProfile(data: any) {
+export async function submitMentorProfile(data: Partial<MentorProfile>) {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== "mentor") {
     return { error: "Unauthorized" };
@@ -56,7 +57,7 @@ export async function submitMentorProfile(data: any) {
 
   try {
     // 1. Create Mentor Profile
-    await MentorProfile.findOneAndUpdate(
+    await MentorProfileModel.findOneAndUpdate(
       { userId: session.user.id },
       {
         userId: session.user.id,
@@ -82,8 +83,8 @@ export async function submitMentorProfile(data: any) {
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error saving mentor profile:", error);
-    return { error: error.message || "Failed to save profile" };
+    return { error: (error as Error).message || "Failed to save profile" };
   }
 }

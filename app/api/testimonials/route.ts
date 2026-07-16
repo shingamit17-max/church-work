@@ -24,13 +24,13 @@ export async function POST(req: Request) {
 
     await testimonial.save();
     return NextResponse.json({ success: true, testimonial });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to create testimonial:", error);
     return NextResponse.json({ error: "Failed to submit testimonial" }, { status: 500 });
   }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     await dbConnect();
     
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, testimonials });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to fetch testimonials:", error);
     return NextResponse.json({ error: "Failed to fetch testimonials" }, { status: 500 });
   }

@@ -4,11 +4,18 @@ import { useState } from "react";
 import { register } from "@/app/actions/auth";
 import NextLink from "next/link";
 import { UserRole } from "@/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function RegisterPage() {
-  const [error, setError] = useState<string | null>(null);
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") === "NoAccountFound" 
+      ? "No account found with this email. Please register below." 
+      : null
+  );
   const [isPending, setIsPending] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.MENTEE);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,11 +25,8 @@ export default function RegisterPage() {
     const formData = new FormData(e.currentTarget);
     try {
       const res = await register(formData);
-      if (res?.error) {
-        setError(res.error);
-      } else if (res?.success) {
-        router.push("/onboarding");
-      }
+      if (res?.error) setError(res.error);
+      else if (res?.success) router.push("/onboarding");
     } catch (err) {
       console.error(err);
     }
@@ -30,73 +34,154 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-teal-400">Join Grace Mentor</h1>
-        <p className="text-white/60 mb-8">Create your account to get started.</p>
+    <div
+      className="min-h-screen flex flex-col justify-center items-center p-6"
+      style={{ background: "#1c1917", color: "#fafaf9" }}
+    >
+      {/* Ambient orb */}
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          width: 600,
+          height: 600,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+          background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 65%)",
+          zIndex: 0,
+        }}
+      />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">I want to join as a:</label>
-            <div className="flex gap-4">
-              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-checked:bg-indigo-600/30 has-checked:border-indigo-500 transition-colors">
-                <input type="radio" name="role" value={UserRole.MENTEE} className="hidden" defaultChecked />
-                Mentee (Job Seeker)
-              </label>
-              <label className="flex-1 cursor-pointer border border-white/10 rounded-lg p-3 text-center hover:bg-white/5 has-checked:bg-teal-600/30 has-checked:border-teal-500 transition-colors">
-                <input type="radio" name="role" value={UserRole.MENTOR} className="hidden" />
-                Mentor (Professional)
-              </label>
+      <div className="relative z-10 w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <NextLink href="/" className="flex items-center gap-2">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{
+                background: "linear-gradient(135deg,#f59e0b,#d97706)",
+                boxShadow: "0 4px 16px rgba(245,158,11,0.35)",
+                fontSize: "1rem",
+              }}
+            >
+              ✦
             </div>
+            <span className="font-semibold text-lg" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
+          </NextLink>
+        </div>
+
+        {/* Card */}
+        <div
+          className="p-8 rounded-2xl"
+          style={{
+            background: "rgba(41,37,36,0.8)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(16px)",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
+          }}
+        >
+          <div className="mb-7">
+            <h1 className="text-2xl font-semibold mb-1" style={{ letterSpacing: "-0.02em" }}>
+              Join Grace Mentor
+            </h1>
+            <p className="text-sm" style={{ color: "#78716c" }}>
+              Create your free account to get started.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input 
-              name="name" 
-              type="text" 
-              required 
-              className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="John Doe"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input 
-              name="email" 
-              type="email" 
-              required 
-              className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input 
-              name="password" 
-              type="password" 
-              required 
-              minLength={6}
-              className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="••••••••"
-            />
-          </div>
-          
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          
-          <button 
-            type="submit" 
-            disabled={isPending}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {isPending ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Role selector */}
+            <div>
+              <label className="block text-sm font-medium mb-3" style={{ color: "#d6d3d1" }}>
+                I&apos;m joining as a…
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { role: UserRole.MENTEE, icon: "🎯", label: "Job Seeker", sub: "Find a mentor" },
+                  { role: UserRole.MENTOR, icon: "💼", label: "Mentor", sub: "Guide others" },
+                ].map(({ role, icon, label, sub }) => (
+                  <label
+                    key={role}
+                    className="relative cursor-pointer"
+                    onClick={() => setSelectedRole(role)}
+                  >
+                    <input type="radio" name="role" value={role} className="sr-only" defaultChecked={role === UserRole.MENTEE} />
+                    <div
+                      className="p-4 rounded-xl text-center transition-all"
+                      style={{
+                        background: selectedRole === role ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${selectedRole === role ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.08)"}`,
+                        boxShadow: selectedRole === role ? "0 0 0 1px rgba(245,158,11,0.2)" : "none",
+                      }}
+                    >
+                      <div className="text-2xl mb-1">{icon}</div>
+                      <div className="text-sm font-medium" style={{ color: selectedRole === role ? "#fbbf24" : "#d6d3d1" }}>
+                        {label}
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: "#57534e" }}>{sub}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-        <p className="mt-8 text-center text-sm text-white/60">
-          Already have an account? <NextLink href="/login" className="text-teal-400 hover:underline">Log in</NextLink>
+            {/* Fields */}
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Full name</label>
+              <input name="name" type="text" required className="warm-input" placeholder="Grace Smith" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Email address</label>
+              <input name="email" type="email" required className="warm-input" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Password</label>
+              <input name="password" type="password" required minLength={6} className="warm-input" placeholder="••••••••" />
+              <p className="text-xs mt-1.5" style={{ color: "#57534e" }}>Minimum 6 characters</p>
+            </div>
+
+            {error && (
+              <div
+                className="p-3 rounded-xl text-sm"
+                style={{
+                  background: "rgba(244,63,94,0.1)",
+                  border: "1px solid rgba(244,63,94,0.25)",
+                  color: "#fb7185",
+                }}
+              >
+                {error}
+              </div>
+            )}
+
+            <button type="submit" disabled={isPending} className="btn-amber w-full" style={{ marginTop: "0.25rem" }}>
+              {isPending ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  </svg>
+                  Creating account…
+                </>
+              ) : "Create Account →"}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-sm mt-6" style={{ color: "#57534e" }}>
+          Already have an account?{" "}
+          <NextLink href="/login" style={{ color: "#fbbf24" }} className="font-medium hover:underline">
+            Sign in
+          </NextLink>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-warm-900 text-white">Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

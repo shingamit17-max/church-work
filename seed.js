@@ -1,8 +1,8 @@
-import "dotenv/config";
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+require("dotenv").config({ path: ".env" }); // Try .env
+require("dotenv").config({ path: ".env.local" }); // Try .env.local as fallback
 
-// Hardcode the schemas here to avoid Next.js alias issues in a standalone script
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -16,7 +16,8 @@ const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
 async function seed() {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    throw new Error("MONGODB_URI is not defined in .env or .env.local");
+    console.error("MONGODB_URI is not defined in .env or .env.local");
+    process.exit(1);
   }
 
   await mongoose.connect(uri);
@@ -47,9 +48,10 @@ async function seed() {
   ];
 
   for (const acc of testAccounts) {
+    const hashedPassword = await bcrypt.hash(acc.password, 10);
+    
     const existing = await UserModel.findOne({ email: acc.email });
     if (!existing) {
-      const hashedPassword = await bcrypt.hash(acc.password, 10);
       await UserModel.create({
         name: acc.name,
         email: acc.email,
@@ -59,7 +61,11 @@ async function seed() {
       });
       console.log(`Created account: ${acc.email}`);
     } else {
-      console.log(`Account ${acc.email} already exists. Skipping.`);
+      await UserModel.updateOne(
+        { email: acc.email },
+        { $set: { password: hashedPassword, role: acc.role, onboardingComplete: acc.onboardingComplete } }
+      );
+      console.log(`Updated existing account password for: ${acc.email}`);
     }
   }
 
@@ -67,4 +73,7 @@ async function seed() {
   console.log("Done.");
 }
 
-seed().catch(console.error);
+seed().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       .sort({ matchScore: -1, createdAt: -1 });
 
     return NextResponse.json({ success: true, matches });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Fetch matches error:", error);
     return NextResponse.json({ error: "Failed to fetch matches" }, { status: 500 });
   }
