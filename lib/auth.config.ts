@@ -5,14 +5,24 @@ import dbConnect from "./db";
 import { User as UserModel } from "@/models/User";
 import bcrypt from "bcryptjs";
 
+function getAuthSecret(): string {
+  if (process.env.AUTH_SECRET) return process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET environment variable is required in production.");
+  }
+  // Dev-only fallback so the app works without an explicit secret
+  return "dev-only-secret-grace-mentor-do-not-use-in-production";
+}
+
 export const authConfig: NextAuthConfig = {
   basePath: "/api/auth",
   trustHost: true,
-  secret: process.env.AUTH_SECRET || "super-secret-development-key-that-is-at-least-32-chars-long",
+  secret: getAuthSecret(),
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
     newUser: "/register",
+    error: "/login",
   },
   providers: [
     GoogleProvider({
@@ -56,10 +66,14 @@ export const authConfig: NextAuthConfig = {
         // For OAuth providers (Google), look up the user in our DB
         // and attach custom fields so the jwt callback can read them
         await dbConnect();
-        const existingUser = await UserModel.findOne({ email: user.email });
+        let existingUser = await UserModel.findOne({ email: user.email });
         if (!existingUser) {
-          // If the user doesn't exist in our DB, redirect them to the register page
-          return "/register?error=NoAccountFound";
+          existingUser = await UserModel.create({
+            email: user.email,
+            name: user.name || "New User",
+            role: "unassigned",
+            onboardingComplete: false,
+          });
         }
         // Attach DB fields to the user object for the jwt callback
         user.id = existingUser._id.toString();
@@ -76,25 +90,10 @@ export const authConfig: NextAuthConfig = {
         token.onboardingComplete = user.onboardingComplete;
       }
       
-      // When the client calls update() to refresh the session
+      // When the client calls update() to refresh the session (e.g. post-onboarding)
       if (trigger === "update" && session) {
         token.role = session.role ?? token.role;
         token.onboardingComplete = session.onboardingComplete ?? token.onboardingComplete;
-      }
-
-      // Periodically sync from DB to pick up onboarding completion, role changes, etc.
-      // We do this on every request — the DB call is fast (indexed by _id)
-      if (token.id) {
-        try {
-          await dbConnect();
-          const dbUser = await UserModel.findById(token.id).select("role onboardingComplete").lean();
-          if (dbUser) {
-            token.role = dbUser.role;
-            token.onboardingComplete = dbUser.onboardingComplete;
-          }
-        } catch {
-          // If DB lookup fails, keep existing token values
-        }
       }
 
       return token;

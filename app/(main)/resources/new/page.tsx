@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function NewResourcePage() {
   const [isPending, setIsPending] = useState(false);
@@ -20,13 +21,13 @@ export default function NewResourcePage() {
         body: JSON.stringify(data)
       });
       if (res.ok) {
+        toast.success("Resource shared successfully!");
         router.push("/resources");
       } else {
-        alert("Failed to create resource");
+        toast.error("Failed to create resource");
       }
     } catch (e) {
-      console.error(e);
-      alert("Error sharing resource");
+      toast.error("Error sharing resource");
     }
     setIsPending(false);
   };
@@ -49,7 +50,7 @@ export default function NewResourcePage() {
         </div>
         <div>
           <label className="block text-sm mb-1">Type</label>
-          <select name="type" className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2">
+          <select name="type" className="warm-input warm-select cursor-pointer" required>
             <option value="article">Article / Guide</option>
             <option value="video">Video</option>
             <option value="template">Template (Resume/Cover Letter)</option>
@@ -57,7 +58,7 @@ export default function NewResourcePage() {
             <option value="other">Other</option>
           </select>
         </div>
-        <button type="submit" disabled={isPending} className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium disabled:opacity-50">
+        <button type="submit" disabled={isPending} className="btn-amber w-full disabled:opacity-50">
           {isPending ? "Sharing..." : "Share Resource"}
         </button>
       </form>

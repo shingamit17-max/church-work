@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-background: var(--background);
@@ -20,7 +21,7 @@
   --color-warm-50: #fafaf9;
 
   --color-amber-600: #d97706;
-  --color-amber-500: #f59e0b;
+  --color-amber-500: #f97316;
   --color-amber-400: #fbbf24;
   --color-amber-300: #fcd34d;
 
@@ -35,14 +36,28 @@
 }
 
 :root {
+  color-scheme: light;
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.1);
+  --accent: #f97316;
+  --accent-dim: rgba(249, 115, 22, 0.1);
+  --muted: #a8a29e;
+  --radius: 1rem;
+}
+
+.dark {
+  color-scheme: dark;
   --background: #1c1917;
   --foreground: #fafaf9;
   --card: #292524;
   --card-border: rgba(255, 255, 255, 0.08);
-  --accent: #f59e0b;
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: #f97316;
   --accent-dim: rgba(245, 158, 11, 0.15);
   --muted: #78716c;
-  --radius: 1rem;
 }
 
 * {
@@ -70,12 +85,10 @@ body {
 /* ──────────────── Selection ──────────────── */
 ::selection { background: rgba(245, 158, 11, 0.25); color: #fafaf9; }
 
-/* ──────────────── Utility: Warm Card ──────────────── */
+/* ──────────────── Card base ──────────────── */
 .warm-card {
-  background: rgba(41, 37, 36, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--card);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
 }
 
@@ -122,19 +135,36 @@ body {
 /* ──────────────── Input base ──────────────── */
 .warm-input {
   width: 100%;
-  background: rgba(12, 10, 9, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 0.625rem;
   padding: 0.75rem 1rem;
-  color: #fafaf9;
+  color: var(--foreground);
   font-size: 0.9375rem;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
 }
-.warm-input::placeholder { color: #78716c; }
+.warm-input::placeholder { color: var(--muted); }
 .warm-input:focus {
-  border-color: rgba(245, 158, 11, 0.5);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ──────────────── Select: Native Style ──────────────── */
+.warm-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2378716c%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+.warm-select:focus {
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+}
+.warm-select option {
+  background-color: #1c1917;
+  color: #fafaf9;
 }
 
 /* ──────────────── Button: Primary (amber) ──────────────── */
@@ -144,7 +174,7 @@ body {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #ef4444, #f97316);
   color: #0c0a09;
   font-weight: 600;
   font-size: 0.9375rem;

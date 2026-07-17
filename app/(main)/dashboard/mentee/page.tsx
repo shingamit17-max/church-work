@@ -8,12 +8,11 @@ import { redirect } from "next/navigation";
 
 const STAT_CARD = ({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) => (
   <div
-    className="p-5 rounded-2xl flex flex-col gap-1"
-    style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+    className="p-5 rounded-2xl flex flex-col gap-1 bg-card border border-border"
   >
-    <p className="text-xs font-medium uppercase tracking-widest" style={{ color: "#57534e" }}>{label}</p>
-    <p className="text-3xl font-light" style={{ color: accent || "#fafaf9", letterSpacing: "-0.03em" }}>{value}</p>
-    {sub && <p className="text-xs" style={{ color: "#57534e" }}>{sub}</p>}
+    <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{label}</p>
+    <p className="text-3xl font-light" style={{ color: accent || "var(--foreground)", letterSpacing: "-0.03em" }}>{value}</p>
+    {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
   </div>
 );
 
@@ -37,10 +36,10 @@ export default async function MenteeDashboardPage() {
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-sm mb-1" style={{ color: "#57534e" }}>Welcome back 👋</p>
+          <p className="text-sm mb-1 text-muted-foreground">Welcome back 👋</p>
           <h1
-            className="text-3xl font-semibold"
-            style={{ letterSpacing: "-0.03em", color: "#fafaf9" }}
+            className="text-3xl font-semibold text-foreground"
+            style={{ letterSpacing: "-0.03em" }}
           >
             {session.user.name?.split(" ")[0]}&apos;s Dashboard
           </h1>
@@ -78,11 +77,10 @@ export default async function MenteeDashboardPage() {
           {/* Mentor Matches */}
           <section>
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-lg font-semibold" style={{ color: "#fafaf9" }}>Your Mentor Matches</h2>
+              <h2 className="text-lg font-semibold text-foreground">Your Mentor Matches</h2>
               <NextLink
                 href="/dashboard/mentee/mentors"
-                className="text-xs px-3 py-1.5 rounded-lg transition-all"
-                style={{ color: "#78716c", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                className="text-xs px-3 py-1.5 rounded-lg transition-all text-muted-foreground bg-foreground/5 border border-border"
               >
                 Find more →
               </NextLink>
@@ -90,17 +88,16 @@ export default async function MenteeDashboardPage() {
 
             {matches.length === 0 ? (
               <div
-                className="p-10 rounded-2xl text-center"
-                style={{ background: "rgba(41,37,36,0.5)", border: "1px dashed rgba(255,255,255,0.08)" }}
+                className="p-10 rounded-2xl text-center bg-card border border-dashed border-border"
               >
                 <div className="text-4xl mb-3">🎯</div>
-                <p className="text-sm mb-5" style={{ color: "#78716c" }}>No mentor matches yet. Generate your first set of AI-curated matches.</p>
+                <p className="text-sm mb-5 text-muted-foreground">No mentor matches yet. Generate your first set of AI-curated matches.</p>
                 <form action="/api/matches/generate" method="POST">
                   <button
                     type="submit"
                     className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
                     style={{
-                      background: "linear-gradient(135deg,#f59e0b,#d97706)",
+                      background: "linear-gradient(135deg,#ef4444,#f97316)",
                       color: "#0c0a09",
                       boxShadow: "0 4px 16px rgba(245,158,11,0.25)",
                     }}
@@ -114,11 +111,7 @@ export default async function MenteeDashboardPage() {
                 {matches.map((match) => (
                   <div
                     key={match.id}
-                    className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all"
-                    style={{
-                      background: "rgba(41,37,36,0.7)",
-                      border: "1px solid rgba(255,255,255,0.07)",
-                    }}
+                    className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all bg-card border border-border"
                   >
                     {/* Ambient accent */}
                     <div
@@ -144,7 +137,7 @@ export default async function MenteeDashboardPage() {
                         {match.matchScore}%
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed relative z-10 line-clamp-3" style={{ color: "#a8a29e" }}>
+                    <p className="text-sm leading-relaxed relative z-10 line-clamp-3 text-muted-foreground">
                       {match.matchReason}
                     </p>
                     <div className="relative z-10 mt-auto">
@@ -161,7 +154,7 @@ export default async function MenteeDashboardPage() {
                         <NextLink
                           href={`/chat/${match._id}`}
                           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                          style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}
+                          style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}
                         >
                           Open Chat
                         </NextLink>
@@ -176,11 +169,10 @@ export default async function MenteeDashboardPage() {
           {/* Events */}
           <section>
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-lg font-semibold" style={{ color: "#fafaf9" }}>Event Activity</h2>
+              <h2 className="text-lg font-semibold text-foreground">Event Activity</h2>
               <NextLink
                 href="/events"
-                className="text-xs px-3 py-1.5 rounded-lg transition-all"
-                style={{ color: "#78716c", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                className="text-xs px-3 py-1.5 rounded-lg transition-all text-muted-foreground bg-foreground/5 border border-border"
               >
                 Browse Events →
               </NextLink>
@@ -188,11 +180,10 @@ export default async function MenteeDashboardPage() {
 
             {eventRegistrations.length === 0 ? (
               <div
-                className="p-8 rounded-2xl text-center"
-                style={{ background: "rgba(41,37,36,0.5)", border: "1px dashed rgba(255,255,255,0.08)" }}
+                className="p-8 rounded-2xl text-center bg-card border border-dashed border-border"
               >
                 <div className="text-3xl mb-2">📅</div>
-                <p className="text-sm" style={{ color: "#78716c" }}>You haven&apos;t registered for any events yet.</p>
+                <p className="text-sm line-clamp-2 text-muted-foreground">You haven&apos;t registered for any events yet.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -201,14 +192,13 @@ export default async function MenteeDashboardPage() {
                   return (
                     <div
                       key={reg._id}
-                      className="flex items-center justify-between p-4 rounded-xl transition-all"
-                      style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+                      className="flex items-center justify-between p-4 rounded-xl transition-all bg-card border border-border"
                     >
                       <div className="min-w-0">
-                        <NextLink href={`/events/${evt._id}`} className="text-sm font-medium hover:underline block mb-0.5 truncate" style={{ color: "#fafaf9" }}>
+                        <NextLink href={`/events/${evt._id}`} className="text-sm font-medium hover:underline block mb-0.5 truncate text-foreground">
                           {evt.title}
                         </NextLink>
-                        <p className="text-xs" style={{ color: "#57534e" }}>
+                        <p className="text-xs text-muted-foreground">
                           {new Date(evt.dateTime).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} · {evt.domain}
                         </p>
                       </div>
@@ -234,28 +224,27 @@ export default async function MenteeDashboardPage() {
         <div className="space-y-5">
           {/* Diagnostic card */}
           <div
-            className="p-6 rounded-2xl"
-            style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+            className="p-6 rounded-2xl bg-card border border-border"
           >
-            <h3 className="text-sm font-semibold mb-5" style={{ color: "#fafaf9" }}>Your Diagnostic</h3>
+            <h3 className="text-sm font-semibold mb-5 text-foreground">Your Diagnostic</h3>
             {profile ? (
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs mb-1" style={{ color: "#57534e" }}>Target Role</p>
-                  <p className="text-sm font-medium" style={{ color: "#fafaf9" }}>
+                  <p className="text-xs mb-1 text-muted-foreground">Target Role</p>
+                  <p className="font-medium text-foreground">
                     {profile.targetRoles?.[0] || "Not set"}{profile.targetDomain ? ` in ${profile.targetDomain}` : ""}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs mb-1" style={{ color: "#57534e" }}>Career Stage</p>
-                  <p className="text-sm capitalize" style={{ color: "#fafaf9" }}>{profile.careerStage?.replace(/_/g, " ")}</p>
+                  <p className="text-xs mb-1 text-muted-foreground">Career Stage</p>
+                  <p className="text-sm capitalize text-foreground">{profile.careerStage?.replace(/_/g, " ")}</p>
                 </div>
                 {profile.diagnosticAnswers?.painPoints?.length > 0 && (
                   <div>
-                    <p className="text-xs mb-2" style={{ color: "#57534e" }}>Pain Points</p>
+                    <p className="text-xs mb-2 text-muted-foreground">Pain Points</p>
                     <div className="flex flex-wrap gap-1.5">
                       {profile.diagnosticAnswers.painPoints.slice(0, 3).map((pt: string) => (
-                        <span key={pt} className="text-[11px] px-2 py-1 rounded-lg" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#fbbf24" }}>
+                        <span key={pt} className="text-[11px] px-2 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary">
                           {pt.replace(/_/g, " ")}
                         </span>
                       ))}
@@ -269,7 +258,7 @@ export default async function MenteeDashboardPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm" style={{ color: "#57534e" }}>Complete your profile to see your diagnostic.</p>
+              <p className="text-sm text-muted-foreground">Complete your profile to see your diagnostic.</p>
             )}
           </div>
 
@@ -286,25 +275,23 @@ export default async function MenteeDashboardPage() {
               &quot;{profile?.goal3Months || "Secure a new role"}&quot;
             </p>
             <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <div className="h-1.5 rounded-full" style={{ width: "25%", background: "linear-gradient(90deg,#f59e0b,#fbbf24)" }} />
+              <div className="h-1.5 rounded-full" style={{ width: "25%", background: "linear-gradient(90deg,#ef4444,#f97316)" }} />
             </div>
-            <p className="text-xs mt-2 text-right" style={{ color: "#57534e" }}>In Progress · 25%</p>
+            <p className="text-xs mt-2 text-right text-muted-foreground">In Progress · 25%</p>
           </div>
 
           {/* Testimonial CTA */}
           <div
-            className="p-6 rounded-2xl text-center"
-            style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
+            className="p-6 rounded-2xl text-center bg-card border border-border"
           >
             <div className="text-2xl mb-2">✍️</div>
-            <h3 className="text-sm font-semibold mb-1" style={{ color: "#fafaf9" }}>Share Your Journey</h3>
-            <p className="text-xs mb-4 leading-relaxed" style={{ color: "#57534e" }}>
+            <h3 className="text-sm font-semibold mb-1 text-foreground">Share Your Journey</h3>
+            <p className="text-xs mb-4 leading-relaxed text-muted-foreground">
               Did mentorship help you reach a milestone? Your story could inspire someone else.
             </p>
             <NextLink
               href="/testimonials/submit"
-              className="inline-flex items-center justify-center w-full py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d6d3d1" }}
+              className="block text-center w-full py-2.5 rounded-xl text-sm font-medium transition-all bg-card border border-border text-muted-foreground hover:text-foreground"
             >
               Write a Testimonial
             </NextLink>

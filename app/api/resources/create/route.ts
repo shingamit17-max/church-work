@@ -5,7 +5,7 @@ import { Resource } from "@/models/Resource";
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "mentor") {
+  if (!session?.user?.id || (session.user.role !== "mentor" && session.user.role !== "admin")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

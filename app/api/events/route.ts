@@ -33,7 +33,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user || session.user.role !== "mentor") {
+    if (!session?.user || (session.user.role !== "mentor" && session.user.role !== "admin")) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
@@ -55,7 +55,9 @@ export async function POST(req: Request) {
       price: data.isFree ? 0 : (data.price || 0),
       capacity: parseInt(data.capacity, 10),
       dateTime: new Date(data.dateTime),
-      status: "upcoming"
+      status: "upcoming",
+      recurrence: data.recurrence || 'none',
+      customQuestions: Array.isArray(data.customQuestions) ? data.customQuestions : [],
     });
 
     return NextResponse.json({ success: true, event: newEvent }, { status: 201 });

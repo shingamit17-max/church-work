@@ -36,6 +36,8 @@ export async function POST(
       return NextResponse.json({ success: false, error: "Already registered for this event" }, { status: 400 });
     }
 
+    const data = await req.json().catch(() => ({}));
+
     // Note: Payment deferred to Phase 16, marking as pending if not free
     const paymentStatus = event.isFree ? "not_required" : "pending";
 
@@ -43,7 +45,8 @@ export async function POST(
       eventId: id,
       userId: session.user.id,
       paymentStatus,
-      amountPaid: 0 // Mocked for now
+      amountPaid: 0, // Mocked for now
+      customAnswers: data.customAnswers || []
     });
 
     // Increment registered count

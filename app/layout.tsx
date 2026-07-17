@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,10 +32,18 @@ export default function RootLayout({
       style={{ colorScheme: "dark" }}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col" style={{ background: "#1c1917", color: "#fafaf9" }}>
+      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         <Providers>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </Providers>
+        <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>
   );

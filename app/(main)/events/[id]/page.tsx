@@ -76,7 +76,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <div className="flex items-center gap-3 mb-8">
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09" }}
+                style={{ background: "linear-gradient(135deg,#ef4444,#eab308)", color: "#eab308" }}
               >
                 {event.hostId?.name?.charAt(0) || '?'}
               </div>
@@ -134,7 +134,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 <RegisterButton 
                   eventId={event._id.toString()} 
                   isRegistered={isRegistered} 
-                  isFull={isFull} 
+                  isFull={isFull}
+                  customQuestions={event.customQuestions || []}
                 />
               )}
               
@@ -184,14 +185,25 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   <tr className="border-b border-white/10 text-white/50 text-sm">
                     <th className="pb-3 font-medium">Name</th>
                     <th className="pb-3 font-medium">Email</th>
+                    {event.customQuestions?.length > 0 && <th className="pb-3 font-medium">Responses</th>}
                     <th className="pb-3 font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {attendees.map((att: { _id: string, userId: { name: string, email: string }, paymentStatus: string }) => (
+                  {attendees.map((att: { _id: string, userId: { name: string, email: string }, paymentStatus: string, customAnswers?: { question: string, answer: string }[] }) => (
                     <tr key={att._id} className="border-b border-white/5">
                       <td className="py-4">{att.userId?.name}</td>
                       <td className="py-4 text-white/70">{att.userId?.email}</td>
+                      {event.customQuestions?.length > 0 && (
+                        <td className="py-4 text-xs text-white/60 max-w-xs">
+                          {att.customAnswers?.length ? att.customAnswers.map((ans, i) => (
+                            <div key={i} className="mb-1.5 line-clamp-2" title={`${ans.question}\n${ans.answer}`}>
+                              <span className="font-medium text-white/80 block truncate">{ans.question}</span>
+                              <span className="text-white/60">{ans.answer}</span>
+                            </div>
+                          )) : <span className="italic">No responses</span>}
+                        </td>
+                      )}
                       <td className="py-4">
                         <span 
                           className="text-xs px-2.5 py-1 rounded-full font-medium"

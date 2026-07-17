@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { PainPoint } from "@/types";
 
 export default function SubmitTestimonialPage() {
@@ -27,13 +28,13 @@ export default function SubmitTestimonialPage() {
         body: JSON.stringify(data)
       });
       if (res.ok) {
-        alert("Success story submitted! Thank you.");
-        router.push("/testimonials");
+        toast.success("Success story submitted! Thank you.");
+        router.push("/dashboard");
       } else {
-        alert("Failed to submit");
+        toast.error("Failed to submit");
       }
     } catch {
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     setIsPending(false);
   };

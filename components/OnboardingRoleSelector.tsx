@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { UserRole } from '@/types';
 import { setRole } from '@/app/actions/auth';
 
@@ -13,7 +14,7 @@ const ROLES = [
     sublabel: 'I want mentorship',
     description: 'Find mentors to guide your career, unlock opportunities, and achieve your professional goals with faith-rooted support.',
     cta: 'I am a Mentee',
-    accentColor: '#f59e0b',
+    accentColor: '#f97316',
     accentBg: 'rgba(245,158,11,0.1)',
     accentBorder: 'rgba(245,158,11,0.2)',
   },
@@ -69,15 +70,7 @@ export function OnboardingRoleSelector() {
       >
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', boxShadow: '0 4px 16px rgba(245,158,11,0.3)', fontSize: '0.875rem' }}
-            >
-              ✦
-            </div>
-            <span className="font-semibold" style={{ letterSpacing: '-0.02em' }}>Grace Mentor</span>
-          </div>
+          <Image src="/logo.png" alt="Grace Mentor" width={48} height={48} className="h-12 w-auto object-contain drop-shadow-md" />
         </div>
 
         {/* Heading */}

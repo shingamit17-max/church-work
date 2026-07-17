@@ -17,6 +17,8 @@ const EventSchema = new Schema(
     paymentSplit: {
       platformFeePercent: { type: Number, default: 0 },
     },
+    recurrence: { type: String, enum: ['none', 'daily', 'weekly', 'monthly'], default: 'none' },
+    customQuestions: [{ type: String }],
   },
   { timestamps: true }
 );

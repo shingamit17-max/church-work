@@ -1,71 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { login, forceSeedAccounts } from "@/app/actions/auth";
+import { useState, Suspense } from "react";
+import { login } from "@/app/actions/auth";
 import NextLink from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
-export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
-  const [seedStatus, setSeedStatus] = useState("");
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
   
-  // Controlled inputs for quick login auto-fill
+  const initialError = urlError === "AccessDenied" 
+    ? "Access Denied: You do not have permission to sign in or an error occurred." 
+    : urlError 
+      ? `Sign in error: ${urlError}` 
+      : null;
+
+  const [internalError, setInternalError] = useState<string | null>(null);
+  const error = internalError || initialError;
+
+  const [isPending, setIsPending] = useState(false);
+  
+  // Controlled inputs for auto-fill
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleSeed = async () => {
-    setSeedStatus("Seeding...");
-    try {
-      await forceSeedAccounts();
-      setSeedStatus("Test accounts seeded successfully! You can now log in.");
-    } catch (e) {
-      setSeedStatus("Error seeding accounts.");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsPending(true);
-    setError(null);
+    setInternalError(null);
     const formData = new FormData(e.currentTarget);
     try {
       const res = await login(formData);
-      if (res?.error) setError(res.error);
+      if (res?.error) setInternalError(res.error);
     } catch (err) {
       console.error(err);
     }
     setIsPending(false);
   };
 
-  const handleQuickLoginChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const role = e.target.value;
-    if (role === "admin") {
-      setEmail("admin@gracementor.com");
-      setPassword("admin123"); // Replace with actual admin test credentials if different
-    } else if (role === "mentor") {
-      setEmail("mentor@gracementor.com");
-      setPassword("mentor123");
-    } else if (role === "mentee") {
-      setEmail("mentee@gracementor.com");
-      setPassword("mentee123");
-    } else {
-      setEmail("");
-      setPassword("");
-    }
-  };
-
   return (
     <div
-      className="min-h-screen flex"
-      style={{ background: "#1c1917", color: "#fafaf9" }}
+      className="min-h-screen bg-background text-foreground flex relative overflow-hidden"
     >
+      {/* Mobile-only background effects */}
+      <div className="absolute inset-0 pointer-events-none lg:hidden">
+        <div className="absolute w-[500px] h-[500px] rounded-full" style={{ top: "-10%", right: "-20%", background: "radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)" }} />
+        <div className="absolute w-[400px] h-[400px] rounded-full" style={{ bottom: "-10%", left: "-20%", background: "radial-gradient(circle, rgba(244,63,94,0.05) 0%, transparent 70%)" }} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+      </div>
       {/* ── Left Panel – Brand ── */}
       <div
-        className="hidden lg:flex lg:w-[52%] relative flex-col justify-between p-12 overflow-hidden"
+        className="hidden lg:flex lg:w-[52%] relative flex-col justify-between p-12 overflow-hidden bg-muted"
         style={{
-          background: "linear-gradient(150deg, #1c1917 0%, #0c0a09 60%, #1a100a 100%)",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
+          borderRight: "1px solid hsl(var(--border))",
         }}
       >
         {/* Ambient orbs */}
@@ -94,18 +83,10 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-base"
-            style={{
-              background: "linear-gradient(135deg,#f59e0b,#d97706)",
-              boxShadow: "0 4px 16px rgba(245,158,11,0.35)",
-            }}
-          >
-            ✦
-          </div>
-          <span className="font-semibold text-lg tracking-tight" style={{ letterSpacing: "-0.02em" }}>
-            Grace Mentor
-          </span>
+          <NextLink href="/" className="flex items-center gap-3">
+            <Image src="/logo.png" alt="Grace Mentor Logo" width={40} height={40} className="h-10 w-auto object-contain" />
+            <span className="font-semibold text-xl" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
+          </NextLink>
         </div>
 
         {/* Main copy */}
@@ -116,12 +97,7 @@ export default function LoginPage() {
           >
             Career guidance rooted in{" "}
             <span
-              style={{
-                background: "linear-gradient(135deg,#f59e0b,#fbbf24)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500"
             >
               faith &amp; community
             </span>
@@ -135,14 +111,13 @@ export default function LoginPage() {
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-4">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-base shrink-0"
-                  style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.2)" }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-base shrink-0 bg-amber-500/10 border border-amber-500/20"
                 >
                   {item.icon}
                 </div>
                 <div>
-                  <p className="font-medium text-sm mb-0.5" style={{ color: "#e7e5e4" }}>{item.title}</p>
-                  <p className="text-sm leading-relaxed" style={{ color: "#57534e" }}>{item.desc}</p>
+                  <p className="font-medium text-sm mb-0.5 text-muted-foreground">{item.title}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -151,24 +126,31 @@ export default function LoginPage() {
 
         {/* Scripture */}
         <div
-          className="relative z-10 text-sm italic leading-relaxed pl-4"
-          style={{ borderLeft: "2px solid rgba(245,158,11,0.4)", color: "#78716c", maxWidth: "38rem" }}
+          className="relative z-10 text-sm italic leading-relaxed pl-4 border-l-2 border-amber-500/40 text-muted-foreground max-w-[38rem]"
         >
           &quot;Let your light shine before others, that they may see your good deeds and glorify your Father in heaven.&quot; — Matthew 5:16
         </div>
       </div>
 
       {/* ── Right Panel – Form ── */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 lg:p-12">
-        {/* Mobile logo */}
-        <div className="flex lg:hidden items-center gap-2 mb-10">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-            style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}
+      <div className="relative flex-1 flex flex-col justify-center items-center p-6 lg:p-12">
+        {/* Mobile Header (Glassmorphism Pill) */}
+        <div className="absolute top-6 w-full px-6 flex lg:hidden justify-center z-50">
+          <div 
+            className="flex items-center justify-between w-full max-w-sm px-4 py-3 rounded-full bg-background/50 backdrop-blur-xl border border-border shadow-xl"
           >
-            ✦
+            <NextLink href="/" className="flex items-center gap-2">
+              <Image src="/logo.png" alt="Grace Mentor Logo" width={28} height={28} className="h-7 w-auto object-contain" />
+              <span className="font-semibold text-base" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
+            </NextLink>
+            
+            {/* Profile Icon Placeholder */}
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">
+              <svg className="w-4 h-4 text-foreground/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
           </div>
-          <span className="font-semibold" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
         </div>
 
         <div className="w-full max-w-sm">
@@ -176,7 +158,7 @@ export default function LoginPage() {
             <h2 className="text-2xl font-semibold mb-1.5" style={{ letterSpacing: "-0.02em" }}>
               Welcome back
             </h2>
-            <p className="text-sm" style={{ color: "#78716c" }}>
+            <p className="text-sm text-muted-foreground">
               Sign in to continue your journey
             </p>
           </div>
@@ -185,10 +167,7 @@ export default function LoginPage() {
           <div className="space-y-3 mb-6">
             <button
               onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium text-sm transition-all"
-              style={{ background: "#fff", color: "#1c1917" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#f5f5f4")}
-              onMouseLeave={e => (e.currentTarget.style.background = "#fff")}
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium text-sm transition-all bg-card border border-border hover:bg-muted"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -202,15 +181,15 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-            <span className="text-xs" style={{ color: "#57534e" }}>or sign in with email</span>
-            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">or sign in with email</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Email form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>
+              <label className="block text-sm font-medium mb-2 text-muted-foreground">
                 Email address
               </label>
               <input
@@ -226,7 +205,7 @@ export default function LoginPage() {
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-medium" style={{ color: "#d6d3d1" }}>Password</label>
+                <label className="text-sm font-medium text-muted-foreground">Password</label>
               </div>
               <input
                 name="password"
@@ -240,15 +219,20 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div
-                className="p-3 rounded-xl text-sm"
-                style={{
-                  background: "rgba(244,63,94,0.1)",
-                  border: "1px solid rgba(244,63,94,0.25)",
-                  color: "#fb7185",
-                }}
-              >
-                {error}
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
+                <div className="p-8 sm:p-10 bg-card border border-border shadow-2xl rounded-2xl relative z-10 w-full max-w-sm animate-in fade-in zoom-in duration-200">
+                  <h3 className="text-xl font-bold text-foreground mb-2 text-center">Login Error</h3>
+                  <p className="text-foreground/60 mb-6 text-center">{error}</p>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => setInternalError(null)}
+                      className="flex-1 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-medium transition-colors"
+                      type="button"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -277,40 +261,16 @@ export default function LoginPage() {
             </NextLink>
           </p>
           
-          {/* Quick Login Dropdown for Demo purposes */}
-          <div className="mt-8 pt-6 border-t border-white/10">
-            <label className="block text-xs font-medium mb-2 text-white/50 text-center uppercase tracking-wider">
-              Quick Demo Login
-            </label>
-            <div className="relative">
-              <select 
-                onChange={handleQuickLoginChange}
-                className="w-full px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 appearance-none cursor-pointer transition-colors text-center"
-              >
-                <option value="" className="bg-slate-900 text-white">Select a test account to auto-fill...</option>
-                <option value="admin" className="bg-slate-900 text-white">Admin Account</option>
-                <option value="mentor" className="bg-slate-900 text-white">Mentor Account</option>
-                <option value="mentee" className="bg-slate-900 text-white">Mentee Account</option>
-              </select>
-              <svg className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          
-          {/* Temporary Seed Button */}
-          <div className="mt-4 text-center">
-            <button
-              onClick={handleSeed}
-              className="text-xs text-amber-500 hover:text-amber-400 underline"
-            >
-              Click here to create/reset test accounts in the DB
-            </button>
-            {seedStatus && <p className="text-xs text-green-400 mt-2">{seedStatus}</p>}
-          </div>
-
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: "#1c1917", color: "#fafaf9" }}>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

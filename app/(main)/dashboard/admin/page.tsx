@@ -6,6 +6,8 @@ import { Event } from "@/models/Event";
 import { redirect } from "next/navigation";
 import type { User as UserType } from "@/types";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
+import { AdminRequest } from "@/models/AdminRequest";
+import { AdminRequestsList } from "@/components/admin/AdminRequestsList";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
@@ -25,6 +27,17 @@ export default async function AdminDashboardPage() {
   const serializedUsers = allUsers.map(user => ({
     ...user,
     _id: user._id.toString(),
+  }));
+
+  const pendingRequests = await AdminRequest.find({ status: "PENDING" })
+    .populate("user", "name email role")
+    .sort({ createdAt: -1 })
+    .lean();
+    
+  const serializedRequests = pendingRequests.map(req => ({
+    ...req,
+    _id: (req as any)._id.toString(),
+    user: req.user ? { ...(req as any).user, _id: (req as any).user._id.toString() } : null
   }));
 
   return (
@@ -54,6 +67,8 @@ export default async function AdminDashboardPage() {
           <div className="text-3xl font-bold">{totalEvents}</div>
         </div>
       </div>
+
+      <AdminRequestsList initialRequests={serializedRequests} />
 
       <UserManagementTable initialUsers={serializedUsers} />
     </div>

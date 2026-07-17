@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { PainPoint } from "@/types";
+import { toast } from "sonner";
 
 export default function CreateEventPage() {
   const { data: session } = useSession();
@@ -11,8 +12,10 @@ export default function CreateEventPage() {
   const [isPending, setIsPending] = useState(false);
   const [isFree, setIsFree] = useState(true);
   const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>([]);
+  const [customQuestions, setCustomQuestions] = useState<string[]>([]);
+  const [newQuestion, setNewQuestion] = useState("");
 
-  if (session?.user?.role !== "mentor") {
+  if (session?.user?.role !== "mentor" && session?.user?.role !== "admin") {
     return (
       <div className="text-center py-20">
         <p className="text-white/60">Only mentors can host events.</p>
@@ -24,6 +27,17 @@ export default function CreateEventPage() {
     setSelectedPainPoints(prev => 
       prev.includes(pt) ? prev.filter(p => p !== pt) : [...prev, pt]
     );
+  };
+
+  const addQuestion = () => {
+    if (newQuestion.trim()) {
+      setCustomQuestions([...customQuestions, newQuestion.trim()]);
+      setNewQuestion("");
+    }
+  };
+
+  const removeQuestion = (idx: number) => {
+    setCustomQuestions(customQuestions.filter((_, i) => i !== idx));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,6 +54,8 @@ export default function CreateEventPage() {
       isFree,
       price: isFree ? 0 : Number(formData.get("price")),
       painPointTags: selectedPainPoints,
+      recurrence: formData.get("recurrence"),
+      customQuestions,
     };
 
     try {
@@ -51,12 +67,13 @@ export default function CreateEventPage() {
       const result = await res.json();
       
       if (result.success) {
+        toast.success("Event has been created", { description: formData.get("title") as string });
         router.push(`/events/${result.event._id}`);
       } else {
-        alert(result.error || "Failed to create event");
+        toast.error(result.error || "Failed to create event");
       }
     } catch {
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     
     setIsPending(false);
@@ -143,6 +160,18 @@ export default function CreateEventPage() {
               onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Recurrence</label>
+            <select 
+              name="recurrence" 
+              className="warm-input warm-select cursor-pointer"
+            >
+              <option value="none" className="bg-slate-900">Does not repeat</option>
+              <option value="daily" className="bg-slate-900">Daily</option>
+              <option value="weekly" className="bg-slate-900">Weekly</option>
+              <option value="monthly" className="bg-slate-900">Monthly</option>
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -220,6 +249,48 @@ export default function CreateEventPage() {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* Custom Questions Builder */}
+        <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-4">
+          <div className="flex flex-col gap-1 mb-2">
+            <h3 className="text-sm font-semibold text-white">Registration Form Questions</h3>
+            <p className="text-xs text-white/50">Ask mentees custom questions when they register (e.g. "What date are you available?", "What is your main challenge?").</p>
+          </div>
+          
+          {customQuestions.length > 0 && (
+            <div className="space-y-3 mb-4">
+              {customQuestions.map((q, idx) => (
+                <div key={idx} className="flex gap-3 items-start p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-white/40 font-medium text-xs mt-0.5">{idx + 1}.</span>
+                  <span className="flex-1 text-sm text-white/80">{q}</span>
+                  <button type="button" onClick={() => removeQuestion(idx)} className="text-white/40 hover:text-red-400">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="flex gap-3">
+            <input 
+              type="text" 
+              value={newQuestion}
+              onChange={(e) => setNewQuestion(e.target.value)}
+              placeholder="Type a new question..."
+              className="flex-1 rounded-xl px-4 py-2 text-sm focus:outline-none transition-all"
+              style={{ background: "rgba(28,25,23,0.8)", border: "1px solid rgba(255,255,255,0.1)", color: "#fafaf9" }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addQuestion(); } }}
+            />
+            <button 
+              type="button" 
+              onClick={addQuestion}
+              disabled={!newQuestion.trim()}
+              className="px-4 py-2 rounded-xl text-sm font-medium border border-amber-500/20 text-amber-500 hover:bg-amber-500/10 transition-colors disabled:opacity-50"
+            >
+              Add
+            </button>
           </div>
         </div>
 

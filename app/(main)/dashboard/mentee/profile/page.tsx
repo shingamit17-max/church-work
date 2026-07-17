@@ -16,25 +16,25 @@ export default async function MenteeProfilePage() {
     <>
       <div className="max-w-4xl">
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">My Profile</h1>
-              <p className="text-slate-600 dark:text-slate-400">Manage your professional information and preferences</p>
+              <h1 className="text-4xl font-bold text-white mb-2">My Profile</h1>
+              <p className="text-white/60">Manage your professional information and preferences</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Profile Card */}
               <div className="lg:col-span-1">
-                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white text-4xl font-bold mx-auto mb-4">
+                <div className="warm-card p-6">
+                  <div className="w-24 h-24 rounded-full bg-linear-to-br from-stone-800 to-stone-900 border border-white/10 flex items-center justify-center text-white text-4xl font-bold mx-auto mb-4">
                     {userName.charAt(0).toUpperCase()}
                   </div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white text-center mb-1">{userName}</h2>
-                  <p className="text-slate-600 dark:text-slate-400 text-center text-sm mb-4">{userEmail}</p>
+                  <h2 className="text-xl font-bold text-white text-center mb-1">{userName}</h2>
+                  <p className="text-white/60 text-center text-sm mb-4">{userEmail}</p>
                   <div className="text-center mb-6">
-                    <span className="inline-block px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium">
+                    <span className="inline-block px-4 py-2 rounded-full bg-white/5 text-white/80 text-sm font-medium">
                       🎓 Job Seeker
                     </span>
                   </div>
-                  <button className="w-full px-4 py-2 rounded-lg bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-500 text-white font-medium transition-colors">
+                  <button className="btn-amber w-full">
                     Edit Profile Picture
                   </button>
                 </div>
@@ -43,86 +43,86 @@ export default async function MenteeProfilePage() {
               {/* Profile Information */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Personal Information */}
-                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Personal Information</h3>
+                <div className="warm-card p-6">
+                  <h3 className="text-lg font-bold text-white mb-6">Personal Information</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Full Name</label>
+                      <label className="block text-sm font-medium text-white mb-2">Full Name</label>
                       <input
                         type="text"
                         defaultValue={userName}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Email Address</label>
+                      <label className="block text-sm font-medium text-white mb-2">Email Address</label>
                       <input
                         type="email"
                         defaultValue={userEmail}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Phone Number</label>
+                      <label className="block text-sm font-medium text-white mb-2">Phone Number</label>
                       <input
                         type="tel"
                         placeholder="+1 (555) 000-0000"
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Bio</label>
+                      <label className="block text-sm font-medium text-white mb-2">Bio</label>
                       <textarea
                         placeholder="Tell us about yourself..."
                         rows={4}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 resize-none"
+                        className="warm-input resize-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Career Information */}
-                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Career Information</h3>
+                <div className="warm-card p-6">
+                  <h3 className="text-lg font-bold text-white mb-6">Career Information</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Current Job Title</label>
+                      <label className="block text-sm font-medium text-white mb-2">Current Job Title</label>
                       <input
                         type="text"
                         placeholder="e.g., Software Engineer"
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Target Role</label>
+                      <label className="block text-sm font-medium text-white mb-2">Target Role</label>
                       <input
                         type="text"
                         placeholder="e.g., Senior Engineer, Product Manager"
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Years of Experience</label>
+                      <label className="block text-sm font-medium text-white mb-2">Years of Experience</label>
                       <input
                         type="number"
                         placeholder="0"
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">Skills</label>
+                      <label className="block text-sm font-medium text-white mb-2">Skills</label>
                       <input
                         type="text"
                         placeholder="e.g., React, TypeScript, Node.js (comma-separated)"
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="warm-input"
                       />
                     </div>
                   </div>
@@ -130,10 +130,10 @@ export default async function MenteeProfilePage() {
 
                 {/* Save Button */}
                 <div className="flex gap-3">
-                  <button className="px-8 py-3 rounded-lg bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-500 text-white font-medium transition-colors">
+                  <button className="btn-amber px-8">
                     Save Changes
                   </button>
-                  <button className="px-8 py-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-medium transition-colors">
+                  <button className="w-full px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-white font-medium transition-colors text-sm">
                     Cancel
                   </button>
                 </div>

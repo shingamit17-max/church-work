@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { PainPoint } from "@/types";
-import { use } from "react";
 import BackButton from "@/components/BackButton";
 
 export default function MentorFeedbackPage({ params }: { params: Promise<{ matchId: string }> }) {
@@ -31,13 +31,13 @@ export default function MentorFeedbackPage({ params }: { params: Promise<{ match
         body: JSON.stringify(data)
       });
       if (res.ok) {
-        alert("Feedback submitted successfully!");
+        toast.success("Feedback submitted successfully!");
         router.push("/dashboard");
       } else {
-        alert("Failed to submit feedback");
+        toast.error("Failed to submit feedback");
       }
     } catch {
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     setIsPending(false);
   };

@@ -11,6 +11,12 @@ const EventRegistrationSchema = new Schema(
     },
     amountPaid: { type: Number, default: 0 },
     providerOrderId: { type: String },
+    customAnswers: [
+      {
+        question: { type: String },
+        answer: { type: String },
+      }
+    ],
   },
   { timestamps: true }
 );

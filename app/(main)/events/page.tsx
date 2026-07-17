@@ -63,7 +63,7 @@ export default function EventsPage() {
             href="/events/create"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shrink-0"
             style={{
-              background: "linear-gradient(135deg,#f59e0b,#d97706)",
+              background: "linear-gradient(135deg,#ef4444,#f97316)",
               color: "#0c0a09",
               boxShadow: "0 4px 16px rgba(245,158,11,0.25)",
             }}
@@ -116,13 +116,7 @@ export default function EventsPage() {
           <select
             value={painPointFilter}
             onChange={(e) => setPainPointFilter(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl text-sm appearance-none"
-            style={{
-              background: "rgba(12,10,9,0.6)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "#fafaf9",
-              outline: "none",
-            }}
+            className="warm-input warm-select cursor-pointer w-auto text-sm"
           >
             <option value="">All Topics</option>
             {Object.values(PainPoint).map((pt) => (
@@ -179,8 +173,8 @@ export default function EventsPage() {
                   >
                     {event.isFree ? "Free" : `$${event.price}`}
                   </span>
-                  <div className="text-xs px-2.5 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.06)", color: "#78716c" }}>
-                    {new Date(event.dateTime).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  <div className="text-xs px-2.5 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.06)", color: "#78716c" }} suppressHydrationWarning>
+                    {new Date(event.dateTime).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}
                   </div>
                 </div>
 
@@ -208,7 +202,7 @@ export default function EventsPage() {
                 {/* Footer */}
                 <div className="pt-3 flex justify-between items-center relative z-10" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09" }}>
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09" }}>
                       {event.hostId?.name?.charAt(0) || "?"}
                     </div>
                     <span className="text-xs truncate max-w-[80px]" style={{ color: "#78716c" }}>{event.hostId?.name}</span>

@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import Image from "next/image";
 
 interface DashboardSidebarProps {
-  userRole: 'mentee' | 'mentor';
+  userRole: 'mentee' | 'mentor' | 'admin';
   userName: string;
   userEmail?: string;
 }
@@ -49,74 +51,109 @@ const MENTOR_LINKS = [
   )},
 ];
 
+const ADMIN_LINKS = [
+  { href: '/dashboard/admin', label: 'Admin Dashboard', icon: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  )},
+  { href: '/events', label: 'Events', icon: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+  )},
+];
+
 export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const links = userRole === 'mentee' ? MENTEE_LINKS : MENTOR_LINKS;
-  const isActive = (href: string) => pathname === href || (href !== '/dashboard/mentee' && href !== '/dashboard/mentor' && pathname.startsWith(href));
+  const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
+  const links = userRole === 'admin' ? ADMIN_LINKS : userRole === 'mentee' ? MENTEE_LINKS : MENTOR_LINKS;
+  const isActive = (href: string) => pathname === href || (href !== '/dashboard/mentee' && href !== '/dashboard/mentor' && href !== '/dashboard/admin' && pathname.startsWith(href));
 
   return (
     <>
-      {/* Mobile hamburger */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 lg:hidden z-50 w-9 h-9 rounded-xl flex items-center justify-center transition-all"
-        style={{ background: 'rgba(41,37,36,0.9)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
-        aria-label="Menu"
-      >
-        {isOpen ? (
-          <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        ) : (
-          <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        )}
-      </button>
+      {/* Mobile Header (Opaque Pill - Hidden when Sidebar is Open) */}
+      <div className={`fixed top-6 w-full px-4 flex lg:hidden justify-center z-[80] pointer-events-none transition-all duration-300 ${isOpen ? 'opacity-0 -translate-y-8 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
+        <div 
+          className="flex items-center justify-between w-full max-w-sm px-4 py-3 rounded-full pointer-events-auto"
+          style={{ 
+            background: "#292524", // Solid color, not see-through
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)" // Stronger shadow for depth since it's solid
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Grace Mentor Logo" width={28} height={28} className="h-7 w-auto object-contain" />
+            <span className="font-semibold text-base text-foreground" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
+          </div>
+          
+          {/* Hamburger Menu Trigger */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-white/10"
+            style={{ background: isOpen ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.05)" }}
+            aria-label="Menu"
+          >
+            {isOpen ? (
+              <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 lg:hidden z-30 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 lg:hidden z-[60] backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:relative w-64 h-screen z-40 flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed right-0 top-0 h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'} bg-card`}
         style={{
-          background: '#1a1714',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          borderRight: '1px solid var(--border)',
         }}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 px-6 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0"
-            style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', boxShadow: '0 2px 8px rgba(245,158,11,0.3)' }}
-          >
-            ✦
+        {/* Desktop Logo */}
+        <div className="hidden lg:flex items-center gap-2.5 px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
+          <Image src="/logo.png" alt="Grace Mentor" width={32} height={32} className="h-8 w-auto object-contain" />
+          <span className="font-bold text-foreground text-xl">Grace Mentor</span>
+        </div>
+
+        {/* Mobile Logo & Close Button (Inside Sidebar) */}
+        <div className="flex lg:hidden items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-2.5">
+            <Image src="/logo.png" alt="Grace Mentor" width={28} height={28} className="h-7 w-auto object-contain" />
+            <span className="font-bold text-foreground text-base">Grace Mentor</span>
           </div>
-          <span className="font-semibold text-sm tracking-tight" style={{ letterSpacing: '-0.02em', color: '#fafaf9' }}>
-            Grace Mentor
-          </span>
+          <button 
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
+            style={{ background: "rgba(255, 255, 255, 0.15)" }}
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+          >
+            <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
 
         {/* User */}
-        <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="px-4 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'bg-foreground/5' }}>
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-              style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#0c0a09' }}
+              style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}
             >
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium truncate" style={{ color: '#fafaf9' }}>{userName}</p>
               <p className="text-xs truncate" style={{ color: '#57534e' }}>
-                {userRole === 'mentee' ? 'Job Seeker' : 'Mentor'}
+                {userRole === 'admin' ? 'Administrator' : userRole === 'mentee' ? 'Job Seeker' : 'Mentor'}
               </p>
             </div>
           </div>
@@ -143,7 +180,7 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
                 }}
                 onMouseEnter={e => {
                   if (!active) {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.background = 'bg-foreground/5';
                     e.currentTarget.style.color = '#d6d3d1';
                   }
                 }}
@@ -164,13 +201,13 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 space-y-0.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="px-3 py-4 space-y-0.5" style={{ borderTop: '1px solid var(--border)' }}>
           <Link
             href="/settings"
             onClick={() => setIsOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
             style={{ color: '#57534e' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#d6d3d1'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#d6d3d1'; e.currentTarget.style.background = 'bg-foreground/5'; }}
             onMouseLeave={e => { e.currentTarget.style.color = '#57534e'; e.currentTarget.style.background = 'transparent'; }}
           >
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
@@ -180,7 +217,7 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
             Settings
           </Link>
           <button
-            onClick={() => { window.location.href = '/api/auth/signout'; }}
+            onClick={() => setShowSignoutConfirm(true)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
             style={{ color: '#57534e' }}
             onMouseEnter={e => { e.currentTarget.style.color = '#fb7185'; e.currentTarget.style.background = 'rgba(244,63,94,0.08)'; }}
@@ -193,6 +230,30 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
           </button>
         </div>
       </aside>
+
+      {/* Sign Out Confirmation Modal */}
+      {showSignoutConfirm && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="p-6 max-w-sm w-full rounded-2xl animate-in fade-in zoom-in duration-200 bg-card border border-border">
+            <h3 className="text-xl font-bold text-foreground mb-2">Sign Out</h3>
+            <p className="text-muted-foreground mb-6">Are you sure you want to sign out of your account?</p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowSignoutConfirm(false)}
+                className="flex-1 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => signOut({ callbackUrl: '/login' })}
+                className="flex-1 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive font-medium transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

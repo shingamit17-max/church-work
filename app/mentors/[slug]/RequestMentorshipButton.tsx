@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 type RequestMentorshipButtonProps = {
   mentorId: string;
@@ -26,7 +27,7 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
     }
 
     if (userSession.role === "mentor") {
-      alert("Mentors cannot request mentorship from other mentors.");
+      toast.error("Mentors cannot request mentorship from other mentors.");
       return;
     }
 
@@ -45,13 +46,13 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
       const data = await res.json();
       
       if (res.ok) {
-        alert("Mentorship request sent successfully!");
+        toast.success("Mentorship request sent successfully!");
         router.push("/dashboard");
       } else {
-        alert(data.error || "Failed to send request");
+        toast.error(data.error || "Failed to send request");
       }
     } catch (e) {
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     setIsPending(false);
   };

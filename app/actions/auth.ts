@@ -27,9 +27,9 @@ export async function register(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const role = formData.get("role") as UserRole;
+  const churchOrganization = formData.get("churchOrganization") as string;
 
-  if (!name || !email || !password || !role) {
+  if (!name || !email || !password) {
     return { error: "All fields are required." };
   }
 
@@ -46,8 +46,9 @@ export async function register(formData: FormData) {
     name,
     email,
     password: hashedPassword,
-    role,
+    role: "unassigned",
     onboardingComplete: false,
+    churchOrganization,
   });
 
   await user.save();
@@ -73,8 +74,11 @@ export async function setRole(role: UserRole) {
   return { success: true };
 }
 
-// TEMPORARY SEED FUNCTION
+// DEV-ONLY SEED FUNCTION — disabled in production
 export async function forceSeedAccounts() {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Seed function is disabled in production.");
+  }
   await dbConnect();
   const testAccounts = [
     { name: "Admin User", email: "admin@gracementor.com", password: "admin123", role: "admin", onboardingComplete: true },

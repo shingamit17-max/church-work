@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import NextLink from "next/link";
+import { toast } from "sonner";
 
 type Testimonial = {
   _id: string;
@@ -10,6 +11,7 @@ type Testimonial = {
   freeText?: string;
   painPoints: string[];
   authorId?: { name: string; role: string };
+  flags?: number;
 };
 
 export default function TestimonialsPage() {
@@ -32,10 +34,15 @@ export default function TestimonialsPage() {
     try {
       const res = await fetch(`/api/testimonials/${id}/flag`, { method: "PATCH" });
       if (res.ok) {
-        setTestimonials(prev => prev.filter(t => t._id !== id));
+        setTestimonials(prev => prev.map(t => 
+          t._id === id ? { ...t, flags: (t.flags || 0) + 1 } : t
+        ));
+        toast.success("Testimonial flagged for review");
+      } else {
+        toast.error("Failed to flag");
       }
     } catch {
-      alert("Failed to flag");
+      toast.error("Failed to flag");
     }
   };
 

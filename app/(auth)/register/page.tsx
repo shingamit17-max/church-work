@@ -15,7 +15,8 @@ function RegisterForm() {
       : null
   );
   const [isPending, setIsPending] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.MENTEE);
+  const [campusSelect, setCampusSelect] = useState("");
+  const [customCampus, setCustomCampus] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -56,16 +57,7 @@ function RegisterForm() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <NextLink href="/" className="flex items-center gap-2">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{
-                background: "linear-gradient(135deg,#f59e0b,#d97706)",
-                boxShadow: "0 4px 16px rgba(245,158,11,0.35)",
-                fontSize: "1rem",
-              }}
-            >
-              ✦
-            </div>
+            <img src="/logo.png" alt="Grace Mentor" className="h-10 w-auto object-contain" />
             <span className="font-semibold text-lg" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
           </NextLink>
         </div>
@@ -90,40 +82,7 @@ function RegisterForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Role selector */}
-            <div>
-              <label className="block text-sm font-medium mb-3" style={{ color: "#d6d3d1" }}>
-                I&apos;m joining as a…
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { role: UserRole.MENTEE, icon: "🎯", label: "Job Seeker", sub: "Find a mentor" },
-                  { role: UserRole.MENTOR, icon: "💼", label: "Mentor", sub: "Guide others" },
-                ].map(({ role, icon, label, sub }) => (
-                  <label
-                    key={role}
-                    className="relative cursor-pointer"
-                    onClick={() => setSelectedRole(role)}
-                  >
-                    <input type="radio" name="role" value={role} className="sr-only" defaultChecked={role === UserRole.MENTEE} />
-                    <div
-                      className="p-4 rounded-xl text-center transition-all"
-                      style={{
-                        background: selectedRole === role ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.04)",
-                        border: `1px solid ${selectedRole === role ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.08)"}`,
-                        boxShadow: selectedRole === role ? "0 0 0 1px rgba(245,158,11,0.2)" : "none",
-                      }}
-                    >
-                      <div className="text-2xl mb-1">{icon}</div>
-                      <div className="text-sm font-medium" style={{ color: selectedRole === role ? "#fbbf24" : "#d6d3d1" }}>
-                        {label}
-                      </div>
-                      <div className="text-xs mt-0.5" style={{ color: "#57534e" }}>{sub}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
+
 
             {/* Fields */}
             <div>
@@ -133,6 +92,45 @@ function RegisterForm() {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Email address</label>
               <input name="email" type="email" required className="warm-input" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Grace Campus / Organization</label>
+              <select 
+                className="warm-input warm-select cursor-pointer" 
+                value={campusSelect} 
+                onChange={(e) => {
+                  setCampusSelect(e.target.value);
+                  if (e.target.value !== "Other") setCustomCampus("");
+                }}
+              >
+                <option value="">Select Campus...</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="West">West</option>
+                <option value="East">East</option>
+                <option value="Airport">Airport</option>
+                <option value="Old High Court">Old High Court</option>
+                <option value="Other">Other</option>
+              </select>
+              
+              {campusSelect === "Other" && (
+                <div className="mt-3">
+                  <input 
+                    type="text" 
+                    className="warm-input" 
+                    placeholder="Please specify your campus or organization" 
+                    value={customCampus}
+                    onChange={(e) => setCustomCampus(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+              
+              <input 
+                type="hidden" 
+                name="churchOrganization" 
+                value={campusSelect === "Other" ? customCampus : campusSelect} 
+              />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Password</label>

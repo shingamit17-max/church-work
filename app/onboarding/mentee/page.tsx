@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useDraft } from "@/hooks/useDraft";
 import { submitMenteeProfile } from "@/app/actions/onboarding";
 import { CareerStage, DiagnosticFunnelStage, PainPoint } from "@/types";
+import { toast } from "sonner";
 import { UploadDropzone } from "@/lib/uploadthing";
 
 const initialMenteeData = {
-  status: "unemployed",
+  status: "unemployed" as "unemployed" | "underemployed" | "employed-but-searching",
   careerStage: CareerStage.FRESHER,
   targetDomain: "",
   targetRoles: [] as string[],
@@ -18,7 +19,7 @@ const initialMenteeData = {
     interviewCount: 0,
   },
   skills: [{ name: "", confidence: 5 }],
-  availability: { hoursPerWeek: 10, preferredMode: "async" },
+  availability: { hoursPerWeek: 10, preferredMode: "async" as "async" | "calls" | "workshops" },
   goal3Months: "",
   resumeUrl: "",
 };
@@ -40,11 +41,11 @@ const STEP_META = [
 // ── Style helpers ────────────────────────────────────────────────
 const INPUT: React.CSSProperties = {
   width: "100%",
-  background: "rgba(12,10,9,0.6)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--bg-card)",
+  border: "1px solid var(--border)",
   borderRadius: "0.625rem",
   padding: "0.75rem 1rem",
-  color: "#fafaf9",
+  color: "var(--foreground)",
   fontSize: "0.9375rem",
   outline: "none",
 };
@@ -53,7 +54,7 @@ const LABEL: React.CSSProperties = {
   display: "block",
   fontSize: "0.8125rem",
   fontWeight: 500,
-  color: "#a8a29e",
+  color: "var(--muted-foreground)",
   marginBottom: "0.5rem",
 };
 
@@ -75,13 +76,14 @@ export default function MenteeOnboarding() {
       const res = await submitMenteeProfile(data);
       if (res.success) {
         clearDraft();
-        window.location.href = "/dashboard";
+        toast.success("Profile submitted successfully!");
+        router.push("/dashboard");
       } else {
-        alert(res.error || "Failed to submit profile");
+        toast.error(res.error || "Failed to submit profile");
       }
     } catch (e) {
       console.error(e);
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     setIsSubmitting(false);
   };
@@ -112,8 +114,7 @@ export default function MenteeOnboarding() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
-      style={{ background: "#1c1917", color: "#fafaf9" }}
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-background text-foreground"
     >
       {/* Ambient */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -124,33 +125,26 @@ export default function MenteeOnboarding() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}>✦</div>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}>✦</div>
             <span className="font-semibold text-sm" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
           </div>
         </div>
 
         {/* Card */}
         <div
-          className="p-8 rounded-2xl"
-          style={{
-            background: "rgba(41,37,36,0.8)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            backdropFilter: "blur(16px)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
-          }}
+          className="p-8 rounded-2xl bg-card border border-border"
         >
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-medium" style={{ color: "#f59e0b" }}>
+              <span className="text-xs font-medium text-primary">
                 Step {step} of {TOTAL_STEPS}
               </span>
-              <span className="text-xs" style={{ color: "#44403c" }}>{Math.round(progress)}% complete</span>
+              <span className="text-xs text-muted"> {Math.round(progress)}% complete</span>
             </div>
-            <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <div className="w-full h-1.5 rounded-full overflow-hidden bg-muted/20">
               <div
-                className="h-1.5 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%`, background: "linear-gradient(90deg,#f59e0b,#fbbf24)" }}
+                className="h-1.5 rounded-full transition-all duration-500 bg-primary"
               />
             </div>
             {/* Step dots */}
@@ -159,7 +153,7 @@ export default function MenteeOnboarding() {
                 <div
                   key={i}
                   className="flex-1 h-0.5 rounded-full transition-all duration-300"
-                  style={{ background: i + 1 <= step ? "#f59e0b" : "rgba(255,255,255,0.06)" }}
+                  style={{ background: i + 1 <= step ? "var(--primary)" : "var(--muted)" }}
                 />
               ))}
             </div>
@@ -168,19 +162,18 @@ export default function MenteeOnboarding() {
           {/* Step header */}
           <div className="flex items-center gap-3 mb-7">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
-              style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-primary/10 border border-primary/20"
             >
               {meta.icon}
             </div>
             <div>
               <h2 className="text-lg font-semibold" style={{ letterSpacing: "-0.02em" }}>{meta.title}</h2>
-              <p className="text-xs" style={{ color: "#78716c" }}>{meta.hint}</p>
+              <p className="text-xs text-muted-foreground">{meta.hint}</p>
             </div>
           </div>
 
           {/* Step content */}
-          <div className="space-y-4 min-h-[200px]">
+          <div className="space-y-4 min-h-[200px] bg-foreground/5">
             {/* Step 1 — Status */}
             {step === 1 && (
               <div className="space-y-2">
@@ -189,15 +182,14 @@ export default function MenteeOnboarding() {
                   { value: "underemployed", label: "Underemployed / Freelancing", icon: "⚡" },
                   { value: "employed-but-searching", label: "Employed but looking to switch", icon: "↗️" },
                 ].map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                  <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                     style={{
-                      background: data.status === opt.value ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${data.status === opt.value ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.07)"}`,
+                      background: data.status === opt.value ? "var(--primary-foreground-soft)" : "transparent",
                     }}
                   >
-                    <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} onChange={() => setDraftData({ status: opt.value })} className="sr-only" />
+                    <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} onChange={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="sr-only" />
                     <span className="text-lg">{opt.icon}</span>
-                    <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "#fbbf24" : "#d6d3d1" }}>{opt.label}</span>
+                    <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -207,14 +199,10 @@ export default function MenteeOnboarding() {
             {step === 2 && (
               <div className="space-y-2">
                 {Object.entries(CareerStage).map(([k, v]) => (
-                  <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
-                    style={{
-                      background: data.careerStage === v ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${data.careerStage === v ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.07)"}`,
-                    }}
+                  <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                   >
                     <input type="radio" name="careerStage" value={v} checked={data.careerStage === v} onChange={() => setDraftData({ careerStage: v as CareerStage })} className="sr-only" />
-                    <span className="text-sm font-medium" style={{ color: data.careerStage === v ? "#fbbf24" : "#d6d3d1" }}>{v}</span>
+                    <span className="text-sm font-medium" style={{ color: data.careerStage === v ? "var(--primary)" : "var(--foreground)" }}>{v}</span>
                   </label>
                 ))}
               </div>
@@ -237,7 +225,7 @@ export default function MenteeOnboarding() {
                       </div>
                     ))}
                   </div>
-                  <button type="button" onClick={addRole} className="mt-2 text-xs font-medium transition-all" style={{ color: "#f59e0b" }}>
+                  <button type="button" onClick={addRole} className="mt-2 text-xs font-medium transition-all" style={{ color: "var(--primary)" }}>
                     + Add another role
                   </button>
                 </div>
@@ -255,14 +243,10 @@ export default function MenteeOnboarding() {
                     low_offers: "Getting offers but below expectation",
                   };
                   return (
-                    <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
-                      style={{
-                        background: data.diagnosticAnswers.funnelStage === v ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${data.diagnosticAnswers.funnelStage === v ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.07)"}`,
-                      }}
+                    <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                     >
                       <input type="radio" name="funnel" value={v} checked={data.diagnosticAnswers.funnelStage === v} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } })} className="sr-only" />
-                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "#fbbf24" : "#d6d3d1" }}>{labels[v] || v}</span>
+                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "var(--primary)" : "var(--foreground)" }}>{labels[v] || v}</span>
                     </label>
                   );
                 })}
@@ -276,11 +260,10 @@ export default function MenteeOnboarding() {
                   const selected = data.diagnosticAnswers.painPoints.includes(v);
                   return (
                     <button key={v} type="button" onClick={() => togglePainPoint(v)}
-                      className="p-3 rounded-xl text-left text-xs font-medium capitalize transition-all"
+                      className="p-3 rounded-xl text-left text-xs font-medium capitalize transition-all border border-border"
                       style={{
-                        background: selected ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${selected ? "rgba(245,158,11,0.35)" : "rgba(255,255,255,0.07)"}`,
-                        color: selected ? "#fbbf24" : "#a8a29e",
+                        background: selected ? "var(--primary-foreground-soft)" : "transparent",
+                        color: selected ? "var(--primary)" : "var(--muted-foreground)",
                       }}
                     >
                       {v.replace(/_/g, " ")}
@@ -302,7 +285,7 @@ export default function MenteeOnboarding() {
                   style={INPUT}
                   placeholder="0"
                 />
-                <p className="text-xs mt-2" style={{ color: "#44403c" }}>This helps your mentor calibrate advice to your actual experience.</p>
+                <p className="text-xs mt-2 text-muted-foreground">This helps your mentor calibrate advice to your actual experience.</p>
               </div>
             )}
 
@@ -316,30 +299,30 @@ export default function MenteeOnboarding() {
                       <div key={i} className="flex gap-3 items-center">
                         <input type="text" value={skill.name} onChange={(e) => { const s = [...data.skills]; s[i].name = e.target.value; setDraftData({ skills: s }); }} style={{ ...INPUT, flex: 1 }} placeholder="e.g. React, Python…" />
                         <div className="flex items-center gap-2 shrink-0">
-                          <input type="range" min="1" max="10" value={skill.confidence} onChange={(e) => { const s = [...data.skills]; s[i].confidence = parseInt(e.target.value); setDraftData({ skills: s }); }} className="w-20" style={{ accentColor: "#f59e0b" }} />
-                          <span className="text-sm w-4 text-right" style={{ color: "#fbbf24" }}>{skill.confidence}</span>
+                          <input type="range" min="1" max="10" value={skill.confidence} onChange={(e) => { const s = [...data.skills]; s[i].confidence = parseInt(e.target.value); setDraftData({ skills: s }); }} className="w-20" style={{ accentColor: "var(--primary)" }} />
+                          <span className="text-sm w-4 text-right text-primary">{skill.confidence}</span>
                         </div>
                         <button type="button" onClick={() => { const s = [...data.skills]; s.splice(i, 1); setDraftData({ skills: s }); }} className="text-xs px-2 py-1.5 rounded-lg" style={{ color: "#fb7185", background: "rgba(251,113,133,0.08)", border: "1px solid rgba(251,113,133,0.15)" }}>✕</button>
                       </div>
                     ))}
-                    <button type="button" onClick={() => setDraftData({ skills: [...data.skills, { name: "", confidence: 5 }] })} className="text-xs font-medium" style={{ color: "#f59e0b" }}>+ Add Skill</button>
+                    <button type="button" onClick={() => setDraftData({ skills: [...data.skills, { name: "", confidence: 5 }] })} className="text-xs font-medium text-primary">+ Add Skill</button>
                   </div>
                 </div>
 
-                <div className="pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-                  <label style={LABEL}>Resume Upload <span style={{ color: "#44403c", fontWeight: 400 }}>(optional)</span></label>
+                <div className="pt-4 border-t border-border">
+                  <label style={LABEL}>Resume Upload <span className="text-muted-foreground font-normal">(optional)</span></label>
                   {data.resumeUrl ? (
-                    <div className="p-4 rounded-xl flex items-center justify-between" style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.2)" }}>
-                      <span className="text-sm" style={{ color: "#4ade80" }}>✓ Resume uploaded</span>
-                      <button type="button" onClick={() => setDraftData({ resumeUrl: "" })} className="text-xs" style={{ color: "#fb7185" }}>Remove</button>
+                    <div className="p-4 rounded-xl flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20">
+                      <span className="text-sm text-emerald-500">✓ Resume uploaded</span>
+                      <button type="button" onClick={() => setDraftData({ resumeUrl: "" })} className="text-xs text-rose-500">Remove</button>
                     </div>
                   ) : (
-                    <div className="rounded-xl overflow-hidden" style={{ border: "1px dashed rgba(255,255,255,0.12)" }}>
+                    <div className="rounded-xl overflow-hidden border border-dashed border-border">
                       <UploadDropzone
                         endpoint="resumeUploader"
                         onUploadBegin={() => setUploadingResume(true)}
                         onClientUploadComplete={(res) => { setUploadingResume(false); if (res?.[0]) setDraftData({ resumeUrl: res[0].url }); }}
-                        onUploadError={(error: Error) => { setUploadingResume(false); alert(`Upload error: ${error.message}`); }}
+                        onUploadError={(error: Error) => { setUploadingResume(false); toast.error(`Upload error: ${error.message}`); }}
                       />
                     </div>
                   )}
@@ -362,15 +345,11 @@ export default function MenteeOnboarding() {
                       { value: "calls", label: "1:1 video calls", icon: "📹" },
                       { value: "workshops", label: "Group workshops", icon: "👥" },
                     ].map((opt) => (
-                      <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
-                        style={{
-                          background: data.availability.preferredMode === opt.value ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${data.availability.preferredMode === opt.value ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.07)"}`,
-                        }}
+                      <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                       >
-                        <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} onChange={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value } })} className="sr-only" />
+                        <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} onChange={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="sr-only" />
                         <span>{opt.icon}</span>
-                        <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "#fbbf24" : "#d6d3d1" }}>{opt.label}</span>
+                        <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
                       </label>
                     ))}
                   </div>
@@ -389,7 +368,7 @@ export default function MenteeOnboarding() {
                   style={{ ...INPUT, resize: "none", lineHeight: "1.6" }}
                   placeholder="e.g. To have an offer for a Mid-level Frontend role at a company I'm proud of…"
                 />
-                <p className="text-xs mt-2" style={{ color: "#44403c" }}>
+                <p className="text-xs mt-2 text-muted-foreground">
                   Be specific — your mentor will use this to anchor your sessions.
                 </p>
               </div>
@@ -397,17 +376,11 @@ export default function MenteeOnboarding() {
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-between gap-3 mt-8 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="flex justify-between gap-3 mt-8 pt-6 border-t border-border">
             <button
               onClick={prevStep}
               disabled={step === 1 || isSubmitting || uploadingResume}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: step === 1 ? "#44403c" : "#a8a29e",
-                cursor: step === 1 ? "not-allowed" : "pointer",
-              }}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-muted/10 border border-border text-muted-foreground"
             >
               ← Back
             </button>
@@ -416,12 +389,7 @@ export default function MenteeOnboarding() {
               <button
                 onClick={nextStep}
                 disabled={uploadingResume}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: "linear-gradient(135deg,#f59e0b,#d97706)",
-                  color: "#0c0a09",
-                  boxShadow: "0 4px 12px rgba(245,158,11,0.25)",
-                }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-primary-foreground shadow-lg"
               >
                 Continue →
               </button>
@@ -429,12 +397,7 @@ export default function MenteeOnboarding() {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: isSubmitting ? "rgba(74,222,128,0.5)" : "linear-gradient(135deg,#4ade80,#16a34a)",
-                  color: "#0c0a09",
-                  boxShadow: "0 4px 12px rgba(74,222,128,0.25)",
-                }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-emerald-600 text-white shadow-lg"
               >
                 {isSubmitting ? (
                   <>
@@ -451,7 +414,7 @@ export default function MenteeOnboarding() {
         </div>
 
         {/* Step labels */}
-        <p className="text-center text-xs mt-5" style={{ color: "#44403c" }}>
+        <p className="text-foreground text-xs mt-5 text-muted-foreground">
           Your progress is auto-saved — you can pick up where you left off.
         </p>
       </div>

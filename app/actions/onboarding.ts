@@ -9,7 +9,7 @@ import type { MenteeProfile, MentorProfile } from "@/types";
 
 export async function submitMenteeProfile(data: Partial<MenteeProfile>) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "mentee") {
+  if (!session?.user?.id || (session.user.role !== "mentee" && session.user.role !== "unassigned")) {
     return { error: "Unauthorized" };
   }
 
@@ -49,7 +49,7 @@ export async function submitMenteeProfile(data: Partial<MenteeProfile>) {
 
 export async function submitMentorProfile(data: Partial<MentorProfile>) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "mentor") {
+  if (!session?.user?.id || (session.user.role !== "mentor" && session.user.role !== "unassigned")) {
     return { error: "Unauthorized" };
   }
 

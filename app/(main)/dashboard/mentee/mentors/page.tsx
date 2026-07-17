@@ -32,7 +32,7 @@ export default async function FindMentorsPage() {
           className="flex items-center gap-3 px-4 py-3 rounded-xl"
           style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.15)" }}
         >
-          <svg width="16" height="16" fill="none" stroke="#f59e0b" strokeWidth="1.75" viewBox="0 0 24 24">
+          <svg width="16" height="16" fill="none" stroke="#f97316" strokeWidth="1.75" viewBox="0 0 24 24">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
           <span className="text-sm" style={{ color: "#fbbf24" }}>
@@ -60,7 +60,7 @@ export default async function FindMentorsPage() {
         </div>
         <form action="/api/matches/generate" method="POST" className="shrink-0">
           <button type="submit" className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap"
-            style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09", boxShadow: "0 4px 16px rgba(245,158,11,0.25)" }}
+            style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 16px rgba(245,158,11,0.25)" }}
           >
             Generate Matches
           </button>
@@ -89,7 +89,7 @@ export default async function FindMentorsPage() {
                 {/* Avatar + name */}
                 <div className="flex items-start gap-4 relative z-10">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
-                    style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0c0a09" }}
+                    style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09" }}
                   >
                     {initials}
                   </div>

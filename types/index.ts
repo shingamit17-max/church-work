@@ -1,4 +1,5 @@
 export enum UserRole {
+  UNASSIGNED = 'unassigned',
   MENTEE = 'mentee',
   MENTOR = 'mentor',
   ADMIN = 'admin',
@@ -47,6 +48,7 @@ export interface User {
   role: UserRole;
   onboardingComplete: boolean;
   linkedinId?: string;
+  churchOrganization?: string;
   createdAt: Date;
 }
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDraft } from "@/hooks/useDraft";
 import { submitMentorProfile } from "@/app/actions/onboarding";
 import { CareerStage, PainPoint, MentorProfile } from "@/types";
+import { toast } from "sonner";
 
 const initialMentorData = {
   company: "",
@@ -39,8 +40,8 @@ const STEP_META = [
 // ── Style helpers ────────────────────────────────────────────────
 const INPUT: React.CSSProperties = {
   width: "100%",
-  background: "rgba(12,10,9,0.6)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--card)",
+  border: "1px solid var(--border)",
   borderRadius: "0.625rem",
   padding: "0.75rem 1rem",
   color: "#fafaf9",
@@ -73,13 +74,14 @@ export default function MentorOnboarding() {
       const res = await submitMentorProfile(data);
       if (res.success) {
         clearDraft();
+        toast.success("Profile submitted successfully!");
         router.push("/dashboard");
       } else {
-        alert(res.error || "Failed to submit profile");
+        toast.error(res.error || "Failed to submit profile");
       }
     } catch (e) {
       console.error(e);
-      alert("An error occurred");
+      toast.error("An error occurred");
     }
     setIsSubmitting(false);
   };
@@ -97,10 +99,7 @@ export default function MentorOnboarding() {
   const progress = (step / TOTAL_STEPS) * 100;
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
-      style={{ background: "#1c1917", color: "#fafaf9" }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-background text-foreground transition-colors duration-300">
       {/* Ambient */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div style={{ position: "absolute", width: 500, height: 500, top: "30%", left: "50%", transform: "translate(-50%,-50%)", background: "radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 65%)" }} />
@@ -116,19 +115,11 @@ export default function MentorOnboarding() {
         </div>
 
         {/* Card */}
-        <div
-          className="p-8 rounded-2xl"
-          style={{
-            background: "rgba(41,37,36,0.8)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            backdropFilter: "blur(16px)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
-          }}
-        >
+        <div className="p-8 rounded-2xl bg-card border border-border shadow-2xl relative z-10 w-full">
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-medium" style={{ color: "#4ade80" }}>
+              <span className="text-xs font-medium text-primary">
                 Step {step} of {TOTAL_STEPS}
               </span>
               <span className="text-xs" style={{ color: "#44403c" }}>{Math.round(progress)}% complete</span>
@@ -145,7 +136,7 @@ export default function MentorOnboarding() {
                 <div
                   key={i}
                   className="flex-1 h-0.5 rounded-full transition-all duration-300"
-                  style={{ background: i + 1 <= step ? "#4ade80" : "rgba(255,255,255,0.06)" }}
+                  style={{ background: i + 1 <= step ? "#4ade80" : "bg-muted/20" }}
                 />
               ))}
             </div>
@@ -257,7 +248,7 @@ export default function MentorOnboarding() {
                     <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
                       style={{
                         background: selected ? "rgba(74,222,128,0.1)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${selected ? "rgba(74,222,128,0.3)" : "rgba(255,255,255,0.07)"}`,
+                        border: "1px solid var(--border)"
                       }}
                     >
                       <input type="checkbox" checked={selected} onChange={() => toggleArrayItem("menteeSeniority", v)} className="sr-only" />
@@ -284,7 +275,8 @@ export default function MentorOnboarding() {
                   <select
                     value={data.availability.preferredMode}
                     onChange={(e) => setDraftData({ availability: { ...data.availability, preferredMode: e.target.value as "async" | "calls" | "workshops" } })}
-                    style={{ ...INPUT, appearance: "none" }}
+                    style={INPUT}
+                    className="warm-select cursor-pointer"
                   >
                     <option value="async">Async Chat / Resources</option>
                     <option value="calls">1:1 Video Calls</option>
@@ -361,7 +353,7 @@ export default function MentorOnboarding() {
                 disabled={isSubmitting}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
                 style={{
-                  background: isSubmitting ? "rgba(74,222,128,0.5)" : "linear-gradient(135deg,#f59e0b,#d97706)",
+                  background: isSubmitting ? "rgba(74,222,128,0.5)" : "var(--primary)",
                   color: "#0c0a09",
                   boxShadow: "0 4px 12px rgba(245,158,11,0.25)",
                 }}
