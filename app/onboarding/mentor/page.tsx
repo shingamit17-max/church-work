@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useDraft } from "@/hooks/useDraft";
 import { submitMentorProfile } from "@/app/actions/onboarding";
 import { CareerStage, PainPoint, MentorProfile } from "@/types";
@@ -23,9 +24,10 @@ const initialMentorData = {
   maxMentees: 2,
   bio: "",
   shareSlug: "",
+  customAnswers: [] as { questionId: string, answer: any }[],
 };
 
-const TOTAL_STEPS = 7;
+const BASE_TOTAL_STEPS = 7;
 
 const STEP_META = [
   { title: "Professional Background", icon: "🏢", hint: "Tell us about your current role" },
@@ -61,11 +63,24 @@ export default function MentorOnboarding() {
   const { data, setDraftData, clearDraft, isLoaded } = useDraft("mentor_onboarding", initialMentorData);
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customQuestions, setCustomQuestions] = useState<any[]>([]);
   const router = useRouter();
+  const { update } = useSession();
+
+  useEffect(() => {
+    fetch('/api/admin/questions')
+      .then(res => res.json())
+      .then(fetchedQuestions => {
+        setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTOR' || q.targetRole === 'BOTH'));
+      })
+      .catch(console.error);
+  }, []);
 
   if (!isLoaded) return null;
 
-  const nextStep = () => setStep((p) => Math.min(TOTAL_STEPS, p + 1));
+  const totalSteps = BASE_TOTAL_STEPS + customQuestions.length;
+
+  const nextStep = () => setStep((p) => Math.min(totalSteps, p + 1));
   const prevStep = () => setStep((p) => Math.max(1, p - 1));
 
   const handleSubmit = async () => {
@@ -75,6 +90,7 @@ export default function MentorOnboarding() {
       if (res.success) {
         clearDraft();
         toast.success("Profile submitted successfully!");
+        await update({ role: "mentor", onboardingComplete: true });
         router.push("/dashboard");
       } else {
         toast.error(res.error || "Failed to submit profile");
@@ -95,32 +111,32 @@ export default function MentorOnboarding() {
     }
   };
 
-  const meta = STEP_META[step - 1];
-  const progress = (step / TOTAL_STEPS) * 100;
+  const handleCustomAnswer = (questionId: string, answer: any) => {
+    const existing = data.customAnswers || [];
+    const filtered = existing.filter((a: any) => a.questionId !== questionId);
+    setDraftData({ customAnswers: [...filtered, { questionId, answer }] });
+  };
+
+  let meta;
+  if (step <= BASE_TOTAL_STEPS) {
+    meta = STEP_META[step - 1];
+  } else {
+    const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
+    meta = { title: q.title, icon: "📋", hint: "Additional Information" };
+  }
+
+  const progress = (step / totalSteps) * 100;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-background text-foreground transition-colors duration-300">
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div style={{ position: "absolute", width: 500, height: 500, top: "30%", left: "50%", transform: "translate(-50%,-50%)", background: "radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 65%)" }} />
-      </div>
-
-      <div className="relative z-10 w-full max-w-xl">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style={{ background: "linear-gradient(135deg,#4ade80,#16a34a)", boxShadow: "0 4px 12px rgba(74,222,128,0.3)", color: "#0c0a09" }}>✦</div>
-            <span className="font-semibold text-sm" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
-          </div>
-        </div>
-
+    <div className="w-full pb-12">
+      <div className="relative z-10 w-full max-w-xl mx-auto">
         {/* Card */}
         <div className="p-8 rounded-2xl bg-card border border-border shadow-2xl relative z-10 w-full">
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-medium text-primary">
-                Step {step} of {TOTAL_STEPS}
+                Step {step} of {totalSteps}
               </span>
               <span className="text-xs" style={{ color: "#44403c" }}>{Math.round(progress)}% complete</span>
             </div>
@@ -132,7 +148,7 @@ export default function MentorOnboarding() {
             </div>
             {/* Step dots */}
             <div className="flex gap-1 mt-2.5">
-              {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+              {Array.from({ length: totalSteps }).map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-0.5 rounded-full transition-all duration-300"
@@ -317,6 +333,63 @@ export default function MentorOnboarding() {
                 </div>
               </div>
             )}
+
+            {/* Custom Dynamic Questions */}
+            {step > BASE_TOTAL_STEPS && (
+              <div className="space-y-4">
+                {(() => {
+                  const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
+                  if (!q) return null;
+                  const currentAnswerObj = (data.customAnswers || []).find((a: any) => a.questionId === q._id);
+                  const currentAnswer = currentAnswerObj ? currentAnswerObj.answer : (q.type === "checkbox" ? [] : "");
+
+                  return (
+                    <div>
+                      <label style={LABEL}>{q.title}</label>
+                      {q.type === "text" && (
+                        <input
+                          type="text"
+                          value={currentAnswer}
+                          onChange={(e) => handleCustomAnswer(q._id, e.target.value)}
+                          style={INPUT}
+                          placeholder="Your answer..."
+                        />
+                      )}
+                      {q.type === "mcq" && (
+                        <div className="space-y-2">
+                          {q.options.map((opt: string) => (
+                            <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} onChange={() => handleCustomAnswer(q._id, opt)} className="sr-only" />
+                              <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      {q.type === "checkbox" && (
+                        <div className="space-y-2">
+                          {q.options.map((opt: string) => {
+                            const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
+                            const isSelected = selectedArr.includes(opt);
+                            return (
+                              <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                                <input type="checkbox" checked={isSelected} onChange={(e) => {
+                                  const newArr = e.target.checked ? [...selectedArr, opt] : selectedArr.filter((a: string) => a !== opt);
+                                  handleCustomAnswer(q._id, newArr);
+                                }} className="sr-only" />
+                                <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
+                                  {isSelected && <span className="text-white text-xs leading-none">✓</span>}
+                                </div>
+                                <span className="text-sm font-medium" style={{ color: isSelected ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
 
           {/* Navigation */}
@@ -326,26 +399,25 @@ export default function MentorOnboarding() {
               disabled={step === 1 || isSubmitting}
               className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
                 color: step === 1 ? "#44403c" : "#a8a29e",
                 cursor: step === 1 ? "not-allowed" : "pointer",
               }}
             >
-              ← Back
+              &larr; Back
             </button>
 
-            {step < TOTAL_STEPS ? (
+            {step < totalSteps ? (
               <button
                 onClick={nextStep}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
                 style={{
-                  background: "linear-gradient(135deg,#4ade80,#16a34a)",
-                  color: "#0c0a09",
-                  boxShadow: "0 4px 12px rgba(74,222,128,0.25)",
+                  background: "var(--primary)",
+                  color: "var(--primary-foreground)",
                 }}
               >
-                Continue →
+                Continue &rarr;
               </button>
             ) : (
               <button
@@ -364,16 +436,16 @@ export default function MentorOnboarding() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                     </svg>
-                    Setting up…
+                    Setting up...
                   </>
-                ) : "Complete Setup ✓"}
+                ) : "Complete Setup (Done)"}
               </button>
             )}
           </div>
         </div>
 
-        <p className="text-center text-xs mt-5" style={{ color: "#44403c" }}>
-          Your progress is auto-saved — you can pick up where you left off.
+        <p className="text-center text-xs mt-6" style={{ color: "#78716c" }}>
+          Your progress is auto-saved - you can pick up where you left off.
         </p>
       </div>
     </div>

@@ -42,12 +42,20 @@ export function LandingPageClient() {
         />
       ))}
 
-      {/* Subtle grid */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
+      {/* Animated Grid Lines */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)',
           backgroundSize: '64px 64px',
+        }}
+        animate={{
+          backgroundPosition: ['0px 0px', '64px 64px']
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 6,
+          ease: "linear"
         }}
       />
 

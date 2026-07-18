@@ -35,68 +35,41 @@ function RegisterForm() {
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col justify-center items-center p-6"
-      style={{ background: "#1c1917", color: "#fafaf9" }}
-    >
-      {/* Ambient orb */}
-      <div
-        className="fixed pointer-events-none"
-        style={{
-          width: 600,
-          height: 600,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
-          background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 65%)",
-          zIndex: 0,
-        }}
-      />
-
+    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-background text-foreground">
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <NextLink href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="Grace Mentor" className="h-10 w-auto object-contain" />
-            <span className="font-semibold text-lg" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
+            <span className="font-black text-xl tracking-tight">Grace Mentor</span>
           </NextLink>
         </div>
 
         {/* Card */}
-        <div
-          className="p-8 rounded-2xl"
-          style={{
-            background: "rgba(41,37,36,0.8)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            backdropFilter: "blur(16px)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
-          }}
-        >
+        <div className="p-8 bg-card border-2 border-neo-border shadow-[4px_4px_0px_0px_var(--neo-border)] rounded-none dark:border dark:rounded-2xl dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
           <div className="mb-7">
-            <h1 className="text-2xl font-semibold mb-1" style={{ letterSpacing: "-0.02em" }}>
+            <h1 className="text-2xl font-black mb-1 text-foreground uppercase tracking-tight">
               Join Grace Mentor
             </h1>
-            <p className="text-sm" style={{ color: "#78716c" }}>
+            <p className="text-sm font-medium text-muted-foreground">
               Create your free account to get started.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-
-
             {/* Fields */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Full name</label>
+              <label className="block text-sm font-bold mb-2 text-foreground">Full name</label>
               <input name="name" type="text" required className="warm-input" placeholder="Grace Smith" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Email address</label>
+              <label className="block text-sm font-bold mb-2 text-foreground">Email address</label>
               <input name="email" type="email" required className="warm-input" placeholder="you@example.com" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Grace Campus / Organization</label>
+              <label className="block text-sm font-bold mb-2 text-foreground">Grace Campus / Organization</label>
               <select 
-                className="warm-input warm-select cursor-pointer" 
+                className="warm-input cursor-pointer bg-background" 
                 value={campusSelect} 
                 onChange={(e) => {
                   setCampusSelect(e.target.value);
@@ -133,28 +106,21 @@ function RegisterForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#d6d3d1" }}>Password</label>
+              <label className="block text-sm font-bold mb-2 text-foreground">Password</label>
               <input name="password" type="password" required minLength={6} className="warm-input" placeholder="••••••••" />
-              <p className="text-xs mt-1.5" style={{ color: "#57534e" }}>Minimum 6 characters</p>
+              <p className="text-xs mt-1.5 text-muted-foreground font-medium">Minimum 6 characters</p>
             </div>
 
             {error && (
-              <div
-                className="p-3 rounded-xl text-sm"
-                style={{
-                  background: "rgba(244,63,94,0.1)",
-                  border: "1px solid rgba(244,63,94,0.25)",
-                  color: "#fb7185",
-                }}
-              >
+              <div className="p-3 bg-red-500/10 border-2 border-red-500 text-red-500 font-bold text-sm">
                 {error}
               </div>
             )}
 
-            <button type="submit" disabled={isPending} className="btn-amber w-full" style={{ marginTop: "0.25rem" }}>
+            <button type="submit" disabled={isPending} className="btn-amber w-full mt-2">
               {isPending ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 animate-spin inline mr-2" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                   </svg>
@@ -165,9 +131,9 @@ function RegisterForm() {
           </form>
         </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: "#57534e" }}>
+        <p className="text-center text-sm mt-6 font-medium text-muted-foreground">
           Already have an account?{" "}
-          <NextLink href="/login" style={{ color: "#fbbf24" }} className="font-medium hover:underline">
+          <NextLink href="/login" className="font-bold text-accent hover:underline">
             Sign in
           </NextLink>
         </p>
@@ -178,7 +144,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-warm-900 text-white">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-foreground">Loading...</div>}>
       <RegisterForm />
     </Suspense>
   );

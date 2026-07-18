@@ -151,8 +151,8 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium truncate" style={{ color: '#fafaf9' }}>{userName}</p>
-              <p className="text-xs truncate" style={{ color: '#57534e' }}>
+              <p className="text-sm font-medium truncate text-foreground">{userName}</p>
+              <p className="text-xs truncate text-muted-foreground">
                 {userRole === 'admin' ? 'Administrator' : userRole === 'mentee' ? 'Job Seeker' : 'Mentor'}
               </p>
             </div>
@@ -160,8 +160,8 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          <p className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-3" style={{ color: '#44403c' }}>
+        <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+          <p className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-3 text-muted-foreground">
             Navigation
           </p>
           {links.map((link) => {
@@ -171,27 +171,13 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all group"
-                style={{
-                  background: active ? 'rgba(245,158,11,0.12)' : 'transparent',
-                  color: active ? '#fbbf24' : '#78716c',
-                  fontWeight: active ? 500 : 400,
-                  border: active ? '1px solid rgba(245,158,11,0.2)' : '1px solid transparent',
-                }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    e.currentTarget.style.background = 'bg-foreground/5';
-                    e.currentTarget.style.color = '#d6d3d1';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#78716c';
-                  }
-                }}
+                className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-all group ${
+                  active 
+                    ? "neobrutal-box text-foreground font-bold" 
+                    : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground rounded-none"
+                }`}
               >
-                <span style={{ color: active ? '#f59e0b' : 'currentColor', flexShrink: 0 }}>
+                <span className={active ? "text-accent" : "text-muted-foreground group-hover:text-foreground"}>
                   {link.icon}
                 </span>
                 {link.label}
@@ -201,31 +187,33 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 space-y-0.5" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="px-3 py-4 space-y-2 border-t border-neo-border">
           <Link
             href="/settings"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
-            style={{ color: '#57534e' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#d6d3d1'; e.currentTarget.style.background = 'bg-foreground/5'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#57534e'; e.currentTarget.style.background = 'transparent'; }}
+            className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-all group ${
+              isActive('/settings') 
+                ? "neobrutal-box text-foreground font-bold" 
+                : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground rounded-none"
+            }`}
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
-              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-            </svg>
+            <span className={isActive('/settings') ? "text-accent" : "text-muted-foreground group-hover:text-foreground"}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+              </svg>
+            </span>
             Settings
           </Link>
           <button
             onClick={() => setShowSignoutConfirm(true)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
-            style={{ color: '#57534e' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#fb7185'; e.currentTarget.style.background = 'rgba(244,63,94,0.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#57534e'; e.currentTarget.style.background = 'transparent'; }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-all group text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-red-500 rounded-none"
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+            <span className="text-muted-foreground group-hover:text-red-500">
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </span>
             Sign Out
           </button>
         </div>

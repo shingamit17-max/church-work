@@ -46,11 +46,12 @@ export default async function MenteeDashboardPage() {
         </div>
         <NextLink
           href="/onboarding"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all self-start md:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all self-start md:self-auto hover:-translate-y-0.5 active:translate-y-0"
           style={{
-            background: "rgba(245,158,11,0.1)",
-            border: "1px solid rgba(245,158,11,0.25)",
-            color: "#fbbf24",
+            background: "#fff",
+            border: "2px solid #000",
+            color: "#000",
+            boxShadow: "2px 2px 0px #000",
           }}
         >
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -95,11 +96,12 @@ export default async function MenteeDashboardPage() {
                 <form action="/api/matches/generate" method="POST">
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5 active:translate-y-0"
                     style={{
-                      background: "linear-gradient(135deg,#ef4444,#f97316)",
-                      color: "#0c0a09",
-                      boxShadow: "0 4px 16px rgba(245,158,11,0.25)",
+                      background: "#f97316", // vibrant orange
+                      border: "2px solid #000",
+                      color: "#fff",
+                      boxShadow: "3px 3px 0px #000",
                     }}
                   >
                     Generate AI Matches
@@ -266,18 +268,19 @@ export default async function MenteeDashboardPage() {
           <div
             className="p-6 rounded-2xl"
             style={{
-              background: "linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.04) 100%)",
-              border: "1px solid rgba(245,158,11,0.15)",
+              background: "#fef3c7", // soft warm yellow
+              border: "2px solid #000",
+              boxShadow: "4px 4px 0px #000",
             }}
           >
-            <h3 className="text-sm font-semibold mb-1" style={{ color: "#fafaf9" }}>3-Month Goal</h3>
-            <p className="text-xs italic leading-relaxed mb-5" style={{ color: "#78716c" }}>
+            <h3 className="text-sm font-bold mb-1 text-black">3-Month Goal</h3>
+            <p className="text-xs italic leading-relaxed mb-5 text-black/80 font-medium">
               &quot;{profile?.goal3Months || "Secure a new role"}&quot;
             </p>
-            <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <div className="h-1.5 rounded-full" style={{ width: "25%", background: "linear-gradient(90deg,#ef4444,#f97316)" }} />
+            <div className="w-full h-2 overflow-hidden" style={{ background: "#fff", border: "2px solid #000" }}>
+              <div className="h-full" style={{ width: "25%", background: "#f97316", borderRight: "2px solid #000" }} />
             </div>
-            <p className="text-xs mt-2 text-right text-muted-foreground">In Progress · 25%</p>
+            <p className="text-xs mt-3 text-right font-bold text-black">In Progress · 25%</p>
           </div>
 
           {/* Testimonial CTA */}

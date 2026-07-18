@@ -8,6 +8,7 @@ import type { User as UserType } from "@/types";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
 import { AdminRequest } from "@/models/AdminRequest";
 import { AdminRequestsList } from "@/components/admin/AdminRequestsList";
+import { AdminOnboardingSettings } from "@/components/admin/AdminOnboardingSettings";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
@@ -43,34 +44,36 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-rose-400">
+        <h1 className="text-4xl font-black mb-2 text-amber-500 tracking-tight [text-shadow:2px_2px_0px_#111] dark:[text-shadow:none]">
           Admin Dashboard
         </h1>
-        <p className="text-white/60">Platform Overview & Management</p>
+        <p className="text-muted-foreground">Platform Overview & Management</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div className="rounded-2xl p-6" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="text-sm text-white/50 mb-2">Total Users</div>
-          <div className="text-3xl font-bold">{totalUsers}</div>
+        <div className="p-6 neobrutal-box">
+          <div className="text-sm text-muted-foreground mb-2">Total Users</div>
+          <div className="text-3xl font-bold text-foreground">{totalUsers}</div>
         </div>
-        <div className="rounded-2xl p-6" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="text-sm text-white/50 mb-2">Mentors / Mentees</div>
-          <div className="text-xl font-bold">{totalMentors} / {totalMentees}</div>
+        <div className="p-6 neobrutal-box">
+          <div className="text-sm text-muted-foreground mb-2">Mentors / Mentees</div>
+          <div className="text-xl font-bold text-foreground">{totalMentors} / {totalMentees}</div>
         </div>
-        <div className="rounded-2xl p-6" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="text-sm text-white/50 mb-2">Total Matches</div>
-          <div className="text-3xl font-bold">{totalMatches}</div>
+        <div className="p-6 neobrutal-box">
+          <div className="text-sm text-muted-foreground mb-2">Total Matches</div>
+          <div className="text-3xl font-bold text-foreground">{totalMatches}</div>
         </div>
-        <div className="rounded-2xl p-6" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="text-sm text-white/50 mb-2">Hosted Events</div>
-          <div className="text-3xl font-bold">{totalEvents}</div>
+        <div className="p-6 neobrutal-box">
+          <div className="text-sm text-muted-foreground mb-2">Hosted Events</div>
+          <div className="text-3xl font-bold text-foreground">{totalEvents}</div>
         </div>
       </div>
 
       <AdminRequestsList initialRequests={serializedRequests} />
 
       <UserManagementTable initialUsers={serializedUsers} />
+
+      <AdminOnboardingSettings />
     </div>
   );
 }

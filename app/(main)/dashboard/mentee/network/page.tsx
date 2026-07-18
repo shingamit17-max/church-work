@@ -14,52 +14,7 @@ interface NetworkMember {
   connected: boolean;
 }
 
-const mockMembers: NetworkMember[] = [
-  {
-    id: '1',
-    name: 'Sarah Chen',
-    role: 'Senior Product Manager',
-    company: 'Google',
-    location: 'Mountain View, CA',
-    bio: 'Passionate about building products that matter',
-    avatar: 'SC',
-    mutual: 3,
-    connected: false,
-  },
-  {
-    id: '2',
-    name: 'Marcus Williams',
-    role: 'Engineering Lead',
-    company: 'Meta',
-    location: 'Menlo Park, CA',
-    bio: 'Building scalable systems at scale',
-    avatar: 'MW',
-    mutual: 2,
-    connected: false,
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    role: 'Designer & Mentor',
-    company: 'Design Co',
-    location: 'Austin, TX',
-    bio: 'Helping designers grow their careers',
-    avatar: 'ER',
-    mutual: 5,
-    connected: true,
-  },
-  {
-    id: '4',
-    name: 'David Kim',
-    role: 'Startup Founder',
-    company: 'Tech Startup Inc',
-    location: 'San Francisco, CA',
-    bio: 'Building the future of tech',
-    avatar: 'DK',
-    mutual: 1,
-    connected: false,
-  },
-];
+const mockMembers: NetworkMember[] = [];
 
 export default async function NetworkPage() {
   const session = await auth();
@@ -72,25 +27,25 @@ export default async function NetworkPage() {
     <>
       <div className="max-w-6xl">
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-white mb-2">My Network</h1>
-              <p className="text-white/60">Connect with mentors and professionals in your industry</p>
+              <h1 className="text-4xl font-bold text-foreground mb-2">My Network</h1>
+              <p className="text-muted-foreground font-medium">Connect with mentors and professionals in your industry</p>
             </div>
 
             {/* Network Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">47</div>
-                <p className="text-white/60 text-sm mt-2">Total Connections</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">0</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Total Connections</p>
               </div>
               
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">12</div>
-                <p className="text-white/60 text-sm mt-2">Active Mentors</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">0</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Active Mentors</p>
               </div>
               
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">5</div>
-                <p className="text-white/60 text-sm mt-2">Recommendations Received</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">0</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Recommendations</p>
               </div>
             </div>
 
@@ -101,37 +56,43 @@ export default async function NetworkPage() {
                 placeholder="Search by name, role, company..."
                 className="warm-input"
               />
-              <button className="btn-amber px-6">
+              <button className="px-6 py-2 bg-[#f43f5e] text-white font-bold border-[3px] border-border shadow-[3px_3px_0px_var(--neo-border)] hover:-translate-y-0.5 active:translate-y-0 transition-all">
                 Search
               </button>
             </div>
 
             {/* Network Members Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {mockMembers.map((member) => (
+              {mockMembers.length === 0 ? (
+                <div className="col-span-full p-16 rounded-2xl text-center bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)]">
+                  <div className="text-5xl mb-4">🌐</div>
+                  <h3 className="font-bold text-xl mb-2 text-foreground">No connections yet</h3>
+                  <p className="text-sm text-muted-foreground font-medium">Start connecting with mentors and peers to build your network.</p>
+                </div>
+              ) : mockMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="warm-card p-6 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all cursor-pointer"
+                  className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl hover:-translate-y-1 transition-all cursor-pointer"
                 >
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-linear-to-br from-stone-800 to-stone-900 border border-white/10 flex items-center justify-center text-white text-xl font-bold shrink-0">
+                    <div className="w-16 h-16 rounded-xl bg-[#292524] border-2 border-black flex items-center justify-center text-white text-xl font-black shrink-0">
                       {member.avatar}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-white">{member.name}</h3>
-                      <p className="text-white/60 text-sm">{member.role}</p>
-                      <p className="text-white/80 text-xs">{member.company}</p>
+                      <h3 className="text-xl font-black text-foreground">{member.name}</h3>
+                      <p className="text-muted-foreground font-bold text-sm">{member.role}</p>
+                      <p className="text-foreground/80 font-bold text-xs mt-1">{member.company}</p>
                     </div>
                   </div>
 
-                  <p className="text-white/60 text-sm mb-4">{member.bio}</p>
+                  <p className="text-foreground/70 font-medium text-sm mb-4 line-clamp-2">{member.bio}</p>
 
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-                    <div className="flex items-center gap-2 text-xs text-white/50">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-border/20">
+                    <div className="flex items-center gap-2 text-xs font-bold text-foreground/60">
                       <span>📍</span>
                       <span>{member.location}</span>
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-xs font-bold text-foreground/60">
                       {member.mutual} mutual connection{member.mutual !== 1 ? 's' : ''}
                     </div>
                   </div>
@@ -139,19 +100,19 @@ export default async function NetworkPage() {
                   <div className="flex gap-3">
                     {member.connected ? (
                       <>
-                        <button className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white/80 font-medium transition-colors hover:bg-white/20">
+                        <button className="flex-1 px-4 py-2 rounded-xl bg-card text-foreground font-bold border-2 border-border shadow-[3px_3px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all">
                           Message
                         </button>
-                        <button className="flex-1 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-white font-medium transition-colors">
+                        <button className="flex-1 px-4 py-2 rounded-xl bg-card text-foreground font-bold border-2 border-border shadow-[3px_3px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all">
                           View Profile
                         </button>
                       </>
                     ) : (
                       <>
-                        <button className="btn-amber w-full">
+                        <button className="flex-1 px-4 py-2 rounded-xl bg-[#ff6b6b] text-white font-bold border-2 border-border shadow-[3px_3px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all">
                           Connect
                         </button>
-                        <button className="flex-1 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-white font-medium transition-colors">
+                        <button className="flex-1 px-4 py-2 rounded-xl bg-card text-foreground font-bold border-2 border-border shadow-[3px_3px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all hidden sm:block">
                           View Profile
                         </button>
                       </>

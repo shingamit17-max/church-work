@@ -18,7 +18,7 @@ export default function CreateEventPage() {
   if (session?.user?.role !== "mentor" && session?.user?.role !== "admin") {
     return (
       <div className="text-center py-20">
-        <p className="text-white/60">Only mentors can host events.</p>
+        <p className="text-muted-foreground">Only mentors can host events.</p>
       </div>
     );
   }
@@ -80,15 +80,15 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-rose-400">
+    <div className="max-w-2xl mx-auto py-8">
+      <h1 className="text-3xl font-black mb-2 uppercase tracking-tight text-foreground">
         Host an Event
       </h1>
-      <p className="text-white/60 mb-8">
+      <p className="text-muted-foreground font-medium mb-8">
         Create a group workshop, Q&A session, or masterclass for mentees.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6 p-8 rounded-3xl" style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <form onSubmit={handleSubmit} className="space-y-6 p-8 bg-card border-2 border-neo-border shadow-[4px_4px_0px_0px_var(--neo-border)] rounded-none dark:border dark:rounded-2xl dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
         
         <div>
           <label className="block text-sm font-medium mb-2">Event Title</label>

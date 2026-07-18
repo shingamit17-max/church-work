@@ -1,6 +1,9 @@
 
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import dbConnect from '@/lib/db';
+import { JobOpportunity } from '@/models/JobOpportunity';
+import { PostJobModal } from '@/components/PostJobModal';
 
 export default async function MentorPlacementsPage() {
   const session = await auth();
@@ -12,30 +15,11 @@ export default async function MentorPlacementsPage() {
   const userName = session.user.name || 'User';
   const userEmail = session.user.email || '';
 
-  const mockPostedJobs = [
-    {
-      id: '1',
-      title: 'Senior Software Engineer',
-      company: 'Tech Corp',
-      location: 'San Francisco, CA',
-      type: 'Full-time',
-      applications: 8,
-      views: 245,
-      postedAt: '2024-01-15',
-      active: true,
-    },
-    {
-      id: '2',
-      title: 'Product Manager',
-      company: 'StartUp Inc',
-      location: 'New York, NY',
-      type: 'Full-time',
-      applications: 12,
-      views: 342,
-      postedAt: '2024-01-10',
-      active: true,
-    },
-  ];
+  await dbConnect();
+  const postedJobs = await JobOpportunity.find({ postedBy: session.user.id }).sort({ createdAt: -1 });
+  const activePostings = postedJobs.filter(j => j.isActive).length;
+  const totalApplications = postedJobs.reduce((acc, j) => acc + (j.applications?.length || 0), 0);
+  const totalViews = postedJobs.reduce((acc, j) => acc + (j.views || 0), 0);
 
   return (
     <>
@@ -45,26 +29,24 @@ export default async function MentorPlacementsPage() {
                 <h1 className="text-4xl font-bold text-white mb-2">Job Board</h1>
                 <p className="text-white/60">Post and manage job opportunities for your mentees</p>
               </div>
-              <button className="btn-amber px-6">
-                Post Job
-              </button>
+              <PostJobModal />
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">2</div>
-                <p className="text-white/60 text-sm mt-2">Active Postings</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">{activePostings}</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Active Postings</p>
               </div>
               
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">20</div>
-                <p className="text-white/60 text-sm mt-2">Total Applications</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">{totalApplications}</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Total Applications</p>
               </div>
               
-              <div className="warm-card p-6">
-                <div className="text-3xl font-bold text-white">587</div>
-                <p className="text-white/60 text-sm mt-2">Total Views</p>
+              <div className="p-6 bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)] rounded-2xl">
+                <div className="text-4xl font-black text-foreground">{totalViews}</div>
+                <p className="text-muted-foreground font-bold text-sm mt-2">Total Views</p>
               </div>
             </div>
 
@@ -72,7 +54,13 @@ export default async function MentorPlacementsPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">Your Postings</h2>
               
-              {mockPostedJobs.map((job) => (
+              {postedJobs.length === 0 ? (
+                <div className="p-16 rounded-2xl text-center bg-card border-[3px] border-border shadow-[4px_4px_0px_var(--neo-border)]">
+                  <div className="text-5xl mb-4">📝</div>
+                  <h3 className="font-bold text-xl mb-2 text-foreground">No jobs posted</h3>
+                  <p className="text-sm text-muted-foreground font-medium">You haven't posted any job opportunities yet.</p>
+                </div>
+              ) : postedJobs.map((job) => (
                 <div
                   key={job.id}
                   className="warm-card p-6 hover:border-amber-500/50 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all cursor-pointer group"
@@ -81,12 +69,12 @@ export default async function MentorPlacementsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-bold text-white">{job.title}</h3>
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          job.active
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                            : 'bg-white/10 text-white/80'
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border-2 ${
+                          job.isActive
+                            ? 'bg-[#dcfce7] border-black text-black'
+                            : 'bg-muted border-border text-muted-foreground'
                         }`}>
-                          {job.active ? 'Active' : 'Closed'}
+                          {job.isActive ? 'Active' : 'Closed'}
                         </span>
                       </div>
                       <p className="text-white/60 text-sm">{job.company} • {job.location}</p>
@@ -99,16 +87,16 @@ export default async function MentorPlacementsPage() {
                       <p className="font-medium text-white">{job.type}</p>
                     </div>
                     <div className="text-sm">
-                      <p className="text-white/50 text-xs">Applications</p>
-                      <p className="font-medium text-white">{job.applications}</p>
+                      <p className="text-muted-foreground text-xs font-bold">Applications</p>
+                      <p className="font-medium text-foreground">{job.applications?.length || 0}</p>
                     </div>
                     <div className="text-sm">
                       <p className="text-white/50 text-xs">Views</p>
                       <p className="font-medium text-white">{job.views}</p>
                     </div>
                     <div className="text-sm">
-                      <p className="text-white/50 text-xs">Posted</p>
-                      <p className="font-medium text-white">{job.postedAt}</p>
+                      <p className="text-muted-foreground text-xs font-bold">Posted</p>
+                      <p className="font-medium text-foreground">{new Date(job.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
 

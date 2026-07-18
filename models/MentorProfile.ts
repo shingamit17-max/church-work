@@ -25,6 +25,12 @@ const MentorProfileSchema = new Schema(
       workshopsHosted: { type: Number, default: 0 },
       testimonialsReceived: { type: Number, default: 0 },
     },
+    customAnswers: [
+      {
+        questionId: { type: Schema.Types.ObjectId, ref: 'CustomQuestion' },
+        answer: { type: Schema.Types.Mixed },
+      },
+    ],
   },
   { timestamps: true }
 );

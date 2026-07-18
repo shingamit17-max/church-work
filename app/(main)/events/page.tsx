@@ -50,23 +50,18 @@ export default function EventsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-5">
         <div>
-          <p className="text-sm mb-1" style={{ color: "#57534e" }}>Community</p>
-          <h1 className="text-3xl font-semibold" style={{ letterSpacing: "-0.03em", color: "#fafaf9" }}>
+          <p className="text-sm mb-1 text-muted-foreground font-bold uppercase tracking-wider">Community</p>
+          <h1 className="text-4xl font-black text-foreground mb-2">
             Workshops & Events
           </h1>
-          <p className="text-sm mt-1" style={{ color: "#78716c" }}>
+          <p className="text-muted-foreground font-medium">
             Join group sessions hosted by expert mentors in your field.
           </p>
         </div>
-        {session?.user?.role === "mentor" && (
+        {(session?.user?.role === "mentor" || session?.user?.role === "admin") && (
           <NextLink
             href="/events/create"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shrink-0"
-            style={{
-              background: "linear-gradient(135deg,#ef4444,#f97316)",
-              color: "#0c0a09",
-              boxShadow: "0 4px 16px rgba(245,158,11,0.25)",
-            }}
+            className="btn-amber shrink-0"
           >
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" d="M12 5v14M5 12h14"/>
@@ -77,21 +72,17 @@ export default function EventsPage() {
       </div>
 
       {/* Filters */}
-      <div
-        className="p-5 rounded-2xl flex flex-col sm:flex-row gap-4"
-        style={{ background: "rgba(41,37,36,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}
-      >
+      <div className="neobrutal-box p-5 flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
-          <label className="block text-xs font-medium mb-2" style={{ color: "#57534e" }}>Domain</label>
+          <label className="block text-xs font-black mb-2 text-foreground uppercase tracking-wider">Domain</label>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setDomainFilter("")}
-              className="text-xs px-3 py-1.5 rounded-lg transition-all"
-              style={{
-                background: !domainFilter ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.05)",
-                border: `1px solid ${!domainFilter ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.08)"}`,
-                color: !domainFilter ? "#fbbf24" : "#78716c",
-              }}
+              className={`text-xs px-3 py-1.5 font-bold transition-all border-2 ${
+                !domainFilter 
+                  ? "bg-foreground text-background border-neo-border shadow-[2px_2px_0px_var(--neo-border)]" 
+                  : "bg-background text-foreground border-neo-border hover:bg-muted"
+              }`}
             >
               All
             </button>
@@ -99,12 +90,11 @@ export default function EventsPage() {
               <button
                 key={d}
                 onClick={() => setDomainFilter(domainFilter === d ? "" : d)}
-                className="text-xs px-3 py-1.5 rounded-lg transition-all"
-                style={{
-                  background: domainFilter === d ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.04)",
-                  border: `1px solid ${domainFilter === d ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.07)"}`,
-                  color: domainFilter === d ? "#fbbf24" : "#57534e",
-                }}
+                className={`text-xs px-3 py-1.5 font-bold transition-all border-2 ${
+                  domainFilter === d 
+                    ? "bg-foreground text-background border-neo-border shadow-[2px_2px_0px_var(--neo-border)]" 
+                    : "bg-background text-foreground border-neo-border hover:bg-muted"
+                }`}
               >
                 {d}
               </button>
@@ -112,11 +102,11 @@ export default function EventsPage() {
           </div>
         </div>
         <div className="sm:w-56">
-          <label className="block text-xs font-medium mb-2" style={{ color: "#57534e" }}>Topic</label>
+          <label className="block text-xs font-black mb-2 text-foreground uppercase tracking-wider">Topic</label>
           <select
             value={painPointFilter}
             onChange={(e) => setPainPointFilter(e.target.value)}
-            className="warm-input warm-select cursor-pointer w-auto text-sm"
+            className="warm-input cursor-pointer w-full text-sm font-bold bg-background"
           >
             <option value="">All Topics</option>
             {Object.values(PainPoint).map((pt) => (
@@ -130,69 +120,49 @@ export default function EventsPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-64 rounded-2xl animate-pulse" style={{ background: "rgba(41,37,36,0.4)" }} />
+            <div key={i} className="h-64 neobrutal-box animate-pulse bg-muted" />
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="p-16 rounded-2xl text-center" style={{ background: "rgba(41,37,36,0.5)", border: "1px dashed rgba(255,255,255,0.08)" }}>
+        <div className="p-16 neobrutal-box text-center">
           <div className="text-5xl mb-4">📅</div>
-          <h3 className="font-semibold mb-2" style={{ color: "#fafaf9" }}>No events found</h3>
-          <p className="text-sm" style={{ color: "#57534e" }}>Try adjusting your filters or check back soon.</p>
+          <h3 className="text-2xl font-black mb-2 text-foreground">No events found</h3>
+          <p className="text-muted-foreground font-medium">Try adjusting your filters or check back soon.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {events.map((event) => (
             <NextLink href={`/events/${event._id}`} key={event._id} className="block group">
-              <div
-                className="h-full p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden transition-all"
-                style={{
-                  background: "rgba(41,37,36,0.7)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.border = "1px solid rgba(245,158,11,0.2)";
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(41,37,36,0.9)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.border = "1px solid rgba(255,255,255,0.07)";
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(41,37,36,0.7)";
-                }}
-              >
-                {/* Ambient */}
-                <div className="absolute top-0 right-0 w-28 h-28 rounded-full pointer-events-none" style={{ background: "rgba(245,158,11,0.04)", filter: "blur(20px)", transform: "translate(30%,-30%)" }} />
-
+              <div className="h-full p-6 neobrutal-box flex flex-col gap-4 relative transition-all group-hover:-translate-y-1 group-hover:shadow-[6px_6px_0px_var(--neo-border)] bg-background">
                 {/* Top row */}
-                <div className="flex justify-between items-start relative z-10">
+                <div className="flex justify-between items-start">
                   <span
-                    className="text-xs px-2.5 py-1 rounded-full font-medium"
-                    style={{
-                      background: event.isFree ? "rgba(74,222,128,0.1)" : "rgba(245,158,11,0.1)",
-                      color: event.isFree ? "#4ade80" : "#fbbf24",
-                      border: `1px solid ${event.isFree ? "rgba(74,222,128,0.2)" : "rgba(245,158,11,0.2)"}`,
-                    }}
+                    className={`text-xs px-2.5 py-1 font-bold border-2 border-neo-border ${
+                      event.isFree ? "bg-green-400 text-black shadow-[2px_2px_0px_var(--neo-border)]" : "bg-yellow-400 text-black shadow-[2px_2px_0px_var(--neo-border)]"
+                    }`}
                   >
                     {event.isFree ? "Free" : `$${event.price}`}
                   </span>
-                  <div className="text-xs px-2.5 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.06)", color: "#78716c" }} suppressHydrationWarning>
+                  <div className="text-xs font-bold text-muted-foreground" suppressHydrationWarning>
                     {new Date(event.dateTime).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}
                   </div>
                 </div>
 
-                <div className="relative z-10 flex-1">
-                  <h3 className="text-base font-semibold mb-2 line-clamp-2" style={{ color: "#fafaf9" }}>{event.title}</h3>
-                  <p className="text-sm leading-relaxed line-clamp-2" style={{ color: "#78716c" }}>{event.description}</p>
+                <div className="flex-1 mt-2">
+                  <h3 className="text-xl font-black mb-2 line-clamp-2 text-foreground">{event.title}</h3>
+                  <p className="text-sm font-medium leading-relaxed line-clamp-2 text-muted-foreground">{event.description}</p>
                 </div>
 
                 {/* Tags */}
                 {event.painPointTags?.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 relative z-10">
+                  <div className="flex flex-wrap gap-1.5">
                     {event.painPointTags.slice(0, 2).map((pt: string) => (
-                      <span key={pt} className="text-[11px] px-2 py-0.5 rounded-md" style={{ background: "rgba(255,255,255,0.05)", color: "#57534e" }}>
+                      <span key={pt} className="text-[11px] font-bold px-2 py-0.5 border-2 border-neo-border bg-muted text-foreground">
                         {pt.replace(/_/g, " ")}
                       </span>
                     ))}
                     {event.painPointTags.length > 2 && (
-                      <span className="text-[11px] px-2 py-0.5 rounded-md" style={{ background: "rgba(255,255,255,0.04)", color: "#44403c" }}>
+                      <span className="text-[11px] font-bold px-2 py-0.5 border-2 border-neo-border bg-muted text-foreground">
                         +{event.painPointTags.length - 2}
                       </span>
                     )}
@@ -200,14 +170,16 @@ export default function EventsPage() {
                 )}
 
                 {/* Footer */}
-                <div className="pt-3 flex justify-between items-center relative z-10" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="pt-4 mt-2 flex justify-between items-center border-t-2 border-neo-border">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09" }}>
+                    <div className="w-8 h-8 flex items-center justify-center text-xs font-black bg-accent text-background border-2 border-neo-border">
                       {event.hostId?.name?.charAt(0) || "?"}
                     </div>
-                    <span className="text-xs truncate max-w-[80px]" style={{ color: "#78716c" }}>{event.hostId?.name}</span>
+                    <span className="text-sm font-bold text-foreground truncate max-w-[80px]">{event.hostId?.name}</span>
                   </div>
-                  <span className="text-xs" style={{ color: event.capacity - event.registeredCount > 5 ? "#4ade80" : "#fb7185" }}>
+                  <span className={`text-[10px] font-bold px-2 py-1 border-2 border-neo-border ${
+                    event.capacity - event.registeredCount > 5 ? "bg-green-400 text-black" : "bg-red-400 text-black"
+                  }`}>
                     {Math.max(0, event.capacity - event.registeredCount)} spots left
                   </span>
                 </div>

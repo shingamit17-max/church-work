@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useDraft } from "@/hooks/useDraft";
 import { submitMenteeProfile } from "@/app/actions/onboarding";
 import { CareerStage, DiagnosticFunnelStage, PainPoint } from "@/types";
@@ -22,9 +23,10 @@ const initialMenteeData = {
   availability: { hoursPerWeek: 10, preferredMode: "async" as "async" | "calls" | "workshops" },
   goal3Months: "",
   resumeUrl: "",
+  customAnswers: [] as { questionId: string, answer: any }[],
 };
 
-const TOTAL_STEPS = 9;
+const BASE_TOTAL_STEPS = 9;
 
 const STEP_META = [
   { title: "Employment Status",    icon: "💼", hint: "Tell us where you're at right now" },
@@ -63,11 +65,24 @@ export default function MenteeOnboarding() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
+  const [customQuestions, setCustomQuestions] = useState<any[]>([]);
   const router = useRouter();
+  const { update } = useSession();
+
+  useEffect(() => {
+    fetch('/api/admin/questions')
+      .then(res => res.json())
+      .then(fetchedQuestions => {
+        setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTEE' || q.targetRole === 'BOTH'));
+      })
+      .catch(console.error);
+  }, []);
 
   if (!isLoaded) return null;
 
-  const nextStep = () => setStep((p) => Math.min(TOTAL_STEPS, p + 1));
+  const totalSteps = BASE_TOTAL_STEPS + customQuestions.length;
+
+  const nextStep = () => setStep((p) => Math.min(totalSteps, p + 1));
   const prevStep = () => setStep((p) => Math.max(1, p - 1));
 
   const handleSubmit = async () => {
@@ -77,6 +92,7 @@ export default function MenteeOnboarding() {
       if (res.success) {
         clearDraft();
         toast.success("Profile submitted successfully!");
+        await update({ role: "mentee", onboardingComplete: true });
         router.push("/dashboard");
       } else {
         toast.error(res.error || "Failed to submit profile");
@@ -109,27 +125,25 @@ export default function MenteeOnboarding() {
     });
   };
 
-  const meta = STEP_META[step - 1];
-  const progress = (step / TOTAL_STEPS) * 100;
+  const handleCustomAnswer = (questionId: string, answer: any) => {
+    const existing = data.customAnswers || [];
+    const filtered = existing.filter((a: any) => a.questionId !== questionId);
+    setDraftData({ customAnswers: [...filtered, { questionId, answer }] });
+  };
+
+  let meta;
+  if (step <= BASE_TOTAL_STEPS) {
+    meta = STEP_META[step - 1];
+  } else {
+    const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
+    meta = { title: q.title, icon: "📋", hint: "Additional Information" };
+  }
+
+  const progress = (step / totalSteps) * 100;
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-background text-foreground"
-    >
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div style={{ position: "absolute", width: 500, height: 500, top: "30%", left: "50%", transform: "translate(-50%,-50%)", background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 65%)" }} />
-      </div>
-
-      <div className="relative z-10 w-full max-w-xl">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}>✦</div>
-            <span className="font-semibold text-sm" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
-          </div>
-        </div>
-
+    <div className="w-full pb-12">
+      <div className="relative z-10 w-full max-w-xl mx-auto">
         {/* Card */}
         <div
           className="p-8 rounded-2xl bg-card border border-border"
@@ -138,7 +152,7 @@ export default function MenteeOnboarding() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-medium text-primary">
-                Step {step} of {TOTAL_STEPS}
+                Step {step} of {totalSteps}
               </span>
               <span className="text-xs text-muted"> {Math.round(progress)}% complete</span>
             </div>
@@ -149,7 +163,7 @@ export default function MenteeOnboarding() {
             </div>
             {/* Step dots */}
             <div className="flex gap-1 mt-2.5">
-              {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+              {Array.from({ length: totalSteps }).map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-0.5 rounded-full transition-all duration-300"
@@ -173,7 +187,7 @@ export default function MenteeOnboarding() {
           </div>
 
           {/* Step content */}
-          <div className="space-y-4 min-h-[200px] bg-foreground/5">
+          <div className="space-y-4 min-h-[200px]">
             {/* Step 1 — Status */}
             {step === 1 && (
               <div className="space-y-2">
@@ -275,17 +289,26 @@ export default function MenteeOnboarding() {
 
             {/* Step 6 — Interview count */}
             {step === 6 && (
-              <div>
+              <div className="space-y-3">
                 <label style={LABEL}>Interviews in the last 3–6 months</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={data.diagnosticAnswers.interviewCount}
-                  onChange={(e) => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: parseInt(e.target.value) || 0 } })}
-                  style={INPUT}
-                  placeholder="0"
-                />
-                <p className="text-xs mt-2 text-muted-foreground">This helps your mentor calibrate advice to your actual experience.</p>
+                <div className="space-y-2">
+                  {[
+                    { value: 0, label: "0 (None yet)" },
+                    { value: 1, label: "1 to 3 interviews" },
+                    { value: 4, label: "4 to 10 interviews" },
+                    { value: 10, label: "10+ interviews" },
+                  ].map((opt) => (
+                    <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                      style={{
+                        background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                      }}
+                    >
+                      <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="sr-only" />
+                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs mt-3 text-muted-foreground">This helps your mentor calibrate advice to your actual experience.</p>
               </div>
             )}
 
@@ -375,6 +398,63 @@ export default function MenteeOnboarding() {
             )}
           </div>
 
+          {/* Custom Dynamic Questions */}
+          {step > BASE_TOTAL_STEPS && (
+            <div className="space-y-4">
+              {(() => {
+                const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
+                if (!q) return null;
+                const currentAnswerObj = (data.customAnswers || []).find((a: any) => a.questionId === q._id);
+                const currentAnswer = currentAnswerObj ? currentAnswerObj.answer : (q.type === "checkbox" ? [] : "");
+
+                return (
+                  <div>
+                    <label style={LABEL}>{q.title}</label>
+                    {q.type === "text" && (
+                      <input
+                        type="text"
+                        value={currentAnswer}
+                        onChange={(e) => handleCustomAnswer(q._id, e.target.value)}
+                        style={INPUT}
+                        placeholder="Your answer..."
+                      />
+                    )}
+                    {q.type === "mcq" && (
+                      <div className="space-y-2">
+                        {q.options.map((opt: string) => (
+                          <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                            <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} onChange={() => handleCustomAnswer(q._id, opt)} className="sr-only" />
+                            <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                    {q.type === "checkbox" && (
+                      <div className="space-y-2">
+                        {q.options.map((opt: string) => {
+                          const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
+                          const isSelected = selectedArr.includes(opt);
+                          return (
+                            <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              <input type="checkbox" checked={isSelected} onChange={(e) => {
+                                const newArr = e.target.checked ? [...selectedArr, opt] : selectedArr.filter((a: string) => a !== opt);
+                                handleCustomAnswer(q._id, newArr);
+                              }} className="sr-only" />
+                              <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
+                                {isSelected && <span className="text-white text-xs leading-none">✓</span>}
+                              </div>
+                              <span className="text-sm font-medium" style={{ color: isSelected ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
           {/* Navigation */}
           <div className="flex justify-between gap-3 mt-8 pt-6 border-t border-border">
             <button
@@ -382,16 +462,16 @@ export default function MenteeOnboarding() {
               disabled={step === 1 || isSubmitting || uploadingResume}
               className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-muted/10 border border-border text-muted-foreground"
             >
-              ← Back
+              &larr; Back
             </button>
 
-            {step < TOTAL_STEPS ? (
+            {step < totalSteps ? (
               <button
                 onClick={nextStep}
                 disabled={uploadingResume}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-primary-foreground shadow-lg"
               >
-                Continue →
+                Continue &rarr;
               </button>
             ) : (
               <button
@@ -405,9 +485,9 @@ export default function MenteeOnboarding() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                     </svg>
-                    Setting up…
+                    Setting up...
                   </>
-                ) : "Complete Setup ✓"}
+                ) : "Complete Setup (Done)"}
               </button>
             )}
           </div>
@@ -415,7 +495,7 @@ export default function MenteeOnboarding() {
 
         {/* Step labels */}
         <p className="text-foreground text-xs mt-5 text-muted-foreground">
-          Your progress is auto-saved — you can pick up where you left off.
+          Your progress is auto-saved - you can pick up where you left off.
         </p>
       </div>
     </div>

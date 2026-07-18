@@ -36,12 +36,12 @@ export function AdminRequestsList({ initialRequests }: AdminRequestsListProps) {
   if (requests.length === 0) return null;
 
   return (
-    <div className="bg-card border border-border p-6 mt-8 rounded-2xl">
+    <div className="neobrutal-box p-6 mt-8">
       <h2 className="text-xl font-bold text-foreground mb-6">Pending User Requests</h2>
       
       <div className="space-y-4">
         {requests.map(req => (
-          <div key={req._id} className="p-4 rounded-xl border border-border bg-foreground/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div key={req._id} className="p-4 neobrutal-box bg-foreground/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-400">

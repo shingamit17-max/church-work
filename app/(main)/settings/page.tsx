@@ -34,19 +34,19 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="text-4xl font-bold text-white mb-2">Account Settings</h1>
-        <p className="text-white/60">Manage your account preferences and security requests.</p>
+        <h1 className="text-4xl font-bold text-foreground mb-2">Account Settings</h1>
+        <p className="text-muted-foreground">Manage your account preferences and security requests.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
           {/* Display & Appearance */}
-          <div className="warm-card p-6 border border-white/5 bg-white/[0.02] rounded-2xl">
-            <h2 className="text-xl font-semibold text-white mb-6">Display & Appearance</h2>
+          <div className="neobrutal-box p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">Display & Appearance</h2>
             <div className="flex items-center justify-between pb-2">
               <div>
-                <h3 className="font-medium text-white">Theme</h3>
-                <p className="text-sm text-white/60">Toggle between light and dark mode.</p>
+                <h3 className="font-medium text-foreground">Theme</h3>
+                <p className="text-sm text-muted-foreground">Toggle between light and dark mode.</p>
               </div>
               <div>
                 <ThemeToggle />
@@ -55,40 +55,40 @@ export default function SettingsPage() {
           </div>
 
           {/* Security & Access */}
-          <div className="warm-card p-6 border border-white/5 bg-white/[0.02] rounded-2xl">
-            <h2 className="text-xl font-semibold text-white mb-6">Security & Roles</h2>
+          <div className="neobrutal-box p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">Security & Roles</h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center justify-between pb-4 border-b border-neo-border">
                 <div>
-                  <h3 className="font-medium text-white">Password Reset</h3>
-                  <p className="text-sm text-white/60">Request a temporary password.</p>
+                  <h3 className="font-medium text-foreground">Password Reset</h3>
+                  <p className="text-sm text-muted-foreground">Request a temporary password.</p>
                 </div>
                 <button 
                   onClick={() => handleRequest("PASSWORD_RESET")}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-colors"
+                  className="px-4 py-2 bg-foreground text-background font-bold border-2 border-neo-border shadow-[2px_2px_0px_var(--neo-border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all text-sm"
                 >
                   Request Reset
                 </button>
               </div>
 
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center justify-between pb-4 border-b border-neo-border">
                 <div>
-                  <h3 className="font-medium text-white">Change Role</h3>
-                  <p className="text-sm text-white/60">Switch to Mentor or Mentee.</p>
+                  <h3 className="font-medium text-foreground">Change Role</h3>
+                  <p className="text-sm text-muted-foreground">Switch to Mentor or Mentee.</p>
                 </div>
                 <div className="flex gap-2">
                   <button 
                     onClick={() => handleRequest("ROLE_CHANGE", { targetRole: "mentee" })}
                     disabled={isPending}
-                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-xs transition-colors"
+                    className="px-3 py-1.5 bg-background text-foreground font-bold border-2 border-neo-border hover:bg-accent hover:text-white transition-colors text-xs"
                   >
                     To Mentee
                   </button>
                   <button 
                     onClick={() => handleRequest("ROLE_CHANGE", { targetRole: "mentor" })}
                     disabled={isPending}
-                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-xs transition-colors"
+                    className="px-3 py-1.5 bg-background text-foreground font-bold border-2 border-neo-border hover:bg-accent hover:text-white transition-colors text-xs"
                   >
                     To Mentor
                   </button>
@@ -118,27 +118,27 @@ export default function SettingsPage() {
 
         <div className="space-y-6">
           {/* Recent Requests Log */}
-          <div className="warm-card p-6 min-h-[300px]">
-            <h2 className="text-xl font-semibold text-white mb-4">Request History</h2>
+          <div className="neobrutal-box p-6 min-h-[300px]">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Request History</h2>
             {requests.length === 0 ? (
-              <p className="text-white/40 text-sm italic">No recent requests.</p>
+              <p className="text-muted-foreground text-sm italic">No recent requests.</p>
             ) : (
               <div className="space-y-4">
                 {requests.map(req => (
-                  <div key={req._id} className="p-4 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                  <div key={req._id} className="p-4 border-2 border-neo-border flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-white text-sm">
+                      <p className="font-bold text-foreground text-sm">
                         {req.type.replace("_", " ")}
                       </p>
-                      <p className="text-xs text-white/50 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {new Date(req.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div>
-                      <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                        req.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400' :
-                        req.status === 'APPROVED' ? 'bg-green-500/20 text-green-400' :
-                        'bg-red-500/20 text-red-400'
+                      <span className={`px-2.5 py-1 text-xs font-bold border-2 border-neo-border ${
+                        req.status === 'PENDING' ? 'bg-amber-400 text-black' :
+                        req.status === 'APPROVED' ? 'bg-green-400 text-black' :
+                        'bg-red-400 text-black'
                       }`}>
                         {req.status}
                       </span>

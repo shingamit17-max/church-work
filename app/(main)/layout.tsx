@@ -23,14 +23,14 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   const isProfileIncomplete = !session.user.onboardingComplete;
 
   return (
-    <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex h-screen bg-background text-foreground transition-colors duration-300 relative overflow-hidden">
       {/* Sidebar */}
       <DashboardSidebar userRole={userRole} userName={userName} userEmail={userEmail} />
       
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         {isProfileIncomplete && <ProfileCompletionBanner role={session.user.role as UserRole} />}
-        <div className="flex-1 overflow-auto pt-24 px-4 pb-6 lg:p-8 lg:pt-8 bg-background">
+        <div className="flex-1 overflow-auto pt-24 px-4 pb-6 lg:p-8 lg:pt-8 bg-transparent">
           <div className="max-w-6xl mx-auto">
             {children}
           </div>

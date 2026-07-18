@@ -30,6 +30,12 @@ const MenteeProfileSchema = new Schema(
       preferredMode: { type: String, enum: ['async', 'calls', 'workshops'], required: true },
     },
     goal3Months: { type: String, required: true },
+    customAnswers: [
+      {
+        questionId: { type: Schema.Types.ObjectId, ref: 'CustomQuestion' },
+        answer: { type: Schema.Types.Mixed },
+      },
+    ],
   },
   { timestamps: true }
 );
