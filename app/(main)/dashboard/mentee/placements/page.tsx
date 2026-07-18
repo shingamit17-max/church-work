@@ -76,7 +76,7 @@ export default async function PlacementsPage() {
                   </p>
 
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {job.skills.map((skill) => (
+                    {job.skills.map((skill: string) => (
                       <span
                         key={skill}
                         className="inline-block px-3 py-1 rounded-md bg-[#fef3c7] text-black border-2 border-black text-xs font-bold"
