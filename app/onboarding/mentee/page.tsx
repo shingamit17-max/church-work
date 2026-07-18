@@ -8,6 +8,7 @@ import { submitMenteeProfile } from "@/app/actions/onboarding";
 import { CareerStage, DiagnosticFunnelStage, PainPoint } from "@/types";
 import { toast } from "sonner";
 import { UploadDropzone } from "@/lib/uploadthing";
+import { MENTEE_DEFAULT_STEPS } from "@/lib/onboarding-defaults";
 
 const initialMenteeData = {
   status: "unemployed" as "unemployed" | "underemployed" | "employed-but-searching",
@@ -29,15 +30,15 @@ const initialMenteeData = {
 const BASE_TOTAL_STEPS = 9;
 
 const STEP_META = [
-  { title: "Employment Status",    icon: "💼", hint: "Tell us where you're at right now" },
-  { title: "Career Stage",         icon: "📈", hint: "How far along is your career journey?" },
-  { title: "Target Domain & Roles",icon: "🎯", hint: "What are you aiming for?" },
-  { title: "Where You're Stuck",   icon: "🚧", hint: "Identify the bottleneck in your job search" },
-  { title: "Pain Points",          icon: "🩹", hint: "What specific challenges are you facing?" },
-  { title: "Interview History",    icon: "📊", hint: "Help us gauge your experience level" },
-  { title: "Skills & Resume",      icon: "⚡", hint: "Show your strengths and upload your CV" },
-  { title: "Availability",         icon: "🕐", hint: "How much time can you commit?" },
-  { title: "3-Month Goal",         icon: "🌟", hint: "What does success look like for you?" },
+  { id: "status",       icon: "💼" },
+  { id: "careerStage",  icon: "📈" },
+  { id: "domain",       icon: "🎯" },
+  { id: "funnel",       icon: "🚧" },
+  { id: "painPoints",   icon: "🩹" },
+  { id: "interviews",   icon: "📊" },
+  { id: "skills",       icon: "⚡" },
+  { id: "availability", icon: "🕐" },
+  { id: "goal",         icon: "🌟" },
 ];
 
 // ── Style helpers ────────────────────────────────────────────────
@@ -66,16 +67,22 @@ export default function MenteeOnboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [customQuestions, setCustomQuestions] = useState<any[]>([]);
+  const [builtInOverrides, setBuiltInOverrides] = useState<Record<string, any>>({});
   const router = useRouter();
   const { update } = useSession();
 
   useEffect(() => {
-    fetch('/api/admin/questions')
-      .then(res => res.json())
-      .then(fetchedQuestions => {
-        setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTEE' || q.targetRole === 'BOTH'));
-      })
-      .catch(console.error);
+    Promise.all([
+      fetch('/api/admin/questions').then(r => r.json()),
+      fetch('/api/admin/config?keys[]=onboarding_mentee_steps').then(r => r.json())
+    ])
+    .then(([fetchedQuestions, config]) => {
+      setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTEE' || q.targetRole === 'BOTH'));
+      if (config.onboarding_mentee_steps) {
+        setBuiltInOverrides(config.onboarding_mentee_steps);
+      }
+    })
+    .catch(console.error);
   }, []);
 
   if (!isLoaded) return null;
@@ -133,7 +140,14 @@ export default function MenteeOnboarding() {
 
   let meta;
   if (step <= BASE_TOTAL_STEPS) {
-    meta = STEP_META[step - 1];
+    const defaultData = MENTEE_DEFAULT_STEPS[step - 1];
+    const iconData = STEP_META[step - 1];
+    const override = builtInOverrides[defaultData.id] || {};
+    meta = {
+      title: override.title || defaultData.title,
+      icon: iconData.icon,
+      hint: override.hint || defaultData.hint,
+    };
   } else {
     const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
     meta = { title: q.title, icon: "📋", hint: "Additional Information" };
@@ -192,20 +206,23 @@ export default function MenteeOnboarding() {
             {step === 1 && (
               <div className="space-y-2">
                 {[
-                  { value: "unemployed", label: "Unemployed and actively looking", icon: "🔍" },
-                  { value: "underemployed", label: "Underemployed / Freelancing", icon: "⚡" },
-                  { value: "employed-but-searching", label: "Employed but looking to switch", icon: "↗️" },
-                ].map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
-                    style={{
-                      background: data.status === opt.value ? "var(--primary-foreground-soft)" : "transparent",
-                    }}
-                  >
-                    <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} onChange={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="sr-only" />
-                    <span className="text-lg">{opt.icon}</span>
-                    <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
-                  </label>
-                ))}
+                  { value: "unemployed", defaultLabel: "Unemployed and actively looking", icon: "🔍" },
+                  { value: "underemployed", defaultLabel: "Underemployed / Freelancing", icon: "⚡" },
+                  { value: "employed-but-searching", defaultLabel: "Employed but looking to switch", icon: "↗️" },
+                ].map((opt) => {
+                  const label = builtInOverrides?.status?.options?.[opt.value]?.label || opt.defaultLabel;
+                  return (
+                    <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                      style={{
+                        background: data.status === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                      }}
+                    >
+                      <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} onChange={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="sr-only" />
+                      <span className="text-lg">{opt.icon}</span>
+                      <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
+                    </label>
+                  );
+                })}
               </div>
             )}
 
@@ -214,6 +231,9 @@ export default function MenteeOnboarding() {
               <div className="space-y-2">
                 {Object.entries(CareerStage).map(([k, v]) => (
                   <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                    style={{
+                      background: data.careerStage === v ? "var(--primary-foreground-soft)" : "transparent",
+                    }}
                   >
                     <input type="radio" name="careerStage" value={v} checked={data.careerStage === v} onChange={() => setDraftData({ careerStage: v as CareerStage })} className="sr-only" />
                     <span className="text-sm font-medium" style={{ color: data.careerStage === v ? "var(--primary)" : "var(--foreground)" }}>{v}</span>
@@ -256,11 +276,15 @@ export default function MenteeOnboarding() {
                     final_round_rejects: "Reaching finals but getting rejected",
                     low_offers: "Getting offers but below expectation",
                   };
+                  const label = builtInOverrides?.funnel?.options?.[v]?.label || labels[v] || v;
                   return (
                     <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                      style={{
+                        background: data.diagnosticAnswers.funnelStage === v ? "var(--primary-foreground-soft)" : "transparent",
+                      }}
                     >
                       <input type="radio" name="funnel" value={v} checked={data.diagnosticAnswers.funnelStage === v} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } })} className="sr-only" />
-                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "var(--primary)" : "var(--foreground)" }}>{labels[v] || v}</span>
+                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
                     </label>
                   );
                 })}
@@ -293,20 +317,23 @@ export default function MenteeOnboarding() {
                 <label style={LABEL}>Interviews in the last 3–6 months</label>
                 <div className="space-y-2">
                   {[
-                    { value: 0, label: "0 (None yet)" },
-                    { value: 1, label: "1 to 3 interviews" },
-                    { value: 4, label: "4 to 10 interviews" },
-                    { value: 10, label: "10+ interviews" },
-                  ].map((opt) => (
-                    <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
-                      style={{
-                        background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : "transparent",
-                      }}
-                    >
-                      <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="sr-only" />
-                      <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
-                    </label>
-                  ))}
+                    { value: 0, defaultLabel: "0 (None yet)" },
+                    { value: 1, defaultLabel: "1 to 3 interviews" },
+                    { value: 4, defaultLabel: "4 to 10 interviews" },
+                    { value: 10, defaultLabel: "10+ interviews" },
+                  ].map((opt) => {
+                    const label = builtInOverrides?.interviews?.options?.[opt.value.toString()]?.label || opt.defaultLabel;
+                    return (
+                      <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                        style={{
+                          background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                        }}
+                      >
+                        <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="sr-only" />
+                        <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
                 <p className="text-xs mt-3 text-muted-foreground">This helps your mentor calibrate advice to your actual experience.</p>
               </div>
@@ -364,17 +391,23 @@ export default function MenteeOnboarding() {
                   <label style={LABEL}>Preferred mode</label>
                   <div className="space-y-2">
                     {[
-                      { value: "async", label: "Async chat & resources", icon: "💬" },
-                      { value: "calls", label: "1:1 video calls", icon: "📹" },
-                      { value: "workshops", label: "Group workshops", icon: "👥" },
-                    ].map((opt) => (
-                      <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
-                      >
-                        <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} onChange={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="sr-only" />
-                        <span>{opt.icon}</span>
-                        <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "var(--primary)" : "var(--foreground)" }}>{opt.label}</span>
-                      </label>
-                    ))}
+                      { value: "async", defaultLabel: "Async chat & resources", icon: "💬" },
+                      { value: "calls", defaultLabel: "1:1 video calls", icon: "📹" },
+                      { value: "workshops", defaultLabel: "Group workshops", icon: "👥" },
+                    ].map((opt) => {
+                      const label = builtInOverrides?.availability?.options?.[opt.value]?.label || opt.defaultLabel;
+                      return (
+                        <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                          style={{
+                            background: data.availability.preferredMode === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                          }}
+                        >
+                          <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} onChange={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="sr-only" />
+                          <span>{opt.icon}</span>
+                          <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

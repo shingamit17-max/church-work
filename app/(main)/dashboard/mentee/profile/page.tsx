@@ -1,6 +1,10 @@
 
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import dbConnect from '@/lib/db';
+import { MenteeProfile } from '@/models/MenteeProfile';
+import { User } from '@/models/User';
+import { MenteeProfileForm } from '@/components/MenteeProfileForm';
 
 export default async function MenteeProfilePage() {
   const session = await auth();
@@ -9,21 +13,42 @@ export default async function MenteeProfilePage() {
     redirect('/login');
   }
 
-  const userName = session.user.name || 'User';
-  const userEmail = session.user.email || '';
+  await dbConnect();
+  
+  // Fetch fresh user data from DB since JWT session name might be stale
+  const dbUser = await User.findById(session.user.id).select("name email").lean();
+  const userName = dbUser?.name || session.user.name || 'User';
+  const userEmail = dbUser?.email || session.user.email || '';
+
+  const menteeProfile = await MenteeProfile.findOne({ userId: session.user.id }).lean();
+
+  // Map the database document to the format expected by the form
+  const initialData = {
+    name: userName,
+    email: userEmail,
+    phoneNumber: menteeProfile?.phoneNumber || '',
+    bio: menteeProfile?.bio || '',
+    currentRole: menteeProfile?.currentRole || '',
+    company: menteeProfile?.company || '',
+    highestQualification: menteeProfile?.highestQualification || '',
+    // Mongoose array conversions to ensure they are plain objects/arrays for React serialization
+    targetRoles: Array.isArray(menteeProfile?.targetRoles) ? Array.from(menteeProfile.targetRoles) : [],
+    skills: Array.isArray(menteeProfile?.skills) ? menteeProfile.skills.map((s: any) => ({ name: s.name })) : [],
+    careerStage: menteeProfile?.careerStage || 'fresher', // default to fresher if not found
+  };
 
   return (
     <>
-      <div className="max-w-4xl">
+      <div className="w-full max-w-7xl">
             <div className="mb-8">
               <h1 className="text-4xl font-bold text-foreground mb-2">My Profile</h1>
               <p className="text-muted-foreground">Manage your professional information and preferences</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Profile Card */}
-              <div className="lg:col-span-1">
-                <div className="warm-card p-6">
+            <div className="flex flex-col xl:flex-row gap-8">
+              {/* Profile Card Sidebar */}
+              <div className="w-full xl:w-[320px] shrink-0">
+                <div className="warm-card p-6 xl:sticky xl:top-24">
                   <div className="w-24 h-24 rounded-full bg-linear-to-br from-stone-800 to-stone-900 border border-white/10 flex items-center justify-center text-white text-4xl font-bold mx-auto mb-4">
                     {userName.charAt(0).toUpperCase()}
                   </div>
@@ -40,104 +65,8 @@ export default async function MenteeProfilePage() {
                 </div>
               </div>
 
-              {/* Profile Information */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Personal Information */}
-                <div className="warm-card p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-6">Personal Information</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        defaultValue={userName}
-                        className="warm-input"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        defaultValue={userEmail}
-                        className="warm-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        className="warm-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Bio</label>
-                      <textarea
-                        placeholder="Tell us about yourself..."
-                        rows={4}
-                        className="warm-input resize-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Career Information */}
-                <div className="warm-card p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-6">Career Information</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Current Job Title</label>
-                      <input
-                        type="text"
-                        placeholder="e.g., Software Engineer"
-                        className="warm-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Target Role</label>
-                      <input
-                        type="text"
-                        placeholder="e.g., Senior Engineer, Product Manager"
-                        className="warm-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Years of Experience</label>
-                      <input
-                        type="number"
-                        placeholder="0"
-                        className="warm-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-foreground mb-2">Skills</label>
-                      <input
-                        type="text"
-                        placeholder="e.g., React, TypeScript, Node.js (comma-separated)"
-                        className="warm-input"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Save Button */}
-                <div className="flex gap-3">
-                  <button className="px-6 py-2 bg-foreground text-background font-bold border-2 border-border shadow-[2px_2px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all text-sm">
-                    Save Changes
-                  </button>
-                  <button className="px-6 py-2 bg-muted text-foreground font-bold border-2 border-border shadow-[2px_2px_0px_var(--neo-border)] hover:-translate-y-0.5 transition-all text-sm">
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              {/* Profile Information Forms */}
+              <MenteeProfileForm initialData={initialData} />
             </div>
       </div>
     </>

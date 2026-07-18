@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import Image from "next/image";
+import { NotificationBell } from './NotificationBell';
 
 interface DashboardSidebarProps {
   userRole: 'mentee' | 'mentor' | 'admin';
@@ -46,6 +47,9 @@ const MENTOR_LINKS = [
   { href: '/events', label: 'Events', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
   )},
+  { href: '/dashboard/mentor/placements', label: 'Job Board', icon: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+  )},
   { href: '/resources', label: 'Resources', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
   )},
@@ -55,8 +59,14 @@ const ADMIN_LINKS = [
   { href: '/dashboard/admin', label: 'Admin Dashboard', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
   )},
+  { href: '/dashboard/admin/questions', label: 'Onboarding Questions', icon: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+  )},
   { href: '/events', label: 'Events', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+  )},
+  { href: '/resources', label: 'Resources', icon: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
   )},
 ];
 
@@ -67,16 +77,23 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
   const links = userRole === 'admin' ? ADMIN_LINKS : userRole === 'mentee' ? MENTEE_LINKS : MENTOR_LINKS;
   const isActive = (href: string) => pathname === href || (href !== '/dashboard/mentee' && href !== '/dashboard/mentor' && href !== '/dashboard/admin' && pathname.startsWith(href));
 
+  useEffect(() => {
+    const handleSetMenu = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      setIsOpen(customEvent.detail);
+    };
+    window.addEventListener('set-mobile-menu', handleSetMenu);
+    return () => window.removeEventListener('set-mobile-menu', handleSetMenu);
+  }, []);
+
   return (
     <>
       {/* Mobile Header (Opaque Pill - Hidden when Sidebar is Open) */}
       <div className={`fixed top-6 w-full px-4 flex lg:hidden justify-center z-[80] pointer-events-none transition-all duration-300 ${isOpen ? 'opacity-0 -translate-y-8 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
         <div 
-          className="flex items-center justify-between w-full max-w-sm px-4 py-3 rounded-full pointer-events-auto"
+          className="flex items-center justify-between w-full max-w-sm px-4 py-3 rounded-full pointer-events-auto border-2 border-border"
           style={{ 
-            background: "#292524", // Solid color, not see-through
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)" // Stronger shadow for depth since it's solid
+            backgroundColor: 'var(--neo-card)',
           }}
         >
           <div className="flex items-center gap-2">
@@ -84,23 +101,30 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
             <span className="font-semibold text-base text-foreground" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
           </div>
           
-          {/* Hamburger Menu Trigger */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-white/10"
-            style={{ background: isOpen ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.05)" }}
-            aria-label="Menu"
-          >
-            {isOpen ? (
-              <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            ) : (
-              <svg width="16" height="16" fill="none" stroke="#fafaf9" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Mobile Notification Bell */}
+            <div className="scale-90 origin-right" id="mobile-bell-btn">
+              <NotificationBell />
+            </div>
+
+            {/* Hamburger Menu Trigger */}
+            <button
+              id="mobile-menu-btn"
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-black/5 dark:hover:bg-white/10"
+              aria-label="Menu"
+            >
+              {isOpen ? (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -114,9 +138,11 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
 
       {/* Sidebar */}
       <aside
-        className={`fixed right-0 top-0 h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'} bg-card`}
+        className={`fixed right-0 top-0 h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
+          backgroundColor: 'var(--neo-card)',
           borderRight: '1px solid var(--border)',
+          borderRadius: '0px',
         }}
       >
         {/* Desktop Logo */}
@@ -169,6 +195,7 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
             return (
               <Link
                 key={link.href}
+                id={`tour-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-all group ${

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { Event } from "@/models/Event";
 import { auth } from "@/lib/auth";
+import { notifyAllMentees } from "@/lib/notifications";
 
 export async function GET(req: Request) {
   try {
@@ -59,6 +60,14 @@ export async function POST(req: Request) {
       recurrence: data.recurrence || 'none',
       customQuestions: Array.isArray(data.customQuestions) ? data.customQuestions : [],
     });
+
+    // Send notifications to all mentees
+    await notifyAllMentees({
+      title: `New Event: ${newEvent.title}`,
+      message: `${session.user.name || 'A mentor'} has just posted a new event!`,
+      type: 'event',
+      link: `/events/${newEvent._id}`,
+    }).catch(err => console.error("Failed to notify mentees about new event:", err));
 
     return NextResponse.json({ success: true, event: newEvent }, { status: 201 });
   } catch (error) {

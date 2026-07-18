@@ -12,9 +12,10 @@ type RequestMentorshipButtonProps = {
     role: string;
     onboardingComplete: boolean;
   } | null;
+  className?: string;
 }
 
-export default function RequestMentorshipButton({ mentorId, isAvailable, userSession }: RequestMentorshipButtonProps) {
+export default function RequestMentorshipButton({ mentorId, isAvailable, userSession, className }: RequestMentorshipButtonProps) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -61,9 +62,9 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
     return (
       <button 
         disabled
-        className="w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"
+        className={className || "w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"}
       >
-        Currently Unavailable
+        Currently full
       </button>
     );
   }
@@ -72,7 +73,7 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
     return (
       <button 
         disabled
-        className="w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"
+        className={className || "w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"}
         title="Mentors cannot request mentors"
       >
         Mentors Cannot Request
@@ -84,7 +85,7 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
     return (
       <button 
         disabled
-        className="w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"
+        className={className || "w-full py-3 px-4 bg-white/5 border border-white/10 text-white/50 rounded-xl font-medium cursor-not-allowed"}
         title="Complete your profile to request mentorship"
       >
         Profile Incomplete
@@ -94,16 +95,11 @@ export default function RequestMentorshipButton({ mentorId, isAvailable, userSes
 
   return (
     <button 
-      onClick={handleRequest}
+      onClick={(e) => { e.stopPropagation(); handleRequest(); }}
       disabled={isPending}
-      className="w-full py-3 px-4 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center"
-      style={{
-        background: "linear-gradient(135deg,#f59e0b,#d97706)",
-        color: "#0c0a09",
-        boxShadow: "0 4px 16px rgba(245,158,11,0.25)"
-      }}
+      className={className || "w-full py-3 px-4 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center text-black bg-gradient-to-br from-amber-400 to-amber-600 shadow-[0_4px_16px_rgba(245,158,11,0.25)]"}
     >
-      {isPending ? "Sending Request..." : "Request Mentorship"}
+      {isPending ? "Sending Request..." : "Request mentorship"}
     </button>
   );
 }

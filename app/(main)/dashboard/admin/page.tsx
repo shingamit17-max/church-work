@@ -8,7 +8,6 @@ import type { User as UserType } from "@/types";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
 import { AdminRequest } from "@/models/AdminRequest";
 import { AdminRequestsList } from "@/components/admin/AdminRequestsList";
-import { AdminOnboardingSettings } from "@/components/admin/AdminOnboardingSettings";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
@@ -72,8 +71,6 @@ export default async function AdminDashboardPage() {
       <AdminRequestsList initialRequests={serializedRequests} />
 
       <UserManagementTable initialUsers={serializedUsers} />
-
-      <AdminOnboardingSettings />
     </div>
   );
 }

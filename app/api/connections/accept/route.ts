@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 import { MentorProfile } from "@/models/MentorProfile";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -42,6 +43,15 @@ export async function POST(req: Request) {
       name: "match/accepted",
       data: { matchId: matchId, mentorId: session.user.id },
     });
+
+    // Notify Mentee
+    await createNotification({
+      userId: match.menteeId.toString(),
+      title: "Mentorship Request Accepted!",
+      message: `${session.user.name || "A mentor"} has accepted your mentorship request!`,
+      type: "match",
+      link: `/mentors/${mentor.shareSlug || mentor.userId.toString()}`,
+    }).catch(err => console.error("Failed to notify mentee:", err));
 
     // Increment count
     mentor.currentMenteeCount += 1;

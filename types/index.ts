@@ -61,6 +61,11 @@ export interface MenteeProfile {
   userId: string;
   status: 'unemployed' | 'underemployed' | 'employed-but-searching';
   careerStage: CareerStage;
+  currentRole?: string;
+  company?: string;
+  highestQualification?: string;
+  phoneNumber?: string;
+  bio?: string;
   targetDomain: string;
   targetRoles: string[];
   targetCompanies?: string[];

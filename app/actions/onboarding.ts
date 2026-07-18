@@ -56,7 +56,11 @@ export async function submitMentorProfile(data: Partial<MentorProfile>) {
   await dbConnect();
 
   try {
-    // 1. Create Mentor Profile
+    // 1. Fetch existing to preserve shareSlug, or generate a new one
+    const existingProfile = await MentorProfileModel.findOne({ userId: session.user.id });
+    const finalShareSlug = data.shareSlug || existingProfile?.shareSlug || Math.random().toString(36).substring(2, 10);
+
+    // 2. Create or Update Mentor Profile
     await MentorProfileModel.findOneAndUpdate(
       { userId: session.user.id },
       {
@@ -72,7 +76,7 @@ export async function submitMentorProfile(data: Partial<MentorProfile>) {
         availability: data.availability,
         maxMentees: data.maxMentees,
         bio: data.bio,
-        shareSlug: data.shareSlug,
+        shareSlug: finalShareSlug,
       },
       { upsert: true, new: true }
     );

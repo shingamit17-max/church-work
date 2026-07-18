@@ -41,7 +41,7 @@ export default async function PublicMentorProfile({ params }: Props) {
   
   await dbConnect();
   
-  const profile = await MentorProfile.findOne({ shareSlug: slug }).populate("userId", "name email");
+  const profile = await MentorProfile.findOne({ shareSlug: slug }).populate("userId", "name email churchOrganization");
   if (!profile) {
     notFound();
   }
@@ -109,6 +109,11 @@ export default async function PublicMentorProfile({ params }: Props) {
                 <span className="px-3 py-1 rounded-lg text-sm" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {profile.specialization}
                 </span>
+                {(profile.userId as any).churchOrganization && (
+                  <span className="px-3 py-1 rounded-lg text-sm flex items-center gap-1" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#fcd34d" }}>
+                    ⌂ {(profile.userId as any).churchOrganization}
+                  </span>
+                )}
               </div>
 
               <div className="mb-10">
@@ -138,6 +143,25 @@ export default async function PublicMentorProfile({ params }: Props) {
                       </li>
                     ))}
                   </ul>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: "#fafaf9" }}>Preferred Mentee Experience</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.menteeSeniority?.map((sen: string) => (
+                      <span key={sen} className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: "rgba(255,255,255,0.1)", color: "#e7e5e4" }}>
+                        {sen}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: "#fafaf9" }}>Availability</h3>
+                  <p style={{ color: "#d6d3d1" }}>
+                    <span className="font-semibold text-white">{profile.availability?.hoursPerMonth || "A few"}</span> hours per month via <span className="font-semibold text-white capitalize">{profile.availability?.preferredMode || "various"}</span> sessions.
+                  </p>
                 </div>
               </div>
 

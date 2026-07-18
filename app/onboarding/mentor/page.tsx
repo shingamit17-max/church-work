@@ -7,6 +7,7 @@ import { useDraft } from "@/hooks/useDraft";
 import { submitMentorProfile } from "@/app/actions/onboarding";
 import { CareerStage, PainPoint, MentorProfile } from "@/types";
 import { toast } from "sonner";
+import { MENTOR_DEFAULT_STEPS } from "@/lib/onboarding-defaults";
 
 const initialMentorData = {
   company: "",
@@ -30,13 +31,13 @@ const initialMentorData = {
 const BASE_TOTAL_STEPS = 7;
 
 const STEP_META = [
-  { title: "Professional Background", icon: "🏢", hint: "Tell us about your current role" },
-  { title: "Domain & Specialization", icon: "🎯", hint: "What's your area of expertise?" },
-  { title: "How You Can Help",        icon: "🤝", hint: "What formats of mentorship do you offer?" },
-  { title: "Pain Points",             icon: "🩹", hint: "What specific challenges can you help mentees with?" },
-  { title: "Target Mentees",          icon: "🎓", hint: "Who are you best equipped to help?" },
-  { title: "Availability",            icon: "🕐", hint: "How much time can you commit?" },
-  { title: "Final Touches",           icon: "✨", hint: "Your bio and public profile link" },
+  { id: "background",     icon: "🏢" },
+  { id: "domain",         icon: "🎯" },
+  { id: "helpTypes",      icon: "🤝" },
+  { id: "painPoints",     icon: "🩹" },
+  { id: "targetMentees",  icon: "🎓" },
+  { id: "availability",   icon: "🕐" },
+  { id: "final",          icon: "✨" },
 ];
 
 // ── Style helpers ────────────────────────────────────────────────
@@ -64,16 +65,22 @@ export default function MentorOnboarding() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customQuestions, setCustomQuestions] = useState<any[]>([]);
+  const [builtInOverrides, setBuiltInOverrides] = useState<Record<string, any>>({});
   const router = useRouter();
   const { update } = useSession();
 
   useEffect(() => {
-    fetch('/api/admin/questions')
-      .then(res => res.json())
-      .then(fetchedQuestions => {
-        setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTOR' || q.targetRole === 'BOTH'));
-      })
-      .catch(console.error);
+    Promise.all([
+      fetch('/api/admin/questions').then(r => r.json()),
+      fetch('/api/admin/config?keys[]=onboarding_mentor_steps').then(r => r.json())
+    ])
+    .then(([fetchedQuestions, config]) => {
+      setCustomQuestions(fetchedQuestions.filter((q: any) => q.targetRole === 'MENTOR' || q.targetRole === 'BOTH'));
+      if (config.onboarding_mentor_steps) {
+        setBuiltInOverrides(config.onboarding_mentor_steps);
+      }
+    })
+    .catch(console.error);
   }, []);
 
   if (!isLoaded) return null;
@@ -119,7 +126,14 @@ export default function MentorOnboarding() {
 
   let meta;
   if (step <= BASE_TOTAL_STEPS) {
-    meta = STEP_META[step - 1];
+    const defaultData = MENTOR_DEFAULT_STEPS[step - 1];
+    const iconData = STEP_META[step - 1];
+    const override = builtInOverrides[defaultData.id] || {};
+    meta = {
+      title: override.title || defaultData.title,
+      icon: iconData.icon,
+      hint: override.hint || defaultData.hint,
+    };
   } else {
     const q = customQuestions[step - BASE_TOTAL_STEPS - 1];
     meta = { title: q.title, icon: "📋", hint: "Additional Information" };
@@ -211,15 +225,16 @@ export default function MentorOnboarding() {
               <div className="grid grid-cols-2 gap-2">
                 {(
                   [
-                    { id: '1:1', label: '1:1 Mentorship Calls' },
-                    { id: 'resume', label: 'Resume Review' },
-                    { id: 'mock', label: 'Mock Interviews' },
-                    { id: 'resource', label: 'Resource Sharing' },
-                    { id: 'workshop', label: 'Hosting Workshops' },
-                    { id: 'guidance', label: 'Career Guidance' },
-                  ] as { id: MentorProfile["helpTypes"][number]; label: string }[]
+                    { id: '1:1', defaultLabel: '1:1 Mentorship Calls' },
+                    { id: 'resume', defaultLabel: 'Resume Review' },
+                    { id: 'mock', defaultLabel: 'Mock Interviews' },
+                    { id: 'resource', defaultLabel: 'Resource Sharing' },
+                    { id: 'workshop', defaultLabel: 'Hosting Workshops' },
+                    { id: 'guidance', defaultLabel: 'Career Guidance' },
+                  ] as { id: MentorProfile["helpTypes"][number]; defaultLabel: string }[]
                 ).map((ht) => {
                   const selected = data.helpTypes.includes(ht.id);
+                  const label = builtInOverrides?.helpTypes?.options?.[ht.id]?.label || ht.defaultLabel;
                   return (
                     <label key={ht.id} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
                       style={{
@@ -228,7 +243,7 @@ export default function MentorOnboarding() {
                       }}
                     >
                       <input type="checkbox" checked={selected} onChange={() => toggleArrayItem("helpTypes", ht.id as MentorProfile["helpTypes"][number])} className="sr-only" />
-                      <span className="text-sm font-medium" style={{ color: selected ? "#4ade80" : "#a8a29e" }}>{ht.label}</span>
+                      <span className="text-sm font-medium" style={{ color: selected ? "#4ade80" : "#a8a29e" }}>{label}</span>
                     </label>
                   );
                 })}
@@ -294,9 +309,9 @@ export default function MentorOnboarding() {
                     style={INPUT}
                     className="warm-select cursor-pointer"
                   >
-                    <option value="async">Async Chat / Resources</option>
-                    <option value="calls">1:1 Video Calls</option>
-                    <option value="workshops">Workshops / Group Sessions</option>
+                    <option value="async">{builtInOverrides?.availability?.options?.async?.label || "Async Chat / Resources"}</option>
+                    <option value="calls">{builtInOverrides?.availability?.options?.calls?.label || "1:1 Video Calls"}</option>
+                    <option value="workshops">{builtInOverrides?.availability?.options?.workshops?.label || "Workshops / Group Sessions"}</option>
                   </select>
                 </div>
               </div>
