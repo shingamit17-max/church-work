@@ -16,11 +16,11 @@ export default async function MenteeProfilePage() {
   await dbConnect();
   
   // Fetch fresh user data from DB since JWT session name might be stale
-  const dbUser = await User.findById(session.user.id).select("name email").lean();
+  const dbUser = (await User.findById(session.user.id).select("name email").lean()) as { name?: string, email?: string } | null;
   const userName = dbUser?.name || session.user.name || 'User';
   const userEmail = dbUser?.email || session.user.email || '';
 
-  const menteeProfile = await MenteeProfile.findOne({ userId: session.user.id }).lean();
+  const menteeProfile = await MenteeProfile.findOne({ userId: session.user.id }).lean() as any;
 
   // Map the database document to the format expected by the form
   const initialData = {
@@ -32,7 +32,7 @@ export default async function MenteeProfilePage() {
     company: menteeProfile?.company || '',
     highestQualification: menteeProfile?.highestQualification || '',
     // Mongoose array conversions to ensure they are plain objects/arrays for React serialization
-    targetRoles: Array.isArray(menteeProfile?.targetRoles) ? Array.from(menteeProfile.targetRoles) : [],
+    targetRoles: Array.isArray(menteeProfile?.targetRoles) ? (Array.from(menteeProfile.targetRoles) as string[]) : [],
     skills: Array.isArray(menteeProfile?.skills) ? menteeProfile.skills.map((s: any) => ({ name: s.name })) : [],
     careerStage: menteeProfile?.careerStage || 'fresher', // default to fresher if not found
   };

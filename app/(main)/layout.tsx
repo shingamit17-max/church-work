@@ -46,8 +46,8 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         </div>
       </main>
 
-      <MobileOnboardingTour role={session.user.role} />
-      <ProfileReminderToast isProfileIncomplete={isProfileIncomplete} role={session.user.role} />
+      <MobileOnboardingTour role={userRole} />
+      <ProfileReminderToast isProfileIncomplete={isProfileIncomplete} role={userRole} />
     </div>
   );
 }
