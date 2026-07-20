@@ -49,7 +49,17 @@ export interface User {
   onboardingComplete: boolean;
   linkedinId?: string;
   churchOrganization?: string;
+  dob?: Date;
   createdAt: Date;
+}
+
+export interface AdminUserView extends User {
+  // Merged profile data for admin table
+  phoneNumber?: string;
+  currentRole?: string;
+  company?: string;
+  careerStage?: CareerStage;
+  bio?: string;
 }
 
 export interface Skill {

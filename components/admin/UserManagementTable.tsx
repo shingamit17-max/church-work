@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { User as UserType, UserRole } from "@/types";
+import type { UserRole, AdminUserView } from "@/types";
 import { updateUserRole, deleteUser, createUser } from "@/app/actions/admin";
 
 interface UserManagementTableProps {
-  initialUsers: UserType[];
+  initialUsers: AdminUserView[];
 }
 
 export function UserManagementTable({ initialUsers }: UserManagementTableProps) {
@@ -72,19 +72,60 @@ export function UserManagementTable({ initialUsers }: UserManagementTableProps) 
     });
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      "Name", "Email", "Role", "Church", "DOB", 
+      "Phone", "Current Role", "Company", "Career Stage", "Joined"
+    ];
+
+    const rows = filteredUsers.map(u => [
+      `"${u.name.replace(/"/g, '""')}"`,
+      `"${u.email}"`,
+      `"${u.role}"`,
+      `"${(u.churchOrganization || '').replace(/"/g, '""')}"`,
+      `"${u.dob ? new Date(u.dob).toLocaleDateString() : ''}"`,
+      `"${u.phoneNumber || ''}"`,
+      `"${(u.currentRole || '').replace(/"/g, '""')}"`,
+      `"${(u.company || '').replace(/"/g, '""')}"`,
+      `"${u.careerStage || ''}"`,
+      `"${new Date(u.createdAt).toLocaleDateString()}"`
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n" 
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `users_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
     <section className="neobrutal-box p-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-bold text-foreground">User Management</h2>
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-500 text-sm font-medium transition-colors"
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
-            Add User
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-500 text-sm font-medium transition-colors"
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Add User
+            </button>
+            <button 
+              onClick={handleExportCSV}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium transition-colors"
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export CSV
+            </button>
+          </div>
         </div>
         
         <div className="flex flex-col md:flex-row gap-3">
@@ -116,21 +157,26 @@ export function UserManagementTable({ initialUsers }: UserManagementTableProps) 
         </div>
       </div>
 
-      <div className="overflow-x-auto max-h-[60vh] overflow-y-auto relative">
-        <table className="w-full text-left">
+      <div className="overflow-x-auto w-full max-h-[60vh] overflow-y-auto relative custom-scrollbar">
+        <table className="w-full text-left whitespace-nowrap">
           <thead className="sticky top-0 z-10" style={{ backgroundColor: "var(--neo-card)" }}>
             <tr style={{ borderBottom: "2px solid var(--neo-border)" }} className="text-muted-foreground text-sm">
-              <th className="pb-3 font-medium">Name</th>
-              <th className="pb-3 font-medium">Email</th>
-              <th className="pb-3 font-medium">Role</th>
-              <th className="pb-3 font-medium">Joined</th>
-              <th className="pb-3 font-medium text-right">Actions</th>
+              <th className="pb-3 font-medium px-4">Name</th>
+              <th className="pb-3 font-medium px-4">Email</th>
+              <th className="pb-3 font-medium px-4">Role</th>
+              <th className="pb-3 font-medium px-4">Church</th>
+              <th className="pb-3 font-medium px-4">DOB</th>
+              <th className="pb-3 font-medium px-4">Phone</th>
+              <th className="pb-3 font-medium px-4">Current Role</th>
+              <th className="pb-3 font-medium px-4">Company</th>
+              <th className="pb-3 font-medium px-4">Joined</th>
+              <th className="pb-3 font-medium px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className={isPending ? "opacity-70 transition-opacity" : "transition-opacity"}>
             {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                <td colSpan={10} className="py-8 text-center text-muted-foreground">
                   No users found.
                 </td>
               </tr>
@@ -138,17 +184,17 @@ export function UserManagementTable({ initialUsers }: UserManagementTableProps) 
               filteredUsers.map((u) => {
                 const idString = u._id.toString();
                 return (
-                  <tr key={idString} style={{ borderBottom: "2px solid var(--neo-border)" }} className="hover:bg-foreground/5 transition-colors group">
-                    <td className="py-4">
+                  <tr key={idString} style={{ borderBottom: "1px solid var(--neo-border)" }} className="hover:bg-foreground/5 transition-colors group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-slate-600 to-slate-800 flex items-center justify-center text-xs font-bold shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-slate-600 to-slate-800 flex items-center justify-center text-xs font-bold shrink-0 text-white">
                           {u.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-medium">{u.name}</span>
+                        <span className="font-medium text-foreground">{u.name}</span>
                       </div>
                     </td>
-                    <td className="py-4 text-muted-foreground text-sm">{u.email}</td>
-                    <td className="py-4">
+                    <td className="py-4 px-4 text-muted-foreground text-sm">{u.email}</td>
+                    <td className="py-4 px-4">
                       <select
                         value={u.role}
                         onChange={(e) => handleRoleChange(idString, e.target.value as UserRole)}
@@ -165,10 +211,17 @@ export function UserManagementTable({ initialUsers }: UserManagementTableProps) 
                         <option value="admin" className="bg-slate-900 text-white">Admin</option>
                       </select>
                     </td>
-                    <td className="py-4 text-muted-foreground text-sm" suppressHydrationWarning>
+                    <td className="py-4 px-4 text-muted-foreground text-sm">{u.churchOrganization || '-'}</td>
+                    <td className="py-4 px-4 text-muted-foreground text-sm" suppressHydrationWarning>
+                      {u.dob ? new Date(u.dob).toLocaleDateString("en-GB") : '-'}
+                    </td>
+                    <td className="py-4 px-4 text-muted-foreground text-sm">{u.phoneNumber || '-'}</td>
+                    <td className="py-4 px-4 text-muted-foreground text-sm">{u.currentRole || '-'}</td>
+                    <td className="py-4 px-4 text-muted-foreground text-sm">{u.company || '-'}</td>
+                    <td className="py-4 px-4 text-muted-foreground text-sm" suppressHydrationWarning>
                       {new Date(u.createdAt).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="py-4 text-right">
+                    <td className="py-4 px-4 text-right">
                       {u.email !== "shingamit17@gmail.com" ? (
                         <button
                           onClick={() => handleDelete(idString, u.name)}

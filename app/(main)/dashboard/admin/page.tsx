@@ -3,8 +3,10 @@ import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
 import { Match } from "@/models/Match";
 import { Event } from "@/models/Event";
+import { MenteeProfile } from "@/models/MenteeProfile";
+import { MentorProfile } from "@/models/MentorProfile";
 import { redirect } from "next/navigation";
-import type { User as UserType } from "@/types";
+import type { User as UserType, AdminUserView } from "@/types";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
 import { AdminRequest } from "@/models/AdminRequest";
 import { AdminRequestsList } from "@/components/admin/AdminRequestsList";
@@ -22,12 +24,27 @@ export default async function AdminDashboardPage() {
   const totalEvents = await Event.countDocuments();
 
   const allUsers = await User.find().sort({ createdAt: -1 }).lean() as unknown as UserType[];
+  const mentees = await MenteeProfile.find().lean();
+  const mentors = await MentorProfile.find().lean();
 
-  // Convert MongoDB ObjectIds to strings to avoid serialization issues in Client Components
-  const serializedUsers = allUsers.map(user => ({
-    ...user,
-    _id: user._id.toString(),
-  }));
+  const menteeMap = new Map(mentees.map(m => [m.userId.toString(), m]));
+  const mentorMap = new Map(mentors.map(m => [m.userId.toString(), m]));
+
+  // Convert MongoDB ObjectIds to strings and merge profiles
+  const serializedUsers: AdminUserView[] = allUsers.map(user => {
+    const id = user._id.toString();
+    const profile = (menteeMap.get(id) || mentorMap.get(id) || {}) as any;
+    
+    return {
+      ...user,
+      _id: id,
+      phoneNumber: profile.phoneNumber,
+      currentRole: profile.currentRole,
+      company: profile.company,
+      careerStage: profile.careerStage || profile.menteeSeniority, // mentorProfile might not have careerStage, but we'll capture what we can
+      bio: profile.bio,
+    };
+  });
 
   const pendingRequests = await AdminRequest.find({ status: "PENDING" })
     .populate("user", "name email role")

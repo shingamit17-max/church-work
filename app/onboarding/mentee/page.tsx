@@ -212,12 +212,12 @@ export default function MenteeOnboarding() {
                 ].map((opt) => {
                   const label = builtInOverrides?.status?.options?.[opt.value]?.label || opt.defaultLabel;
                   return (
-                    <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                    <label key={opt.value} onClick={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                       style={{
                         background: data.status === opt.value ? "var(--primary-foreground-soft)" : "transparent",
                       }}
                     >
-                      <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} onChange={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="sr-only" />
+                      <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} readOnly className="sr-only" />
                       <span className="text-lg">{opt.icon}</span>
                       <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
                     </label>
@@ -230,12 +230,12 @@ export default function MenteeOnboarding() {
             {step === 2 && (
               <div className="space-y-2">
                 {Object.entries(CareerStage).map(([k, v]) => (
-                  <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                  <label key={k} onClick={() => setDraftData({ careerStage: v as CareerStage })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                     style={{
                       background: data.careerStage === v ? "var(--primary-foreground-soft)" : "transparent",
                     }}
                   >
-                    <input type="radio" name="careerStage" value={v} checked={data.careerStage === v} onChange={() => setDraftData({ careerStage: v as CareerStage })} className="sr-only" />
+                    <input type="radio" name="careerStage" value={v} checked={data.careerStage === v} readOnly className="sr-only" />
                     <span className="text-sm font-medium" style={{ color: data.careerStage === v ? "var(--primary)" : "var(--foreground)" }}>{v}</span>
                   </label>
                 ))}
@@ -278,12 +278,12 @@ export default function MenteeOnboarding() {
                   };
                   const label = builtInOverrides?.funnel?.options?.[v]?.label || labels[v] || v;
                   return (
-                    <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                    <label key={k} onClick={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                       style={{
                         background: data.diagnosticAnswers.funnelStage === v ? "var(--primary-foreground-soft)" : "transparent",
                       }}
                     >
-                      <input type="radio" name="funnel" value={v} checked={data.diagnosticAnswers.funnelStage === v} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } })} className="sr-only" />
+                      <input type="radio" name="funnel" value={v} checked={data.diagnosticAnswers.funnelStage === v} readOnly className="sr-only" />
                       <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
                     </label>
                   );
@@ -324,12 +324,12 @@ export default function MenteeOnboarding() {
                   ].map((opt) => {
                     const label = builtInOverrides?.interviews?.options?.[opt.value.toString()]?.label || opt.defaultLabel;
                     return (
-                      <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                      <label key={opt.value} onClick={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                         style={{
                           background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : "transparent",
                         }}
                       >
-                        <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} onChange={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="sr-only" />
+                        <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} readOnly className="sr-only" />
                         <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
                       </label>
                     );
@@ -397,12 +397,12 @@ export default function MenteeOnboarding() {
                     ].map((opt) => {
                       const label = builtInOverrides?.availability?.options?.[opt.value]?.label || opt.defaultLabel;
                       return (
-                        <label key={opt.value} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                        <label key={opt.value} onClick={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
                           style={{
                             background: data.availability.preferredMode === opt.value ? "var(--primary-foreground-soft)" : "transparent",
                           }}
                         >
-                          <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} onChange={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="sr-only" />
+                          <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} readOnly className="sr-only" />
                           <span>{opt.icon}</span>
                           <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
                         </label>
@@ -455,8 +455,8 @@ export default function MenteeOnboarding() {
                     {q.type === "mcq" && (
                       <div className="space-y-2">
                         {q.options.map((opt: string) => (
-                          <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
-                            <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} onChange={() => handleCustomAnswer(q._id, opt)} className="sr-only" />
+                          <label key={opt} onClick={() => handleCustomAnswer(q._id, opt)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                            <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} readOnly className="sr-only" />
                             <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
                           </label>
                         ))}
@@ -468,11 +468,12 @@ export default function MenteeOnboarding() {
                           const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
                           const isSelected = selectedArr.includes(opt);
                           return (
-                            <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
-                              <input type="checkbox" checked={isSelected} onChange={(e) => {
-                                const newArr = e.target.checked ? [...selectedArr, opt] : selectedArr.filter((a: string) => a !== opt);
-                                handleCustomAnswer(q._id, newArr);
-                              }} className="sr-only" />
+                            <label key={opt} onClick={(e) => {
+                              e.preventDefault();
+                              const newArr = isSelected ? selectedArr.filter((a: string) => a !== opt) : [...selectedArr, opt];
+                              handleCustomAnswer(q._id, newArr);
+                            }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              <input type="checkbox" checked={isSelected} readOnly className="sr-only" />
                               <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
                                 {isSelected && <span className="text-white text-xs leading-none">✓</span>}
                               </div>

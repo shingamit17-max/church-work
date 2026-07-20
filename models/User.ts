@@ -10,6 +10,7 @@ const UserSchema = new Schema(
     onboardingComplete: { type: Boolean, default: false },
     linkedinId: { type: String },
     churchOrganization: { type: String },
+    dob: { type: Date },
   },
   { timestamps: true }
 );

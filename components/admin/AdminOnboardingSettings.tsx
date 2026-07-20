@@ -134,8 +134,8 @@ export function AdminOnboardingSettings() {
           <h2 className="text-2xl font-black text-foreground uppercase tracking-tight">Onboarding Questions</h2>
           <p className="text-sm text-muted-foreground mt-1">Manage custom dynamic questions for the onboarding flow</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-muted p-1 rounded-xl border-2 border-neo-border dark:border-none">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex bg-muted p-1 rounded-xl border-2 border-neo-border dark:border-none overflow-x-auto max-w-full">
             {(["BOTH", "MENTEE", "MENTOR"] as const).map((role) => (
               <button
                 key={role}

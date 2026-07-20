@@ -236,13 +236,13 @@ export default function MentorOnboarding() {
                   const selected = data.helpTypes.includes(ht.id);
                   const label = builtInOverrides?.helpTypes?.options?.[ht.id]?.label || ht.defaultLabel;
                   return (
-                    <label key={ht.id} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
+                    <label key={ht.id} onClick={() => toggleArrayItem("helpTypes", ht.id as MentorProfile["helpTypes"][number])} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
                       style={{
-                        background: selected ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${selected ? "rgba(74,222,128,0.35)" : "rgba(255,255,255,0.07)"}`,
+                        background: selected ? "var(--primary-foreground-soft)" : "transparent",
+                        border: selected ? "2px solid var(--primary)" : "2px solid var(--border)",
                       }}
                     >
-                      <input type="checkbox" checked={selected} onChange={() => toggleArrayItem("helpTypes", ht.id as MentorProfile["helpTypes"][number])} className="sr-only" />
+                      <input type="checkbox" checked={selected} readOnly className="sr-only" />
                       <span className="text-sm font-medium" style={{ color: selected ? "#4ade80" : "#a8a29e" }}>{label}</span>
                     </label>
                   );
@@ -276,13 +276,13 @@ export default function MentorOnboarding() {
                 {Object.entries(CareerStage).map(([k, v]) => {
                   const selected = data.menteeSeniority.includes(v);
                   return (
-                    <label key={k} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                    <label key={k} onClick={() => toggleArrayItem("menteeSeniority", v)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
                       style={{
-                        background: selected ? "rgba(74,222,128,0.1)" : "rgba(255,255,255,0.03)",
-                        border: "1px solid var(--border)"
+                        background: selected ? "var(--primary-foreground-soft)" : "transparent",
+                        border: selected ? "2px solid var(--primary)" : "2px solid var(--border)",
                       }}
                     >
-                      <input type="checkbox" checked={selected} onChange={() => toggleArrayItem("menteeSeniority", v)} className="sr-only" />
+                      <input type="checkbox" checked={selected} readOnly className="sr-only" />
                       <span className="text-sm font-medium capitalize" style={{ color: selected ? "#4ade80" : "#d6d3d1" }}>{v.replace(/_/g, " ")}</span>
                     </label>
                   );
@@ -373,8 +373,8 @@ export default function MentorOnboarding() {
                       {q.type === "mcq" && (
                         <div className="space-y-2">
                           {q.options.map((opt: string) => (
-                            <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
-                              <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} onChange={() => handleCustomAnswer(q._id, opt)} className="sr-only" />
+                            <label key={opt} onClick={() => handleCustomAnswer(q._id, opt)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} readOnly className="sr-only" />
                               <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
                             </label>
                           ))}
@@ -386,11 +386,12 @@ export default function MentorOnboarding() {
                             const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
                             const isSelected = selectedArr.includes(opt);
                             return (
-                              <label key={opt} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
-                                <input type="checkbox" checked={isSelected} onChange={(e) => {
-                                  const newArr = e.target.checked ? [...selectedArr, opt] : selectedArr.filter((a: string) => a !== opt);
-                                  handleCustomAnswer(q._id, newArr);
-                                }} className="sr-only" />
+                              <label key={opt} onClick={(e) => {
+                                e.preventDefault();
+                                const newArr = isSelected ? selectedArr.filter((a: string) => a !== opt) : [...selectedArr, opt];
+                                handleCustomAnswer(q._id, newArr);
+                              }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                                <input type="checkbox" checked={isSelected} readOnly className="sr-only" />
                                 <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
                                   {isSelected && <span className="text-white text-xs leading-none">✓</span>}
                                 </div>

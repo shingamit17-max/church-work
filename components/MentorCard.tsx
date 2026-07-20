@@ -91,7 +91,7 @@ export default function MentorCard({ mentor, userSession }: MentorCardProps) {
     router.push(`/mentors/${mentor.shareSlug}`);
   };
 
-  const transition = shouldReduceMotion ? { duration: 0.15 } : { type: "spring", stiffness: 300, damping: 30 };
+  const transition = shouldReduceMotion ? { duration: 0.15 } : { type: "spring" as const, stiffness: 300, damping: 30 };
 
   return (
     <>

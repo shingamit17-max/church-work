@@ -172,13 +172,13 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
         }}
       >
         {/* Desktop Logo */}
-        <div className="hidden lg:flex items-center gap-2.5 px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="hidden lg:flex items-center gap-2.5 px-6 py-5 border-b-2 border-neo-border dark:border-border">
           <Image src="/logo.png" alt="Grace Mentor" width={32} height={32} className="h-8 w-auto object-contain" />
           <span className="font-bold text-foreground text-xl">Grace Mentor</span>
         </div>
 
         {/* Mobile Logo & Close Button (Inside Sidebar) */}
-        <div className="flex lg:hidden items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="flex lg:hidden items-center justify-between px-6 py-5 border-b-2 border-neo-border dark:border-border">
           <div className="flex items-center gap-2.5">
             <Image src="/logo.png" alt="Grace Mentor" width={28} height={28} className="h-7 w-auto object-contain" />
             <span className="font-bold text-foreground text-base">Grace Mentor</span>
@@ -194,8 +194,8 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
         </div>
 
         {/* User */}
-        <div className="px-4 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'bg-foreground/5' }}>
+        <div className="px-4 py-4">
+          <div className="flex items-center gap-3 p-3 rounded-xl border border-neo-border/50 dark:border-border bg-foreground/5">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
               style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}

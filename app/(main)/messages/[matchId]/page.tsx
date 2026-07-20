@@ -20,7 +20,7 @@ export default async function MessageThreadPage({ params }: { params: Promise<{ 
   const match = await Match.findById(matchId)
     .populate('menteeId', 'name image role churchOrganization')
     .populate('mentorId', 'name image role churchOrganization')
-    .lean();
+    .lean() as any;
 
   if (!match) {
     redirect("/messages");
