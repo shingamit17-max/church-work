@@ -140,6 +140,9 @@ export default function MentorOnboarding() {
   }
 
   const progress = (step / totalSteps) * 100;
+  
+  let isSingleChoice = false;
+  if (step > BASE_TOTAL_STEPS && customQuestions[step - BASE_TOTAL_STEPS - 1]?.type === "mcq") isSingleChoice = true;
 
   return (
     <div className="w-full pb-12">
@@ -165,8 +168,7 @@ export default function MentorOnboarding() {
               {Array.from({ length: totalSteps }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex-1 h-0.5 rounded-full transition-all duration-300"
-                  style={{ background: i + 1 <= step ? "#4ade80" : "bg-muted/20" }}
+                  className={`flex-1 h-0.5 rounded-full transition-all duration-300 ${i + 1 === step ? 'bg-primary' : i + 1 < step ? 'bg-primary/50' : 'bg-muted-foreground/30'}`}
                 />
               ))}
             </div>
@@ -222,7 +224,7 @@ export default function MentorOnboarding() {
 
             {/* Step 3 */}
             {step === 3 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {(
                   [
                     { id: '1:1', defaultLabel: '1:1 Mentorship Calls' },
@@ -236,9 +238,9 @@ export default function MentorOnboarding() {
                   const selected = data.helpTypes.includes(ht.id);
                   const label = builtInOverrides?.helpTypes?.options?.[ht.id]?.label || ht.defaultLabel;
                   return (
-                    <label key={ht.id} onClick={() => toggleArrayItem("helpTypes", ht.id as MentorProfile["helpTypes"][number])} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
+                    <label key={ht.id} onClick={() => toggleArrayItem("helpTypes", ht.id as MentorProfile["helpTypes"][number])} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:!bg-primary/10 hover:!border-primary/50"
                       style={{
-                        background: selected ? "var(--primary-foreground-soft)" : "transparent",
+                        background: selected ? "var(--primary-foreground-soft)" : undefined,
                         border: selected ? "2px solid var(--primary)" : "2px solid var(--border)",
                       }}
                     >
@@ -252,14 +254,14 @@ export default function MentorOnboarding() {
 
             {/* Step 4 */}
             {step === 4 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.entries(PainPoint).map(([k, v]) => {
                   const selected = data.painPointsCanHelp.includes(v);
                   return (
-                    <label key={k} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
+                    <label key={k} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:!bg-primary/10 hover:!border-primary/50"
                       style={{
-                        background: selected ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${selected ? "rgba(74,222,128,0.35)" : "rgba(255,255,255,0.07)"}`,
+                        background: selected ? "rgba(74,222,128,0.12)" : undefined,
+                        border: `1px solid ${selected ? "rgba(74,222,128,0.35)" : "var(--border)"}`,
                       }}
                     >
                       <input type="checkbox" checked={selected} onChange={() => toggleArrayItem("painPointsCanHelp", v)} className="sr-only" />
@@ -276,9 +278,9 @@ export default function MentorOnboarding() {
                 {Object.entries(CareerStage).map(([k, v]) => {
                   const selected = data.menteeSeniority.includes(v);
                   return (
-                    <label key={k} onClick={() => toggleArrayItem("menteeSeniority", v)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                    <label key={k} onClick={() => toggleArrayItem("menteeSeniority", v)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all hover:!bg-primary/10 hover:!border-primary/50"
                       style={{
-                        background: selected ? "var(--primary-foreground-soft)" : "transparent",
+                        background: selected ? "var(--primary-foreground-soft)" : undefined,
                         border: selected ? "2px solid var(--primary)" : "2px solid var(--border)",
                       }}
                     >
@@ -373,10 +375,10 @@ export default function MentorOnboarding() {
                       {q.type === "mcq" && (
                         <div className="space-y-2">
                           {q.options.map((opt: string) => (
-                            <label key={opt} onClick={() => handleCustomAnswer(q._id, opt)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                            <div key={opt} onClick={() => { handleCustomAnswer(q._id, opt); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : undefined }}>
                               <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} readOnly className="sr-only" />
                               <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
-                            </label>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -386,17 +388,17 @@ export default function MentorOnboarding() {
                             const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
                             const isSelected = selectedArr.includes(opt);
                             return (
-                              <label key={opt} onClick={(e) => {
+                              <div key={opt} onClick={(e) => {
                                 e.preventDefault();
                                 const newArr = isSelected ? selectedArr.filter((a: string) => a !== opt) : [...selectedArr, opt];
                                 handleCustomAnswer(q._id, newArr);
-                              }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50" style={{ background: isSelected ? "var(--primary-foreground-soft)" : undefined }}>
                                 <input type="checkbox" checked={isSelected} readOnly className="sr-only" />
                                 <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
                                   {isSelected && <span className="text-white text-xs leading-none">✓</span>}
                                 </div>
                                 <span className="text-sm font-medium" style={{ color: isSelected ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
-                              </label>
+                              </div>
                             );
                           })}
                         </div>
@@ -410,31 +412,35 @@ export default function MentorOnboarding() {
 
           {/* Navigation */}
           <div className="flex justify-between gap-3 mt-8 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-            <button
-              onClick={prevStep}
-              disabled={step === 1 || isSubmitting}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: step === 1 ? "#44403c" : "#a8a29e",
-                cursor: step === 1 ? "not-allowed" : "pointer",
-              }}
-            >
-              &larr; Back
-            </button>
-
-            {step < totalSteps ? (
+            {step > 1 ? (
               <button
-                onClick={nextStep}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                onClick={prevStep}
+                disabled={step === 1 || isSubmitting}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
                 style={{
-                  background: "var(--primary)",
-                  color: "var(--primary-foreground)",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: step === 1 ? "#44403c" : "#a8a29e",
+                  cursor: step === 1 ? "not-allowed" : "pointer",
                 }}
               >
-                Continue &rarr;
+                &larr; Back
               </button>
+            ) : <div />}
+
+            {step < totalSteps ? (
+              !isSingleChoice ? (
+                <button
+                  onClick={nextStep}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                  }}
+                >
+                  Continue &rarr;
+                </button>
+              ) : <div />
             ) : (
               <button
                 onClick={handleSubmit}

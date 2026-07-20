@@ -154,6 +154,10 @@ export default function MenteeOnboarding() {
   }
 
   const progress = (step / totalSteps) * 100;
+  
+  let isSingleChoice = false;
+  if (step === 1 || step === 2 || step === 4 || step === 6) isSingleChoice = true;
+  if (step > BASE_TOTAL_STEPS && customQuestions[step - BASE_TOTAL_STEPS - 1]?.type === "mcq") isSingleChoice = true;
 
   return (
     <div className="w-full pb-12">
@@ -173,6 +177,7 @@ export default function MenteeOnboarding() {
             <div className="w-full h-1.5 rounded-full overflow-hidden bg-muted/20">
               <div
                 className="h-1.5 rounded-full transition-all duration-500 bg-primary"
+                style={{ width: `${progress}%` }}
               />
             </div>
             {/* Step dots */}
@@ -180,8 +185,7 @@ export default function MenteeOnboarding() {
               {Array.from({ length: totalSteps }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex-1 h-0.5 rounded-full transition-all duration-300"
-                  style={{ background: i + 1 <= step ? "var(--primary)" : "var(--muted)" }}
+                  className={`flex-1 h-0.5 rounded-full transition-all duration-300 ${i + 1 === step ? 'bg-primary' : i + 1 < step ? 'bg-primary/50' : 'bg-muted-foreground/30'}`}
                 />
               ))}
             </div>
@@ -212,15 +216,15 @@ export default function MenteeOnboarding() {
                 ].map((opt) => {
                   const label = builtInOverrides?.status?.options?.[opt.value]?.label || opt.defaultLabel;
                   return (
-                    <label key={opt.value} onClick={() => setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                    <div key={opt.value} onClick={() => { setDraftData({ status: opt.value as "unemployed" | "underemployed" | "employed-but-searching" }); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50"
                       style={{
-                        background: data.status === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                        background: data.status === opt.value ? "var(--primary-foreground-soft)" : undefined,
                       }}
                     >
                       <input type="radio" name="status" value={opt.value} checked={data.status === opt.value} readOnly className="sr-only" />
                       <span className="text-lg">{opt.icon}</span>
                       <span className="text-sm font-medium" style={{ color: data.status === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
-                    </label>
+                    </div>
                   );
                 })}
               </div>
@@ -230,14 +234,14 @@ export default function MenteeOnboarding() {
             {step === 2 && (
               <div className="space-y-2">
                 {Object.entries(CareerStage).map(([k, v]) => (
-                  <label key={k} onClick={() => setDraftData({ careerStage: v as CareerStage })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                  <div key={k} onClick={() => { setDraftData({ careerStage: v as CareerStage }); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50"
                     style={{
-                      background: data.careerStage === v ? "var(--primary-foreground-soft)" : "transparent",
+                      background: data.careerStage === v ? "var(--primary-foreground-soft)" : undefined,
                     }}
                   >
                     <input type="radio" name="careerStage" value={v} checked={data.careerStage === v} readOnly className="sr-only" />
                     <span className="text-sm font-medium" style={{ color: data.careerStage === v ? "var(--primary)" : "var(--foreground)" }}>{v}</span>
-                  </label>
+                  </div>
                 ))}
               </div>
             )}
@@ -278,14 +282,14 @@ export default function MenteeOnboarding() {
                   };
                   const label = builtInOverrides?.funnel?.options?.[v]?.label || labels[v] || v;
                   return (
-                    <label key={k} onClick={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                    <div key={k} onClick={() => { setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, funnelStage: v as DiagnosticFunnelStage } }); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50"
                       style={{
-                        background: data.diagnosticAnswers.funnelStage === v ? "var(--primary-foreground-soft)" : "transparent",
+                        background: data.diagnosticAnswers.funnelStage === v ? "var(--primary-foreground-soft)" : undefined,
                       }}
                     >
                       <input type="radio" name="funnel" value={v} checked={data.diagnosticAnswers.funnelStage === v} readOnly className="sr-only" />
                       <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.funnelStage === v ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
-                    </label>
+                    </div>
                   );
                 })}
               </div>
@@ -293,7 +297,7 @@ export default function MenteeOnboarding() {
 
             {/* Step 5 — Pain points */}
             {step === 5 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.values(PainPoint).map((v) => {
                   const selected = data.diagnosticAnswers.painPoints.includes(v);
                   return (
@@ -324,14 +328,14 @@ export default function MenteeOnboarding() {
                   ].map((opt) => {
                     const label = builtInOverrides?.interviews?.options?.[opt.value.toString()]?.label || opt.defaultLabel;
                     return (
-                      <label key={opt.value} onClick={() => setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                      <div key={opt.value} onClick={() => { setDraftData({ diagnosticAnswers: { ...data.diagnosticAnswers, interviewCount: opt.value } }); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50"
                         style={{
-                          background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                          background: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary-foreground-soft)" : undefined,
                         }}
                       >
                         <input type="radio" name="interviewCount" value={opt.value} checked={data.diagnosticAnswers.interviewCount === opt.value} readOnly className="sr-only" />
                         <span className="text-sm font-medium" style={{ color: data.diagnosticAnswers.interviewCount === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
-                      </label>
+                      </div>
                     );
                   })}
                 </div>
@@ -397,15 +401,15 @@ export default function MenteeOnboarding() {
                     ].map((opt) => {
                       const label = builtInOverrides?.availability?.options?.[opt.value]?.label || opt.defaultLabel;
                       return (
-                        <label key={opt.value} onClick={() => setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } })} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border"
+                        <div key={opt.value} onClick={() => { setDraftData({ availability: { ...data.availability, preferredMode: opt.value as "async" | "calls" | "workshops" } }); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50"
                           style={{
-                            background: data.availability.preferredMode === opt.value ? "var(--primary-foreground-soft)" : "transparent",
+                            background: data.availability.preferredMode === opt.value ? "var(--primary-foreground-soft)" : undefined,
                           }}
                         >
                           <input type="radio" name="mode" value={opt.value} checked={data.availability.preferredMode === opt.value} readOnly className="sr-only" />
                           <span>{opt.icon}</span>
                           <span className="text-sm font-medium" style={{ color: data.availability.preferredMode === opt.value ? "var(--primary)" : "var(--foreground)" }}>{label}</span>
-                        </label>
+                        </div>
                       );
                     })}
                   </div>
@@ -455,10 +459,10 @@ export default function MenteeOnboarding() {
                     {q.type === "mcq" && (
                       <div className="space-y-2">
                         {q.options.map((opt: string) => (
-                          <label key={opt} onClick={() => handleCustomAnswer(q._id, opt)} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : "transparent" }}>
+                          <div key={opt} onClick={() => { handleCustomAnswer(q._id, opt); setTimeout(() => nextStep(), 250); }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50" style={{ background: currentAnswer === opt ? "var(--primary-foreground-soft)" : undefined }}>
                             <input type="radio" name={`custom-${q._id}`} value={opt} checked={currentAnswer === opt} readOnly className="sr-only" />
                             <span className="text-sm font-medium" style={{ color: currentAnswer === opt ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
-                          </label>
+                          </div>
                         ))}
                       </div>
                     )}
@@ -468,17 +472,17 @@ export default function MenteeOnboarding() {
                           const selectedArr = Array.isArray(currentAnswer) ? currentAnswer : [];
                           const isSelected = selectedArr.includes(opt);
                           return (
-                            <label key={opt} onClick={(e) => {
+                            <div key={opt} onClick={(e) => {
                               e.preventDefault();
                               const newArr = isSelected ? selectedArr.filter((a: string) => a !== opt) : [...selectedArr, opt];
                               handleCustomAnswer(q._id, newArr);
-                            }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border" style={{ background: isSelected ? "var(--primary-foreground-soft)" : "transparent" }}>
+                              }} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border border-border hover:!bg-primary/10 hover:!border-primary/50" style={{ background: isSelected ? "var(--primary-foreground-soft)" : undefined }}>
                               <input type="checkbox" checked={isSelected} readOnly className="sr-only" />
                               <div className="w-5 h-5 rounded border flex items-center justify-center transition-colors" style={{ background: isSelected ? "var(--primary)" : "transparent", borderColor: isSelected ? "var(--primary)" : "var(--border)" }}>
                                 {isSelected && <span className="text-white text-xs leading-none">✓</span>}
                               </div>
                               <span className="text-sm font-medium" style={{ color: isSelected ? "var(--primary)" : "var(--foreground)" }}>{opt}</span>
-                            </label>
+                            </div>
                           );
                         })}
                       </div>
@@ -491,22 +495,26 @@ export default function MenteeOnboarding() {
 
           {/* Navigation */}
           <div className="flex justify-between gap-3 mt-8 pt-6 border-t border-border">
-            <button
-              onClick={prevStep}
-              disabled={step === 1 || isSubmitting || uploadingResume}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-muted/10 border border-border text-muted-foreground"
-            >
-              &larr; Back
-            </button>
+            {step > 1 ? (
+              <button
+                onClick={prevStep}
+                disabled={isSubmitting || uploadingResume}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-muted/10 border border-border text-muted-foreground"
+              >
+                &larr; Back
+              </button>
+            ) : <div />}
 
             {step < totalSteps ? (
-              <button
-                onClick={nextStep}
-                disabled={uploadingResume}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-primary-foreground shadow-lg"
-              >
-                Continue &rarr;
-              </button>
+              !isSingleChoice ? (
+                <button
+                  onClick={nextStep}
+                  disabled={uploadingResume}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-primary-foreground shadow-lg"
+                >
+                  Continue &rarr;
+                </button>
+              ) : <div />
             ) : (
               <button
                 onClick={handleSubmit}

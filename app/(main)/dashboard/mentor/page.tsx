@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 import { MentorProfile } from "@/models/MentorProfile";
 import { Event } from "@/models/Event";
+import "@/models/User";
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
 
@@ -12,7 +13,7 @@ export default async function MentorDashboardPage() {
 
   await dbConnect();
 
-  const matches = await Match.find({ mentorId: session.user.id }).sort({ createdAt: -1 });
+  const matches = await Match.find({ mentorId: session.user.id }).populate("menteeId", "name").sort({ createdAt: -1 });
   const profile = await MentorProfile.findOne({ userId: session.user.id });
   const hostedEvents = await Event.find({ hostId: session.user.id }).sort({ dateTime: 1 });
 
@@ -50,7 +51,7 @@ export default async function MentorDashboardPage() {
       </div>
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Requests", value: matches.length, accent: "var(--foreground)" },
           { label: "Pending", value: pending.length, accent: "#fbbf24" },
@@ -89,12 +90,15 @@ export default async function MentorDashboardPage() {
             ) : (
               <div className="space-y-4">
                 {pending.map((match) => (
-                  <div key={match.id} className="p-5 rounded-2xl bg-card border border-border">
+                  <div key={match._id.toString()} className="p-5 rounded-2xl bg-card border border-border">
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium border bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20">
-                        New Request
-                      </span>
-                      <span className="text-xs text-muted-foreground">Match ID: {match._id.toString().slice(-6)}</span>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-lg">{match.menteeId?.name || "Unknown Mentee"}</span>
+                        <span className="text-xs px-2.5 py-1 rounded-full font-medium border bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20 w-fit">
+                          New Request
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground mt-1">Match ID: {match._id.toString().slice(-6)}</span>
                     </div>
                     <p className="text-sm leading-relaxed mb-5 text-muted-foreground">{match.matchReason}</p>
                     <div className="flex gap-3">
@@ -128,10 +132,13 @@ export default async function MentorDashboardPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {active.map((match) => (
-                  <div key={match.id} className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all bg-card border border-border">
-                    <span className="text-xs px-2.5 py-1 rounded-full font-medium block mb-3 w-fit border bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20">
-                      Active
-                    </span>
+                  <div key={match._id.toString()} className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all bg-card border border-border">
+                    <div className="flex flex-col gap-1 z-10 relative">
+                      <span className="font-bold text-lg">{match.menteeId?.name || "Unknown Mentee"}</span>
+                      <span className="text-xs px-2.5 py-1 rounded-full font-medium block mb-1 w-fit border bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20">
+                        Active
+                      </span>
+                    </div>
                     <p className="text-sm leading-relaxed relative z-10 line-clamp-3 text-muted-foreground">{match.matchReason}</p>
                     <div className="space-y-2">
                       <NextLink href={`/messages/${match._id}`} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}>

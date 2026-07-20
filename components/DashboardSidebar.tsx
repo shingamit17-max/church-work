@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Image from "next/image";
 import { NotificationBell } from './NotificationBell';
+import { UploadButton } from "@/lib/uploadthing";
+import { toast } from "sonner";
 
 interface DashboardSidebarProps {
   userRole: 'mentee' | 'mentor' | 'admin';
@@ -71,6 +73,7 @@ const ADMIN_LINKS = [
 ];
 
 export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) {
+  const { data: session, update } = useSession();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
@@ -164,7 +167,7 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
 
       {/* Sidebar */}
       <aside
-        className={`fixed right-0 top-0 h-[100dvh] lg:h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 pb-20 lg:pb-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed right-0 top-0 h-[100dvh] lg:h-screen lg:relative w-64 xl:w-72 2xl:w-80 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 pb-20 lg:pb-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
           backgroundColor: 'var(--neo-card)',
           borderRight: '1px solid var(--border)',
@@ -195,18 +198,45 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
 
         {/* User */}
         <div className="px-4 py-4">
-          <div className="flex items-center gap-3 p-3 rounded-xl border border-neo-border/50 dark:border-border bg-foreground/5">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-              style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}
-            >
-              {userName.charAt(0).toUpperCase()}
+          <div className="flex flex-col gap-3 p-3 rounded-xl border border-neo-border/50 dark:border-border bg-foreground/5 relative group">
+            <div className="flex items-center gap-3">
+              {session?.user?.image ? (
+                <Image src={session.user.image} alt={userName} width={32} height={32} className="w-8 h-8 rounded-lg object-cover shrink-0" />
+              ) : (
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+                  style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}
+                >
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate text-foreground">{userName}</p>
+                <p className="text-xs truncate text-muted-foreground">
+                  {userRole === 'admin' ? 'Administrator' : userRole === 'mentee' ? 'Job Seeker' : 'Mentor'}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium truncate text-foreground">{userName}</p>
-              <p className="text-xs truncate text-muted-foreground">
-                {userRole === 'admin' ? 'Administrator' : userRole === 'mentee' ? 'Job Seeker' : 'Mentor'}
-              </p>
+            
+            <div className="hidden group-hover:block transition-all">
+              <UploadButton
+                endpoint="profileImageUploader"
+                onClientUploadComplete={() => {
+                  update();
+                  toast.success("Profile photo updated");
+                }}
+                onUploadError={(error: Error) => {
+                  toast.error(`Upload failed: ${error.message}`);
+                }}
+                appearance={{
+                  button: "w-full text-xs font-medium px-2 py-1.5 h-auto rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-none",
+                  allowedContent: "hidden",
+                  container: "w-full items-start"
+                }}
+                content={{
+                  button: "Change Photo"
+                }}
+              />
             </div>
           </div>
         </div>

@@ -64,7 +64,7 @@ export default async function MenteeDashboardPage() {
       </div>
 
       {/* ── Stats row ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <STAT_CARD label="Mentor Matches" value={matches.length} sub="AI generated" accent="#fbbf24" />
         <STAT_CARD label="Active Mentors" value={acceptedMatches.length} sub="Connections" accent="#4ade80" />
         <STAT_CARD label="Pending" value={pendingMatches.length} sub="Awaiting response" accent="#fb7185" />

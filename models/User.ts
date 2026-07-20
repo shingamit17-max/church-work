@@ -5,6 +5,7 @@ const UserSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    image: { type: String },
     password: { type: String }, // For credentials fallback
     role: { type: String, enum: Object.values(UserRole), default: UserRole.UNASSIGNED },
     onboardingComplete: { type: Boolean, default: false },

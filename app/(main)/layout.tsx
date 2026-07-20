@@ -41,7 +41,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         </div>
 
         <div id="main-scroll-container" className="flex-1 overflow-auto pt-24 px-4 pb-20 lg:p-8 lg:pt-8 bg-transparent">
-          <div className="max-w-6xl mx-auto mt-4 lg:mt-0">
+          <div className="max-w-7xl 2xl:max-w-[1600px] w-full mx-auto mt-4 lg:mt-0">
             {children}
           </div>
         </div>

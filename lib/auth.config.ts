@@ -54,6 +54,7 @@ export const authConfig: NextAuthConfig = {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
+          image: user.image,
           role: user.role,
           onboardingComplete: user.onboardingComplete,
         };
@@ -79,6 +80,7 @@ export const authConfig: NextAuthConfig = {
         user.id = existingUser._id.toString();
         user.role = existingUser.role;
         user.onboardingComplete = existingUser.onboardingComplete;
+        user.image = existingUser.image || user.image;
       }
       return true;
     },
@@ -88,12 +90,14 @@ export const authConfig: NextAuthConfig = {
         token.id = user.id;
         token.role = user.role;
         token.onboardingComplete = user.onboardingComplete;
+        token.image = user.image;
       }
       
       // When the client calls update() to refresh the session (e.g. post-onboarding)
       if (trigger === "update" && session) {
         token.role = session.role ?? token.role;
         token.onboardingComplete = session.onboardingComplete ?? token.onboardingComplete;
+        token.image = session.image ?? token.image;
       }
 
       return token;
@@ -103,6 +107,7 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.onboardingComplete = token.onboardingComplete as boolean;
+        if (token.image) session.user.image = token.image as string;
       }
       return session;
     },

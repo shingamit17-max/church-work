@@ -5,6 +5,19 @@ const nextConfig: NextConfig = {
   // These must run in the Node.js runtime, not the Edge runtime.
   serverExternalPackages: ["mongoose", "bcryptjs"],
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      },
+    ],
+  },
+
   // Basic security headers applied to all routes
   async headers() {
     return [

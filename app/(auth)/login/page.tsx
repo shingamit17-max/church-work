@@ -141,13 +141,6 @@ function LoginForm() {
               <Image src="/logo.png" alt="Grace Mentor Logo" width={28} height={28} className="h-7 w-auto object-contain" />
               <span className="font-semibold text-base" style={{ letterSpacing: "-0.02em" }}>Grace Mentor</span>
             </NextLink>
-            
-            {/* Profile Icon Placeholder */}
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">
-              <svg className="w-4 h-4 text-foreground/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
           </div>
         </div>
 
