@@ -184,12 +184,12 @@ export default async function MentorProfilePage() {
                 </div>
 
                 {/* Save Button */}
-                <div className="flex gap-3">
-                  <button className="btn-amber px-8">
-                    Save Changes
-                  </button>
-                  <button className="btn-ghost px-8">
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-4">
+                  <button className="btn-ghost flex-1 sm:flex-none px-6">
                     Cancel
+                  </button>
+                  <button className="btn-amber flex-1 sm:flex-none px-6">
+                    Save Changes
                   </button>
                 </div>
               </div>

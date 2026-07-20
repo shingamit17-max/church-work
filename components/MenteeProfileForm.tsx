@@ -133,11 +133,11 @@ export function MenteeProfileForm({ initialData }: MenteeProfileFormProps) {
       </div>
 
       {/* Save Button */}
-      <div className="warm-card p-6 flex items-center justify-end gap-3 mt-2">
-        <button type="button" className="px-6 py-2.5 rounded-xl bg-muted text-foreground font-bold border-2 border-border hover:bg-muted/80 transition-all text-sm">
+      <div className="warm-card p-6 flex items-center justify-between sm:justify-end gap-4 mt-2">
+        <button type="button" className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-muted text-foreground font-bold border-2 border-border hover:bg-muted/80 transition-all text-sm">
           Cancel
         </button>
-        <button type="submit" disabled={isSubmitting} className="px-8 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 text-black bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_4px_16px_rgba(52,211,153,0.3)] border-2 border-emerald-700/20 disabled:opacity-50">
+        <button type="submit" disabled={isSubmitting} className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 text-black bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-emerald-700/20 disabled:opacity-50">
           {isSubmitting ? "Saving..." : "Save Changes"}
         </button>
       </div>

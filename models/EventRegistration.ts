@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import './Event';
 
 const EventRegistrationSchema = new Schema(
   {

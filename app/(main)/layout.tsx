@@ -5,6 +5,7 @@ import { ProfileCompletionBanner } from "@/components/ProfileCompletionBanner";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileOnboardingTour } from "@/components/MobileOnboardingTour";
 import { ProfileReminderToast } from "@/components/ProfileReminderToast";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import type { UserRole } from "@/types";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
@@ -31,7 +32,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       <DashboardSidebar userRole={userRole} userName={userName} userEmail={userEmail} />
       
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative z-10">
+      <main className="flex-1 flex flex-col overflow-hidden relative">
         {isProfileIncomplete && <ProfileCompletionBanner role={session.user.role as UserRole} />}
         
         {/* Top Header Row for Notification Bell */}
@@ -39,7 +40,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           <NotificationBell />
         </div>
 
-        <div className="flex-1 overflow-auto pt-24 px-4 pb-6 lg:p-8 lg:pt-8 bg-transparent">
+        <div id="main-scroll-container" className="flex-1 overflow-auto pt-24 px-4 pb-20 lg:p-8 lg:pt-8 bg-transparent">
           <div className="max-w-6xl mx-auto mt-4 lg:mt-0">
             {children}
           </div>
@@ -48,6 +49,9 @@ export default async function MainLayout({ children }: { children: React.ReactNo
 
       <MobileOnboardingTour role={userRole} />
       <ProfileReminderToast isProfileIncomplete={isProfileIncomplete} role={userRole} />
+      
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav userRole={userRole} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import { Match } from "@/models/Match";
 import { MenteeProfile } from "@/models/MenteeProfile";
 import { EventRegistration } from "@/models/EventRegistration";
+import { Event } from "@/models/Event"; // Required for population
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
 
@@ -126,12 +127,13 @@ export default async function MenteeDashboardPage() {
                     />
                     <div className="flex items-start justify-between relative z-10">
                       <span
-                        className="text-xs px-2.5 py-1 rounded-full font-medium"
-                        style={{
-                          background: match.status === 'accepted' ? 'rgba(74,222,128,0.1)' : match.status === 'pending' ? 'rgba(251,191,36,0.1)' : 'rgba(251,113,133,0.1)',
-                          color: match.status === 'accepted' ? '#4ade80' : match.status === 'pending' ? '#fbbf24' : '#fb7185',
-                          border: `1px solid ${match.status === 'accepted' ? 'rgba(74,222,128,0.2)' : match.status === 'pending' ? 'rgba(251,191,36,0.2)' : 'rgba(251,113,133,0.2)'}`,
-                        }}
+                        className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                          match.status === 'accepted' 
+                            ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20' 
+                            : match.status === 'pending' 
+                              ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' 
+                              : 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
+                        }`}
                       >
                         {match.status === 'accepted' ? '✓ Active' : match.status === 'pending' ? '· Pending' : '✕ Declined'}
                       </span>
@@ -146,15 +148,14 @@ export default async function MenteeDashboardPage() {
                       {match.status === 'pending' && (
                         <NextLink
                           href={`/mentors/${match.mentorId.toString()}`}
-                          className="w-full flex items-center justify-center py-2.5 rounded-xl text-sm font-medium transition-all"
-                          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d6d3d1" }}
+                          className="w-full flex items-center justify-center py-2.5 rounded-xl text-sm font-medium transition-all bg-foreground/5 border border-border text-foreground hover:bg-foreground/10"
                         >
                           View Profile & Request
                         </NextLink>
                       )}
                       {match.status === 'accepted' && (
                         <NextLink
-                          href={`/chat/${match._id}`}
+                          href={`/messages/${match._id}`}
                           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
                           style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}
                         >
@@ -205,12 +206,11 @@ export default async function MenteeDashboardPage() {
                         </p>
                       </div>
                       <span
-                        className="text-xs px-2.5 py-1 rounded-full shrink-0 ml-4"
-                        style={{
-                          background: evt.status === "upcoming" ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.05)",
-                          color: evt.status === "upcoming" ? "#fbbf24" : "#78716c",
-                          border: `1px solid ${evt.status === "upcoming" ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.08)"}`,
-                        }}
+                        className={`text-xs px-2.5 py-1 rounded-full shrink-0 ml-4 border ${
+                          evt.status === 'upcoming'
+                            ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20'
+                            : 'bg-black/5 text-muted-foreground border-black/10 dark:bg-white/5 dark:border-white/10'
+                        }`}
                       >
                         {evt.status}
                       </span>

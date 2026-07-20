@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { matchId, content } = await req.json();
+    const { matchId, content, type = 'text', resourceData } = await req.json();
 
     if (!matchId || !content) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -27,10 +27,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Check if match is messageable
+    if (match.status !== 'accepted' && match.status !== 'active') {
+      return NextResponse.json({ error: "Messaging is not allowed for this match status" }, { status: 403 });
+    }
+
+    let attachments: string[] = [];
+
+    // Create Resource if applicable
+    if (type === 'resource' && resourceData) {
+      const { Resource } = await import('@/models/Resource');
+      const newResource = new Resource({
+        sharedBy: session.user.id,
+        uploadedBy: session.user.id,
+        matchId,
+        title: resourceData.title,
+        url: resourceData.url,
+        painPointTags: resourceData.painPointTags || [],
+        type: 'link'
+      });
+      await newResource.save();
+      // Store the resource ID or URL in attachments or content
+      attachments.push(newResource._id.toString());
+    }
+
     const newMessage = new Message({
       matchId,
       senderId: session.user.id,
       content,
+      type,
+      attachments,
+      readBy: [session.user.id] // Mark as read by sender
     });
 
     await newMessage.save();
@@ -41,6 +68,8 @@ export async function POST(req: Request) {
       matchId,
       senderId: session.user.id,
       content,
+      type,
+      attachments,
       createdAt: newMessage.createdAt,
     });
 

@@ -14,43 +14,43 @@ interface DashboardSidebarProps {
 }
 
 const MENTEE_LINKS = [
-  { href: '/dashboard/mentee', label: 'Dashboard', icon: (
+  { href: '/dashboard/mentee', label: 'Dashboard', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
   )},
   { href: '/dashboard/mentee/profile', label: 'My Profile', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
   )},
-  { href: '/dashboard/mentee/mentors', label: 'Find Mentors', icon: (
+  { href: '/dashboard/mentee/mentors', label: 'Find Mentors', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 20c0-3.3 3.1-6 7-6"/><circle cx="17" cy="11" r="3"/><path d="M14 20c0-2.2 1.3-4 3-4s3 1.8 3 4"/></svg>
   )},
-  { href: '/dashboard/mentee/placements', label: 'Job Board', icon: (
+  { href: '/dashboard/mentee/placements', label: 'Job Board', comingSoon: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
   )},
-  { href: '/dashboard/mentee/network', label: 'My Network', icon: (
+  { href: '/dashboard/mentee/network', label: 'My Network', comingSoon: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 6.5l4 4M14 9.5l4-3M6 17.5l4-4M14 14.5l4 3"/></svg>
   )},
-  { href: '/events', label: 'Events', icon: (
+  { href: '/events', label: 'Events', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
   )},
-  { href: '/resources', label: 'Resources', icon: (
+  { href: '/resources', label: 'Resources', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
   )},
 ];
 
 const MENTOR_LINKS = [
-  { href: '/dashboard/mentor', label: 'Dashboard', icon: (
+  { href: '/dashboard/mentor', label: 'Dashboard', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
   )},
   { href: '/dashboard/mentor/profile', label: 'My Profile', icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
   )},
-  { href: '/events', label: 'Events', icon: (
+  { href: '/events', label: 'Events', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
   )},
-  { href: '/dashboard/mentor/placements', label: 'Job Board', icon: (
+  { href: '/dashboard/mentor/placements', label: 'Job Board', comingSoon: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
   )},
-  { href: '/resources', label: 'Resources', icon: (
+  { href: '/resources', label: 'Resources', hideOnMobile: true, icon: (
     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
   )},
 ];
@@ -74,8 +74,30 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const links = userRole === 'admin' ? ADMIN_LINKS : userRole === 'mentee' ? MENTEE_LINKS : MENTOR_LINKS;
   const isActive = (href: string) => pathname === href || (href !== '/dashboard/mentee' && href !== '/dashboard/mentor' && href !== '/dashboard/admin' && pathname.startsWith(href));
+
+  useEffect(() => {
+    const scrollContainer = document.getElementById('main-scroll-container');
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const currentScrollY = scrollContainer.scrollTop;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 60) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   useEffect(() => {
     const handleSetMenu = (e: Event) => {
@@ -89,7 +111,11 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
   return (
     <>
       {/* Mobile Header (Opaque Pill - Hidden when Sidebar is Open) */}
-      <div className={`fixed top-6 w-full px-4 flex lg:hidden justify-center z-[80] pointer-events-none transition-all duration-300 ${isOpen ? 'opacity-0 -translate-y-8 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
+      <div className={`fixed top-6 w-full px-4 flex lg:hidden justify-center z-[80] pointer-events-none transition-all duration-300 ${
+        isOpen || !isVisible 
+          ? 'opacity-0 -translate-y-8 pointer-events-none' 
+          : 'opacity-100 translate-y-0'
+      }`}>
         <div 
           className="flex items-center justify-between w-full max-w-sm px-4 py-3 rounded-full pointer-events-auto border-2 border-border"
           style={{ 
@@ -138,7 +164,7 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
 
       {/* Sidebar */}
       <aside
-        className={`fixed right-0 top-0 h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed right-0 top-0 h-[100dvh] lg:h-screen lg:relative w-64 z-[70] flex flex-col transition-transform duration-300 lg:translate-x-0 pb-20 lg:pb-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
           backgroundColor: 'var(--neo-card)',
           borderRight: '1px solid var(--border)',
@@ -190,24 +216,41 @@ export function DashboardSidebar({ userRole, userName }: DashboardSidebarProps) 
           <p className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-3 text-muted-foreground">
             Navigation
           </p>
-          {links.map((link) => {
+          {links.map((link: any) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 id={`tour-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-all group ${
+                href={link.comingSoon ? '#' : link.href}
+                onClick={(e) => {
+                  if (link.comingSoon) {
+                    e.preventDefault();
+                    return;
+                  }
+                  setIsOpen(false);
+                }}
+                className={`items-center justify-between px-3 py-2.5 text-sm transition-all group ${
+                  link.hideOnMobile ? 'hidden lg:flex' : 'flex'
+                } ${
                   active 
                     ? "neobrutal-box text-foreground font-bold" 
-                    : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground rounded-none"
+                    : link.comingSoon
+                      ? "text-muted-foreground/50 cursor-default"
+                      : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground rounded-none"
                 }`}
               >
-                <span className={active ? "text-accent" : "text-muted-foreground group-hover:text-foreground"}>
-                  {link.icon}
-                </span>
-                {link.label}
+                <div className="flex items-center gap-3">
+                  <span className={active ? "text-accent" : "text-muted-foreground group-hover:text-foreground"}>
+                    {link.icon}
+                  </span>
+                  {link.label}
+                </div>
+                {link.comingSoon && (
+                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-muted-foreground">
+                    Soon
+                  </span>
+                )}
               </Link>
             );
           })}

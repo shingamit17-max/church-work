@@ -125,6 +125,7 @@ export interface Message {
   content: string;
   type: 'text' | 'resource';
   attachments?: string[];
+  readBy?: string[];
   createdAt: Date;
 }
 

@@ -91,7 +91,7 @@ export default async function MentorDashboardPage() {
                 {pending.map((match) => (
                   <div key={match.id} className="p-5 rounded-2xl bg-card border border-border">
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>
+                      <span className="text-xs px-2.5 py-1 rounded-full font-medium border bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20">
                         New Request
                       </span>
                       <span className="text-xs text-muted-foreground">Match ID: {match._id.toString().slice(-6)}</span>
@@ -129,12 +129,12 @@ export default async function MentorDashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {active.map((match) => (
                   <div key={match.id} className="p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group transition-all bg-card border border-border">
-                    <span className="text-xs px-2.5 py-1 rounded-full font-medium block mb-3 w-fit" style={{ background: "rgba(74,222,128,0.1)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.2)" }}>
+                    <span className="text-xs px-2.5 py-1 rounded-full font-medium block mb-3 w-fit border bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20">
                       Active
                     </span>
                     <p className="text-sm leading-relaxed relative z-10 line-clamp-3 text-muted-foreground">{match.matchReason}</p>
                     <div className="space-y-2">
-                      <NextLink href={`/chat/${match._id}`} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}>
+                      <NextLink href={`/messages/${match._id}`} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all" style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#0c0a09", boxShadow: "0 4px 12px rgba(245,158,11,0.2)" }}>
                         Open Chat
                       </NextLink>
                       <NextLink href={`/feedback/${match._id.toString()}`} className="w-full flex items-center justify-center py-2 rounded-xl text-sm transition-all" style={{ background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.15)", color: "#a78bfa" }}>

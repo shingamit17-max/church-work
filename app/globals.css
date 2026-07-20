@@ -94,7 +94,7 @@ body {
 .neobrutal-box, .bg-card, .warm-card {
   background-color: var(--neo-card) !important;
   border: 2px solid var(--neo-border) !important;
-  border-radius: 0px !important;
+  border-radius: 1rem !important;
   box-shadow: 4px 4px 0px 0px var(--neo-border) !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
@@ -120,7 +120,7 @@ body {
   width: 100%;
   background: var(--neo-card) !important;
   border: 2px solid var(--neo-border) !important;
-  border-radius: 0px !important;
+  border-radius: 0.75rem !important;
   padding: 0.75rem 1rem;
   color: var(--foreground);
   font-size: 0.9375rem;
@@ -175,7 +175,7 @@ body {
   color: #fff;
   font-weight: 700;
   font-size: 0.9375rem;
-  border-radius: 0px;
+  border-radius: 0.75rem;
   border: 2px solid var(--neo-border);
   cursor: pointer;
   transition: all 0.1s ease;
@@ -199,15 +199,15 @@ body {
 .dark .btn-amber {
   border: none !important;
   border-radius: 0.625rem !important;
-  box-shadow: 0 4px 16px rgba(255, 94, 94, 0.2) !important;
+  box-shadow: none !important;
 }
 .dark .btn-amber:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 8px 24px rgba(255, 94, 94, 0.35) !important;
+  box-shadow: none !important;
 }
 .dark .btn-amber:active {
   transform: none !important;
-  box-shadow: 0 2px 8px rgba(255, 94, 94, 0.2) !important;
+  box-shadow: none !important;
 }
 
 /* ──────────────── Button: Ghost (Neobrutalist Secondary) ──────────────── */
@@ -222,7 +222,7 @@ body {
   color: var(--foreground);
   font-weight: 700;
   font-size: 0.9375rem;
-  border-radius: 0px;
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.1s ease;
   box-shadow: 4px 4px 0px 0px var(--neo-border);
@@ -256,7 +256,7 @@ button[class*="bg-primary"], a[class*="bg-primary"],
 button[class*="bg-foreground"], a[class*="bg-foreground"] {
   border: 2px solid var(--neo-border) !important;
   box-shadow: 3px 3px 0px 0px var(--neo-border) !important;
-  border-radius: 0px !important;
+  border-radius: 0.75rem !important;
   transition: all 0.1s ease;
 }
 button[class*="bg-primary"]:hover, a[class*="bg-primary"]:hover,

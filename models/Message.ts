@@ -7,6 +7,7 @@ const MessageSchema = new Schema(
     content: { type: String, required: true },
     type: { type: String, enum: ['text', 'resource'], default: 'text' },
     attachments: [{ type: String }], // Array of URLs
+    readBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   { timestamps: true }
 );
